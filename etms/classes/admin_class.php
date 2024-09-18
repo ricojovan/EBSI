@@ -10,7 +10,7 @@ class Admin_Class
         $host_name='localhost';
 		$user_name='root';
 		$password='';
-		$db_name='etms_db';
+		$db_name='ebsi_db';
 
 		try{
 			$connection=new PDO("mysql:host={$host_name}; dbname={$db_name}", $user_name,  $password);

@@ -7,7 +7,7 @@ include 'nav-and-footer/header-nav.php';
 $host_name='localhost';
 $user_name='root';
 $password='';
-$db_name='etms_db';
+$db_name='ebsi_db';
 
 try {
     // Create a new PDO instance

@@ -50,19 +50,8 @@ if (isset($_POST['add_task_post'])) {
 
                                             <div class="form-group">
     <label class="control-label text-p-reset">Task Title</label>
-    <select name="task_title" id="task_title" class="form-control rounded-0" required>
-        <option value="">Select Activity...</option>
-        <?php
-        // Fetch activities from the home_tasks table
-        $sql = "SELECT DISTINCT activity FROM home_tasks";
-        $result = $obj_admin->manage_all_info($sql);
-        
-        // Loop through the results and create option elements
-        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            echo "<option value='" . $row['activity'] . "'>" . $row['activity'] . "</option>";
-        }
-        ?>
-    </select>
+    <input name="task_title" id="task_title" class="form-control rounded-0" required>
+    </input>
 </div>
                                                 <div class="form-group">
                                                     <label class="control-label text-p-reset">Task Description</label>
