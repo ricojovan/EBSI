@@ -41,6 +41,9 @@ if(isset($_POST['add_task_post'])){
                 <div class="col-12">
                     <?php $date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d') ?>
                     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="well well-custom rounded-0">
@@ -52,6 +55,7 @@ if(isset($_POST['add_task_post'])){
                                     <div class="col-md-4">
                                         <button class="btn btn-primary btn-sm btn-menu" type="button" id="filter"><i class="glyphicon glyphicon-filter"></i> Filter</button>
                                         <button class="btn btn-success btn-sm btn-menu" type="button" id="print"><i class="glyphicon glyphicon-print"></i> Print</button>
+                                        <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF</button>
                                     </div>
                                 </div>
                                 <center><h3>Attendance Report</h3></center>
@@ -118,6 +122,73 @@ if(isset($_POST['add_task_post'])){
 
 <?php include("etms/include/footer.php"); ?>
 <?php include("nav-and-footer/footer-area.php"); ?>
+
+
+<script>
+    // Handle the PDF generation
+    document.getElementById('pdf').addEventListener('click', function () {
+        // Get the date for the header
+        var currentDate = "<?= date("F d, Y", strtotime($date)) ?>";
+
+        // Create jsPDF instance
+        const { jsPDF } = window.jspdf;
+        var pdf = new jsPDF('p', 'pt', 'a4');
+
+        // Add the header content (from <noscript>)
+        pdf.setFontSize(12);
+        pdf.setFont('Helvetica', 'bold');
+        pdf.text(300, 40, 'Eternal Bright Sanctuary Inc.', { align: 'center' });
+        pdf.text(300, 60, 'Attendance Report', { align: 'center' });
+        pdf.setFont('Helvetica', 'normal');
+        pdf.text(300, 80, 'as of', { align: 'center' });
+        pdf.text(300, 100, currentDate, { align: 'center' });
+
+        // Draw a line below the header
+        pdf.line(40, 110, 560, 110); // Horizontal line
+
+        // Prepare the table data
+        var table = document.querySelector("table");
+        var rows = [];
+        
+        // Get table rows
+        table.querySelectorAll("tbody tr").forEach(function (row) {
+            var rowData = [];
+            row.querySelectorAll("td").forEach(function (cell) {
+                rowData.push(cell.innerText);
+            });
+            rows.push(rowData);
+        });
+
+        // Get table headers
+        var headers = [];
+        table.querySelectorAll("thead th").forEach(function (th) {
+            headers.push(th.innerText);
+        });
+
+        // Add the table to the PDF using autoTable
+        pdf.autoTable({
+            head: [headers],
+            body: rows,
+            startY: 120 // Start below the header
+        });
+
+        // Get the real-time date for the filename
+        var now = new Date();
+        var dateString = now.getFullYear() + "-" +
+                         ("0" + (now.getMonth() + 1)).slice(-2) + "-" +
+                         ("0" + now.getDate()).slice(-2);
+                         
+        // Save the generated PDF with the real-time date in the filename
+        var filename = 'attendance_report_' + dateString + '.pdf';
+        pdf.save(filename);
+
+        // Save the generated PDF
+        // pdf.save('attendance_report.pdf');
+    });
+</script>
+
+
+
 
 <noscript>
     <div>
