@@ -127,7 +127,7 @@ class Admin_Class
         unset($_SESSION['admin_name']);
         unset($_SESSION['security_key']);
         unset($_SESSION['user_role']);
-        header('Location: login_and_sign-in_form.php');
+        header('Location: login.php');
     }
 
 /*----------- add_new_user--------------*/
