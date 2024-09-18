@@ -313,7 +313,7 @@ $user_role = $_SESSION['user_role'];
                                     <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="./attendance-info.php"><i class="fa fa-calendar-check-o"></i>Attendance </a></li>
                                     <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>><a href="./manage-admin.php"><i class="fa fa-user"></i>Administration</span></a></li>
                                     <li <?php if($page_name == "Daily-Task-Report" ){echo "class=\"active\"";} ?>><a href="./daily-task-report.php"><i class="fa fa-tasks"></i>Task Report</a></li>
-                                    <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>><a href="./daily-attendance-report.php"><i class="fa fa-envelope-o"></i>Attendance Report</a></li>
+                                    <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>><a href="./attendance.php"><i class="fa fa-envelope-o"></i>Attendance Report</a></li>
                                 </ul>
 
     <?php 

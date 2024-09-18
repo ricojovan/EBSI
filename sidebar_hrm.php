@@ -61,7 +61,7 @@
         <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="etms/attendance-info.php">Attendance </a></li>
         <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>><a href="manage-admin.php">Administration</span></a></li>
         <li <?php if($page_name == "Daily-Task-Report" ){echo "class=\"active\"";} ?>><a href="daily-task-report.php">Task Report</a></li>
-        <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>><a href="daily-attendance-report.php">Attendance Report</a></li>
+        <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>><a href="attendance.php">Attendance Report</a></li>
                                 </ul>
 
     <?php 

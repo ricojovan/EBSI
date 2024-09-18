@@ -54,7 +54,7 @@ if(isset($_POST['add_task_post'])){
                                         <button class="btn btn-success btn-sm btn-menu" type="button" id="print"><i class="glyphicon glyphicon-print"></i> Print</button>
                                     </div>
                                 </div>
-                                <center><h3>Daily Attendance Report</h3></center>
+                                <center><h3>Attendance Report</h3></center>
                                 <div class="gap"></div>
                                 <div class="gap"></div>
                                 <div class="table-responsive" id="printout">
@@ -142,7 +142,7 @@ if(isset($_POST['add_task_post'])){
 <script type="text/javascript">
 $(function(){
     $('#filter').click(function(){
-        location.href="./daily-attendance-report.php?date="+$('#date').val()
+        location.href="./attendance.php?date="+$('#date').val()
     })
     $('#print').click(function(){
         var h = $('head').clone()

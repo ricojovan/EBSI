@@ -381,7 +381,7 @@ class Admin_Class
 		}
 
 		
-	/* =================Attendance Related===================== */
+	/* =================Attendance Related==================== */
 	public function add_punch_in($data){
 		// data insert 
 		$date = new DateTime('now', new DateTimeZone('Asia/Manila'));
