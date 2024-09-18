@@ -9,7 +9,7 @@ if(isset($_SESSION['admin_id'])){
   $user_name = $_SESSION['admin_name'];
   $security_key = $_SESSION['security_key'];
   if ($user_id != NULL && $security_key != NULL) {
-    header('Location: dashboard.php');
+    header('Location: Interface/dashboard.php');
   }
 }
 

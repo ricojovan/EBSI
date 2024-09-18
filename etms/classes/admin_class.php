@@ -53,7 +53,7 @@ class Admin_Class
           		if($userRow['temp_password'] == null){
 	                header('Location: task-info.php');
           		}else{
-          			header('Location: changePasswordForEmployee.php');
+          			header('Location: ../Manage-Employee/change-password.php');
           		}
                 
              
@@ -127,7 +127,7 @@ class Admin_Class
         unset($_SESSION['admin_name']);
         unset($_SESSION['security_key']);
         unset($_SESSION['user_role']);
-        header('Location: login.php');
+        header('Location: ../Interface/login.php');
     }
 
 /*----------- add_new_user--------------*/
@@ -244,7 +244,7 @@ class Admin_Class
 
 			$_SESSION['update_user_pass'] = 'update_user_pass';
 
-			header('Location: admin-manage-user.php');
+			header('Location: Manage-Admin/manage-user.php');
 		}catch (PDOException $e) {
 			echo $e->getMessage();
 		}
@@ -296,7 +296,7 @@ class Admin_Class
 
 				$_SESSION['update_user_pass'] = 'update_user_pass';
 
-				header('Location: admin-manage-user.php');
+				header('Location: Manage-Admin/manage-user.php');
 
 			}else{
 				return $all_error;
