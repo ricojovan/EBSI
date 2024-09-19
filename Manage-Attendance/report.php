@@ -58,7 +58,7 @@ if(isset($_POST['add_task_post'])){
                                         <input type="date" id="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
                                     </div>
                                     <div class="col-md-4">
-                                        <button class="btn btn-primary btn-sm btn-menu" type="button" id="filter"><i class="glyphicon glyphicon-filter"></i> Filter</button>
+                                        
                                         <button class="btn btn-success btn-sm btn-menu" type="button" id="print"><i class="glyphicon glyphicon-print"></i> Print</button>
                                         <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF</button>
                                     </div>
@@ -81,29 +81,21 @@ if(isset($_POST['add_task_post'])){
                                             <?php 
                                             $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
                                             $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
-                                            $name_search = isset($_GET['name_search']) ? $_GET['name_search'] : '';
                                             
-                                            // Modify SQL query to filter by name if it's provided
                                             $sql = "SELECT a.*, b.fullname 
                                                     FROM attendance_info a
                                                     LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id) 
-                                                    WHERE date(a.in_time) BETWEEN '{$start_date}' AND '{$end_date}'";
-                                            
-                                            if (!empty($name_search)) {
-                                                $sql .= " AND b.fullname LIKE '%{$name_search}%'";
-                                            }
-                                            
-                                            $sql .= " ORDER BY date(a.in_time) ASC"; // Ascending order
+                                                    WHERE date(a.in_time) BETWEEN '{$start_date}' AND '{$end_date}'
+                                                    ORDER BY date(a.in_time) ASC"; // Order by start date
                                             
                                             $info = $obj_admin->manage_all_info($sql);
                                             $serial  = 1;
                                             $num_row = $info->rowCount();
                                             
-                                            if($num_row == 0){
+                                            if($num_row==0){
                                                 echo '<tr><td colspan="7">No Data found</td></tr>';
                                             }
-                                            
-                                            while($row = $info->fetch(PDO::FETCH_ASSOC)){
+                                            while( $row = $info->fetch(PDO::FETCH_ASSOC) ){
                                             ?>
                                             <tr>
                                                 <td><?php echo $serial; $serial++; ?></td>
@@ -122,6 +114,9 @@ if(isset($_POST['add_task_post'])){
                                                     } else {
                                                         echo $row['total_duration'];
                                                     }
+                                                    echo '</td>';
+                                                    echo '</tr>';
+                                                    $serial++;
                                                     ?>
                                                 </td>
                                             </tr>
@@ -206,9 +201,6 @@ if(isset($_POST['add_task_post'])){
     });
 </script>
 
-
-
-
 <noscript>
     <div>
         <style>
@@ -221,7 +213,7 @@ if(isset($_POST['add_task_post'])){
         </style>
         <div style="line-height:1em">
             <h4 class="mb-0 text-center"><b>Human Resources Management System</b></h4>
-            <h4 class="mb-0 text-center"><b>Daily Task Report</b></h4>
+            <h4 class="mb-0 text-center"><b>Attendance Report</b></h4>
             <div class="mb-0 text-center"><b>as of</b></div>
             <div class="mb-0 text-center"><b><?= date("F d, Y", strtotime($date)) ?></b></div>
         </div>
@@ -230,46 +222,36 @@ if(isset($_POST['add_task_post'])){
 </noscript>
 
 <script type="text/javascript">
-$(function() {
-    $('#name_search').on('keyup', function() {
-        var startDate = $('#start_date').val();
-        var endDate = $('#end_date').val();
-        var nameSearch = $('#name_search').val();
-        location.href = "./report.php?start_date=" + startDate + "&end_date=" + endDate + "&name_search=" + nameSearch;
+
+function updateURLParameter(url, param, paramVal) {
+        var newAdditionalURL = "";
+        var tempArray = url.split("?");
+        var baseURL = tempArray[0];
+        var additionalURL = tempArray[1];
+        var temp = "";
+
+        if (additionalURL) {
+            var tempArray = additionalURL.split("&");
+            for (var i=0; i < tempArray.length; i++) {
+                if (tempArray[i].split('=')[0] != param) {
+                    newAdditionalURL += temp + tempArray[i];
+                    temp = "&";
+                }
+            }
+        }
+
+        var rows_txt = temp + "" + param + "=" + paramVal;
+        return baseURL + "?" + newAdditionalURL + rows_txt;
+    }
+
+    // Event listeners for the date inputs
+    document.getElementById('start_date').addEventListener('change', function() {
+        var newUrl = updateURLParameter(window.location.href, 'start_date', this.value);
+        window.location.href = updateURLParameter(newUrl, 'end_date', document.getElementById('end_date').value);
     });
 
-    $('#filter').click(function() {
-        var startDate = $('#start_date').val();
-        var endDate = $('#end_date').val();
-        var nameSearch = $('#name_search').val();
-        location.href = "./report.php?start_date=" + startDate + "&end_date=" + endDate + "&name_search=" + nameSearch;
+    document.getElementById('end_date').addEventListener('change', function() {
+        var newUrl = updateURLParameter(window.location.href, 'end_date', this.value);
+        window.location.href = updateURLParameter(newUrl, 'start_date', document.getElementById('start_date').value);
     });
-
-    $('#print').click(function() {
-        var h = $('head').clone();
-        var ns = $($('noscript').html()).clone();
-        var p = $('#printout').clone();
-        var base = '<?= $base_url ?>';
-        h.find('link').each(function() {
-            $(this).attr('href', base + $(this).attr('href'))
-        });
-        h.find('script').each(function() {
-            if ($(this).attr('src') != "")
-                $(this).attr('src', base + $(this).attr('src'))
-        });
-        p.find('.table').addClass('table-bordered');
-        var nw = window.open("", "_blank", "width:" + ($(window).width() * .8) + ",left:" + ($(window).width() * .1) + ",height:" + ($(window).height() * .8) + ",top:" + ($(window).height() * .1));
-        nw.document.querySelector('head').innerHTML = h.html();
-        nw.document.querySelector('body').innerHTML = ns[0].outerHTML;
-        nw.document.querySelector('body').innerHTML += p[0].outerHTML;
-        nw.document.close();
-        setTimeout(() => {
-            nw.print();
-            setTimeout(() => {
-                nw.close();
-            }, 200);
-        }, 200);
-    });
-});
-
 </script>
