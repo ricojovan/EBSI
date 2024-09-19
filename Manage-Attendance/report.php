@@ -58,9 +58,8 @@ if(isset($_POST['add_task_post'])){
                                         <input type="date" id="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
                                     </div>
                                     <div class="col-md-4">
-                                        
-                                        <button class="btn btn-success btn-sm btn-menu" type="button" id="print"><i class="glyphicon glyphicon-print"></i> Print</button>
-                                        <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF</button>
+                                        <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF </button>
+                                        <button class="btn btn-primary btn-sm btn-menu" type="button" id="csv"><i class="glyphicon glyphicon-download"></i> CSV </button>
                                     </div>
                                 </div><br>
                                 <center><h3>Attendance Report</h3></center>
@@ -199,9 +198,59 @@ if(isset($_POST['add_task_post'])){
         // Save the generated PDF
         // pdf.save('attendance_report.pdf');
     });
+
+
+    // Handle CSV download
+    document.getElementById('csv').addEventListener('click', function () {
+        var table = document.querySelector("table");
+        var rows = [];
+        
+        // Get table rows
+        table.querySelectorAll("tbody tr").forEach(function (row) {
+            var rowData = [];
+            row.querySelectorAll("td").forEach(function (cell) {
+                rowData.push(cell.innerText);
+            });
+            rows.push(rowData.join(",")); // Join the row data as a comma-separated string
+        });
+        
+        // Get table headers
+        var headers = [];
+        table.querySelectorAll("thead th").forEach(function (th) {
+            headers.push(th.innerText);
+        });
+        
+        // Add headers to the CSV
+        var csvContent = headers.join(",") + "\n" + rows.join("\n");
+        
+        // Create a Blob from the CSV content
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        
+        // Create a link element to download the CSV file
+        var link = document.createElement("a");
+        var url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        
+        // Set the real-time date for the filename
+        var now = new Date();
+        var dateString = now.getFullYear() + "-" +
+                        ("0" + (now.getMonth() + 1)).slice(-2) + "-" +
+                        ("0" + now.getDate()).slice(-2);
+        
+        link.setAttribute("download", 'attendance_report_' + dateString + '.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        
+        // Programmatically click the link to trigger the download
+        link.click();
+        document.body.removeChild(link);
+    });
+
+
+
 </script>
 
-<noscript>
+<!-- <noscript>
     <div>
         <style>
             body {
@@ -219,7 +268,7 @@ if(isset($_POST['add_task_post'])){
         </div>
         <hr>
     </div>
-</noscript>
+</noscript> -->
 
 <script type="text/javascript">
 
@@ -254,4 +303,6 @@ function updateURLParameter(url, param, paramVal) {
         var newUrl = updateURLParameter(window.location.href, 'end_date', this.value);
         window.location.href = updateURLParameter(newUrl, 'start_date', document.getElementById('start_date').value);
     });
+
+
 </script>
