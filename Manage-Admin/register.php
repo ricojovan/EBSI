@@ -6,7 +6,7 @@
     </head>
 
             <?php
-            include 'db_connection.php'; // Include database connection script
+            include '../db_connection.php'; // Include database connection script
 
             // Check if form is submitted
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -33,7 +33,7 @@
 
                 if ($conn->query($sql) === TRUE) {
                     echo '<script>alert("New record created successfully!");</script>';
-                    echo '<script>window.location.href = "register.php";</script>';
+                    echo '<script>window.location.href = "../Manage-Admin/register.php";</script>';
                     // Redirect to a success page or perform other actions
                     // Example: header("Location: success.php");
                 } else {
@@ -46,7 +46,7 @@
             $result = $conn->query($sql_fetch_employees);
             ?>
 <body>
-    <?php include 'nav-and-footer/header-nav.php';?>
+    <?php include '../nav-and-footer/header-nav.php';?>
     <!-- No gutters start -->
     <div class="col-12 mt-5">
         <div class="card">
@@ -381,7 +381,7 @@
                     <!-- Bootstrap Grid end -->
         <!-- main content area end -->
     <br><br>
-    <?php include 'nav-and-footer/footer-area.php';?>  
+    <?php include '../nav-and-footer/footer-area.php';?>  
 
     <script src="https://cdn.tailwindcss.com"></script>
     

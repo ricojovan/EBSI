@@ -11,7 +11,7 @@ if ($user_id == NULL || $security_key == NULL) {
 
 $user_role = $_SESSION['user_role'];
 if ($user_role != 1) {
-    header('Location: task-info.php');
+    header('Location: ../task-info.php');
 }
 
 if (isset($_GET['delete_user'])) {
@@ -40,8 +40,8 @@ if (isset($_POST['add_new_employee'])) {
                         <div class="gap"></div>
                         <div class="gap"></div>
                         <ul class="nav nav-tabs nav-justified nav-tabs-custom">
-                            <li><a href="manage-admin.php" class="btn btn-primary btn-xs mb-3 mr-4 mt-3">Manage Admin</a></li>
-                            <li class="active"><a href="admin-manage-user.php" class="btn btn-outline-primary btn-xs mb-3 mt-3 disabled-link">Manage Employee</a></li>
+                            <li><a href="../Manage-Admin/manage-admin.php" class="btn btn-primary btn-xs mb-3 mr-4 mt-3">Manage Admin</a></li>
+                            <li class="active"><a href="../Manage-Admin/manage-user.php" class="btn btn-outline-primary btn-xs mb-3 mt-3 disabled-link">Manage Employee</a></li>
                         </ul>
 
                         <div class="table-responsive">
@@ -75,7 +75,7 @@ if (isset($_POST['add_new_employee'])) {
                                             <td><?php echo $row['temp_password']; ?></td>
 
                                             <td>
-                                                <a title="Update Employee" href="update-employee.php?admin_id=<?php echo $row['user_id']; ?>"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
+                                                <a title="Update Employee" href="../Manage-Employee/emp-update.php?admin_id=<?php echo $row['user_id']; ?>"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
                                                 <a title="Delete" href="?delete_user=delete_user&admin_id=<?php echo $row['user_id']; ?>" onclick=" return check_delete();"><i class="fa fa-trash-o"></i></a>
                                             </td>
                                         </tr>
@@ -162,6 +162,6 @@ if (isset($_SESSION['update_user_pass'])) {
     echo '<script>alert("Password updated successfully");</script>';
     unset($_SESSION['update_user_pass']);
 }
-include("etms/include/footer.php");
-include("nav-and-footer/footer-area.php");
+include("../etms/include/footer.php");
+include("../nav-and-footer/footer-area.php");
 ?>

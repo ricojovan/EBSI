@@ -1,6 +1,6 @@
 <?php
 $page_name = "Payroll";
-include('nav-and-footer/header-nav.php');
+include('../nav-and-footer/header-nav.php');
 
 
 // Create an instance of the admin class
@@ -213,7 +213,7 @@ if (isset($_GET['delete_task']) && isset($_GET['id'])) {
                         ?>
                     </td>
                     <td>
-                    <a title="View" href="payslip_list.php?id=<?php echo $row['id']; ?>"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
+                    <a title="View" href="p_list.php?id=<?php echo $row['id']; ?>"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
                     <a title="Edit" href="#" ><i class="fa fa-folder-open-o"></i></a>&nbsp;&nbsp;
                     <?php if ($user_role == 1) { ?>
                     <a title="Delete" href="#" onclick="confirmDelete(<?php echo $row['id']; ?>);"><i class="fa fa-trash-o"></i></a>
@@ -244,8 +244,8 @@ if (isset($_GET['delete_task']) && isset($_GET['id'])) {
 <!-- Bootstrap Grid end -->
 
 <?php
-include("etms/include/footer.php");
-include("nav-and-footer/footer-area.php");
+include("../etms/include/footer.php");
+include("../nav-and-footer/footer-area.php");
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

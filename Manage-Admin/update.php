@@ -2,7 +2,7 @@
 <?php
 
 $page_name="Admin";
-include('nav-and-footer/header-nav.php');
+include('../nav-and-footer/header-nav.php');
 
 // require 'authentication.php'; // admin authentication check 
 
@@ -11,7 +11,7 @@ $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: login_and_sign-in_form.php');
+    header('Location: ../Interface/login.php');
 }
 
 
@@ -44,8 +44,8 @@ $row = $info->fetch(PDO::FETCH_ASSOC);
                         <div class="col-md-12">
                             <div class="well well-custom">
                                 <ul class="nav nav-tabs nav-justified nav-tabs-custom">
-                                    <li><a href="manage-admin.php" class="btn btn-primary btn-xs mb-3 mr-4">Manage Admin</a></li>
-                                    <li><a href="admin-manage-user.php" class="btn btn-primary btn-xs mb-3">Manage Employee</a></li>
+                                    <li><a href="../Manage-Admin/manage-admin.php" class="btn btn-primary btn-xs mb-3 mr-4">Manage Admin</a></li>
+                                    <li><a href="../Manage-Admin/manage-user.php" class="btn btn-primary btn-xs mb-3">Manage Employee</a></li>
                                 </ul>
 
                                 <div class="row">
@@ -78,7 +78,7 @@ $row = $info->fetch(PDO::FETCH_ASSOC);
                                                 </div>
                                             </form> 
                                             <div class="col-md-5 offset-md-2">
-                                                <a href="admin-password-change.php?admin_id=<?php echo $row['user_id'];?>">Change Password</a>
+                                                <a href="../Manage-Employee/password-change.php?admin_id=<?php echo $row['user_id'];?>">Change Password</a>
                                             </div>
                                         </div>
                                     </div>
@@ -97,8 +97,8 @@ $row = $info->fetch(PDO::FETCH_ASSOC);
 
 <?php
 
-include("etms/include/footer.php");
-include("nav-and-footer/footer-area.php");
+include("../etms/include/footer.php");
+include("../nav-and-footer/footer-area.php");
 
 
 ?>

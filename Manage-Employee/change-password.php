@@ -1,7 +1,7 @@
 <?php
 $page_name = "Login";
-require 'etms/authentication.php'; // admin authentication check 
-include("etms/include/login_header.php");
+require '../etms/authentication.php'; // admin authentication check 
+include("../etms/include/login_header.php");
 
 // auth check
 if (isset($_SESSION['admin_id'])) {
@@ -45,5 +45,5 @@ if (isset($_POST['change_password_btn'])) {
 </div>
 
 <?php
-include("etms/include/footer.php");
+include("../etms/include/footer.php");
 ?>

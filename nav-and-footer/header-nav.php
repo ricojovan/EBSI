@@ -20,7 +20,7 @@ $user_role = $_SESSION['user_role'];
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="../assets/images/icon/palinis-po-icon.png" type="image/png">
-    <link rel="shortcut icon" type="image/png" href="assets/images/icon/favicon.ico">
+    <link rel="shortcut icon" type="image/png" href="../assets/images/icon/favicon.ico">
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
     <link rel="stylesheet" href="../assets/css/themify-icons.css">
@@ -81,8 +81,8 @@ $user_role = $_SESSION['user_role'];
         <![endif] -->
 
     <!-- preloader area start -->
-    <div id="preloader">
-        <!-- <div class="loader"></div> -->
+    <!-- <div class="loader"></div> -->
+    <!-- <div id="preloader">
 
         <div class="boxes">
     <div class="box">
@@ -110,7 +110,7 @@ $user_role = $_SESSION['user_role'];
         <div></div>
     </div>
 </div>
-        </div>
+        </div> -->
     <!-- preloader area end -->
 
     <!-- main wrapper start -->
@@ -121,7 +121,7 @@ $user_role = $_SESSION['user_role'];
                 <div class="row align-items-center">
                     <div class="col-md-3">
                         <div class="logo">
-                            <a href="<?php if ($user_role == 1) { ?>dashboard.php<?php } ?>"><img src="assets/images/icon/palinis-po-logo.png" alt="logo"></a>
+                            <a href="<?php if ($user_role == 1) { ?>dashboard.php<?php } ?>"><img src="../assets/images/icon/palinis-po-logo.png" alt="logo"></a>
                         </div>
                     </div>
                     <!-- profile info & task notification -->

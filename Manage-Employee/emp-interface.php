@@ -1,11 +1,11 @@
 <?php
-include 'db_connection.php'; // Include the database connection file
+include '../db_connection.php'; // Include the database connection file
 
 session_start(); // Start session if not already started
 
 if (!isset($_SESSION['username'])) {
     // Redirect to login if no username is found in session
-    header("Location: login_and_sign-in_form.php");
+    header("Location: ../Interface/login.php");
     exit();
 }
 
@@ -50,7 +50,7 @@ $conn->close();
 <html lang="en">
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <body>
-<?php include 'nav-and-footer-employee/header-nav-employee.php';?>
+<?php include '../nav-and-footer-employee/header-nav-employee.php';?>
 
 <!-- INFORMATION CARD START -->  
 <div class="flex justify-center">                          
@@ -189,6 +189,6 @@ $conn->close();
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<?php include 'nav-and-footer-employee/footer-area-employee.php';?>  
+<?php include '../nav-and-footer-employee/footer-area-employee.php';?>  
 </body>
 </html>

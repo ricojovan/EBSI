@@ -1,6 +1,6 @@
 <?php
 $page_name = "Payslip List";
-include('nav-and-footer/header-nav.php');
+include('../nav-and-footer/header-nav.php');
 
 // Create an instance of the admin class
 $admin_class = new admin_class();
@@ -340,8 +340,8 @@ if (isset($payslips) && !empty($payslips)) {
 </div>
 
 <?php
-include("etms/include/footer.php");
-include("nav-and-footer/footer-area.php");
+include("../etms/include/footer.php");
+include("../nav-and-footer/footer-area.php");
 ?>
 
 <!-- Your JavaScript code here -->
@@ -421,7 +421,7 @@ $(document).ready(function() {
         if (confirm("Are you sure you want to delete this payslip?")) {
             // Send AJAX request to delete payslip
             $.ajax({
-                url: "payslip_list.php", // Same PHP script URL
+                url: "p_list.php", // Same PHP script URL
                 method: "POST",
                 data: { delete_id: payslipId }, // Data to send (payslip ID)
                 success: function(response) {

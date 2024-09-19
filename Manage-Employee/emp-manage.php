@@ -8,7 +8,7 @@ if(isset($_GET['delete_task'])){
   $action_id = $_GET['task_id'];
   
   $sql = "DELETE FROM task_info WHERE task_id = :id";
-  $sent_po = "task-info.php";
+  $sent_po = "../task-info.php";
   $obj_admin->delete_data_by_this_method($sql,$action_id,$sent_po);
 }
 
@@ -17,7 +17,7 @@ if(isset($_POST['add_task_post'])){
 }
 
 $page_name="Task_Info";
-include 'nav-and-footer/header-nav.php';
+include '../nav-and-footer/header-nav.php';
 // include('ems_header.php');
 
 
@@ -195,8 +195,8 @@ include 'nav-and-footer/header-nav.php';
                     
                   </td>
   
-                 <td><a title="Update Task"  href="edit-task.php?task_id=<?php echo $row['task_id'];?>"><span class="glyphicon glyphicon-edit"></span></a>&nbsp;&nbsp;
-                  <a title="View" href="task-details.php?task_id=<?php echo $row['task_id']; ?>"><span class="glyphicon glyphicon-folder-open"></span></a>&nbsp;&nbsp;
+                 <td><a title="Update Task"  href="../edit-task.php?task_id=<?php echo $row['task_id'];?>"><span class="glyphicon glyphicon-edit"></span></a>&nbsp;&nbsp;
+                  <a title="View" href="../task-details.php?task_id=<?php echo $row['task_id']; ?>"><span class="glyphicon glyphicon-folder-open"></span></a>&nbsp;&nbsp;
                   <?php if($user_role == 1){ ?>
                   <a title="Delete" href="?delete_task=delete_task&task_id=<?php echo $row['task_id']; ?>" onclick=" return check_delete();"><span class="glyphicon glyphicon-trash"></span></a></td>
                 <?php } ?>
@@ -213,7 +213,7 @@ include 'nav-and-footer/header-nav.php';
 
 <?php
 
-include("etms/include/footer.php");
+include("../etms/include/footer.php");
 
 
 
@@ -246,7 +246,7 @@ include("etms/include/footer.php");
                     <!-- Bootstrap Grid end -->
 
 
-<?php include 'nav-and-footer/footer-area.php';?> 
+<?php include '../nav-and-footer/footer-area.php';?> 
 </body>
 
 
