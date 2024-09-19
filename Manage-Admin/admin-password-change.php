@@ -2,7 +2,7 @@
 <?php
 
 $page_name="Admin";
-include('nav-and-footer/header-nav.php');
+include('../nav-and-footer/header-nav.php');
 
 // require 'authentication.php'; // admin authentication check 
 
@@ -11,7 +11,7 @@ $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: login_and_sign-in_form.php');
+    header('Location: ../Interface/login.php');
 }
 
 // check admin 
@@ -100,8 +100,8 @@ if(isset($_POST['btn_admin_password'])){
 
 <?php
 
-include("etms/include/footer.php");
-include("nav-and-footer/footer-area.php");
+include("../etms/include/footer.php");
+include("../nav-and-footer/footer-area.php");
 
 ?>
 

@@ -1,6 +1,6 @@
 <?php
 $page_name = "Admin";
-include('nav-and-footer/header-nav.php');
+include('../nav-and-footer/header-nav.php');
 
 // require 'authentication.php'; // admin authentication check 
 
@@ -9,13 +9,13 @@ $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: login_and_sign-in_form.php');
+    header('Location: ../Interface/login.php');
 }
 
 // check admin
 $user_role = $_SESSION['user_role'];
 if ($user_role != 1) {
-    header('Location: task-info.php');
+    header('Location: ../task-info.php');
 }
 
 ?>
@@ -31,7 +31,7 @@ if ($user_role != 1) {
                             <div class="well well-custom">
                                 <ul class="nav nav-pills">
                                     <li class="active"><a href="manage-admin.php" class="btn btn-outline-primary btn-xs mb-3 mr-4 disabled-link" disabled>Manage Admin</a></li>
-                                    <li><a href="admin-manage-user.php" class="btn btn-primary btn-xs mb-3">Manage Employee</a></li>
+                                    <li><a href="../Manage-Admin/manage-user.php" class="btn btn-primary btn-xs mb-3">Manage Employee</a></li>
                                 </ul>
 
                                 <center>

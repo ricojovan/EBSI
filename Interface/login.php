@@ -1,7 +1,7 @@
 <?php
 
 $page_name="Login";
-require 'etms\authentication.php'; // admin authentication check 
+require '../etms/authentication.php';  // admin authentication check 
 
 // auth check
 if(isset($_SESSION['admin_id'])){
@@ -9,7 +9,7 @@ if(isset($_SESSION['admin_id'])){
   $user_name = $_SESSION['admin_name'];
   $security_key = $_SESSION['security_key'];
   if ($user_id != NULL && $security_key != NULL) {
-    header('Location: Interface/dashboard.php');
+    header('Location: ../Interface/dashboard.php');
   }
 }
 
@@ -28,7 +28,7 @@ if(isset($_POST['login_btn'])){
       src="https://kit.fontawesome.com/64d58efce2.js"
       crossorigin="anonymous"
     ></script>
-    <link rel="stylesheet" href="assets/CSS/login-signin_styling.css" />
+    <link rel="stylesheet" href="../assets/CSS/login-signin_styling.css" />
     <title>Sign in & Sign up Form</title>
   </head>
   <body>
@@ -61,12 +61,12 @@ if(isset($_POST['login_btn'])){
               Enter your details and start your journey with us!
             </p>
           </div>
-          <img src="assets\images\media\logo.png" class="image" alt="" />
+          <img src="../assets\images\media\logo.png" class="image" alt="" />
         </div>
       </div>
     </div>
 
-    <script src="assets/JS/main.js"></script>
+    <script src="../assets/JS/main.js"></script>
 </body>
 
 </html>

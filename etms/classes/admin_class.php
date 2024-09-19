@@ -51,7 +51,7 @@ class Admin_Class
 	            $_SESSION['temp_password'] = $userRow['temp_password'];
 
           		if($userRow['temp_password'] == null){
-	                header('Location: task-info.php');
+	                header('Location: ../task-info.php');
           		}else{
           			header('Location: ../Manage-Employee/change-password.php');
           		}
@@ -102,7 +102,7 @@ class Admin_Class
 				            $_SESSION['user_role'] = $userRow['user_role'];
 				            $_SESSION['temp_password'] = $userRow['temp_password'];
 
-				            header('Location: task-info.php');
+				            header('Location: ../task-info.php');
 			          }
 
 			}catch (PDOException $e) {
@@ -198,7 +198,7 @@ class Admin_Class
 
 			$_SESSION['update_user'] = 'update_user';
 
-			header('Location: admin-manage-user.php');
+			header('Location: ../Manage-Admin/manage-user.php');
 		}catch (PDOException $e) {
 			echo $e->getMessage();
 		}
@@ -222,7 +222,7 @@ class Admin_Class
 			
 			$update_user->execute();
 
-			header('Location: manage-admin.php');
+			header('Location: ../Manage-Admin/manage-admin.php');
 		}catch (PDOException $e) {
 			echo $e->getMessage();
 		}
@@ -244,7 +244,7 @@ class Admin_Class
 
 			$_SESSION['update_user_pass'] = 'update_user_pass';
 
-			header('Location: Manage-Admin/manage-user.php');
+			header('Location: ../Manage-Admin/manage-user.php');
 		}catch (PDOException $e) {
 			echo $e->getMessage();
 		}
@@ -296,7 +296,7 @@ class Admin_Class
 
 				$_SESSION['update_user_pass'] = 'update_user_pass';
 
-				header('Location: Manage-Admin/manage-user.php');
+				header('Location: ../Manage-Admin/manage-user.php');
 
 			}else{
 				return $all_error;
@@ -334,7 +334,7 @@ class Admin_Class
 
 			$_SESSION['Task_msg'] = 'Task Add Successfully';
 
-			header('Location: task-info.php');
+			header('Location: ../task-info.php');
 		}catch (PDOException $e) {
 			echo $e->getMessage();
 		}
@@ -373,7 +373,7 @@ class Admin_Class
 
 				$_SESSION['Task_msg'] = 'Task Update Successfully';
 
-				header('Location: task-info.php');
+				header('Location: ../task-info.php');
 			}catch (PDOException $e) {
 				echo $e->getMessage();
 			}
@@ -393,7 +393,7 @@ class Admin_Class
 			$add_attendance = $this->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time) VALUES ('$user_id', '$punch_in_time') ");
 			$add_attendance->execute();
 
-			header('Location: attendance-info.php');
+			header('Location: ../Manage-Attendance/attendance.php');
 
 		}catch (PDOException $e) {
 			echo $e->getMessage();
@@ -422,7 +422,7 @@ class Admin_Class
 			
 			$update_user->execute();
 
-			header('Location: attendance-info.php');
+			header('Location: ../Manage-Attendance/attendance.php');
 		}catch (PDOException $e) {
 			echo $e->getMessage();
 		}

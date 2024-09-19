@@ -1,7 +1,7 @@
 <?php
 
 $page_name="Attendance";
-include('nav-and-footer/header-nav.php');
+include('../nav-and-footer/header-nav.php');
 
 // require 'etms\authentication.php'; // admin authentication check 
 
@@ -11,13 +11,13 @@ $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 $user_role = $_SESSION['user_role'];
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: login_and_sign-in_form.php');
+    header('Location: ../Interface/login.php');
 }
 if(isset($_GET['delete_attendance'])){
   $action_id = $_GET['aten_id'];
   
   $sql = "DELETE FROM attendance_info WHERE aten_id = :id";
-  $sent_po = "attendance-info.php";
+  $sent_po = "../Manage-Attendance/attendance.php";
   $obj_admin->delete_data_by_this_method($sql,$action_id,$sent_po);
 }
 
@@ -191,8 +191,8 @@ $page_name="Attendance";
 
 <?php
 
-include("etms/include/footer.php");
-include("nav-and-footer/footer-area.php");
+include("../etms/include/footer.php");
+include("../nav-and-footer/footer-area.php");
 
 
 ?>

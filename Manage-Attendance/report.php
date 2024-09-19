@@ -9,13 +9,13 @@ $base_url = $protocol . "://".$_SERVER['SERVER_NAME'].'/' .(explode('/',$_SERVER
 
 <?php
 $page_name = "Daily-Attennce-Report";
-include('nav-and-footer/header-nav.php');
+include('../nav-and-footer/header-nav.php');
 
 $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: login_and_sign-in_form.php');
+    header('Location: ../Interface/login.php');
 }
 
 $user_role = $_SESSION['user_role'];
@@ -23,7 +23,7 @@ $user_role = $_SESSION['user_role'];
 if(isset($_GET['delete_task'])){
     $action_id = $_GET['task_id'];
     $sql = "DELETE FROM task_info WHERE task_id = :id";
-    $sent_po = "task-info.php";
+    $sent_po = "../task-info.php";
     $obj_admin->delete_data_by_this_method($sql,$action_id,$sent_po);
 }
 
@@ -120,8 +120,8 @@ if(isset($_POST['add_task_post'])){
 </div>
 <!-- Bootstrap Grid end -->
 
-<?php include("etms/include/footer.php"); ?>
-<?php include("nav-and-footer/footer-area.php"); ?>
+<?php include("../etms/include/footer.php"); ?>
+<?php include("../nav-and-footer/footer-area.php"); ?>
 
 
 <script>

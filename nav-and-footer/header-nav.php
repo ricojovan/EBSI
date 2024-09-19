@@ -1,11 +1,11 @@
 <?php
-require 'etms\authentication.php'; // admin authentication check 
+require '../etms/authentication.php'; // admin authentication check 
 // auth check
 $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: login_and_sign-in_form.php');
+    header('Location: ../Interface/login.php');
 }
 
 // check admin
@@ -19,23 +19,23 @@ $user_role = $_SESSION['user_role'];
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="assets/images/icon/palinis-po-icon.png" type="image/png">
+    <link rel="icon" href="../assets/images/icon/palinis-po-icon.png" type="image/png">
     <link rel="shortcut icon" type="image/png" href="assets/images/icon/favicon.ico">
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/css/themify-icons.css">
-    <link rel="stylesheet" href="assets/css/metisMenu.css">
-    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="assets/css/slicknav.min.css">
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/themify-icons.css">
+    <link rel="stylesheet" href="../assets/css/metisMenu.css">
+    <link rel="stylesheet" href="../assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../assets/css/slicknav.min.css">
     <!-- amchart css -->
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <!-- others css -->
-    <link rel="stylesheet" href="assets/css/typography.css">
-    <link rel="stylesheet" href="assets/css/default-css.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="../assets/css/typography.css">
+    <link rel="stylesheet" href="../assets/css/default-css.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
     <!-- modernizr css -->
-    <script src="assets/js/vendor/modernizr-2.8.3.min.js"></script>
+    <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <!--datatable bootstrap 5-->
@@ -48,14 +48,14 @@ $user_role = $_SESSION['user_role'];
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
 
 
-    <link rel="stylesheet" href="./etms//assets/bootstrap-datepicker/css/datepicker.css">
+    <link rel="stylesheet" href="../etms//assets/bootstrap-datepicker/css/datepicker.css">
     <link rel="stylesheet" href="./etms//assets/bootstrap-datepicker/css/datepicker-custom.css">
 
     
     
-    <script src="./etms//assets/js/custom.js"></script>
-    <script src="./etms//assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-    <script src="./etms//assets/bootstrap-datepicker/js/datepicker-custom.js"></script>
+    <script src="../etms//assets/js/custom.js"></script>
+    <script src="../etms//assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="../etms//assets/bootstrap-datepicker/js/datepicker-custom.js"></script>
 
     <script type="text/javascript">
     
@@ -196,7 +196,7 @@ $user_role = $_SESSION['user_role'];
                                         <div class="nofity-list">
                                             <a href="#" class="notify-item">
                                                 <div class="notify-thumb">
-                                                    <img src="assets/images/author/author-img1.jpg" alt="image">
+                                                    <img src="../assets/images/author/author-img1.jpg" alt="image">
                                                 </div>
                                                 <div class="notify-text">
                                                     <p>Aglae Mayer</p>
@@ -206,7 +206,7 @@ $user_role = $_SESSION['user_role'];
                                             </a>
                                             <a href="#" class="notify-item">
                                                 <div class="notify-thumb">
-                                                    <img src="assets/images/author/author-img2.jpg" alt="image">
+                                                    <img src="../assets/images/author/author-img2.jpg" alt="image">
                                                 </div>
                                                 <div class="notify-text">
                                                     <p>Aglae Mayer</p>
@@ -216,7 +216,7 @@ $user_role = $_SESSION['user_role'];
                                             </a>
                                             <a href="#" class="notify-item">
                                                 <div class="notify-thumb">
-                                                    <img src="assets/images/author/author-img3.jpg" alt="image">
+                                                    <img src="../assets/images/author/author-img3.jpg" alt="image">
                                                 </div>
                                                 <div class="notify-text">
                                                     <p>Aglae Mayer</p>
@@ -226,7 +226,7 @@ $user_role = $_SESSION['user_role'];
                                             </a>
                                             <a href="#" class="notify-item">
                                                 <div class="notify-thumb">
-                                                    <img src="assets/images/author/author-img4.jpg" alt="image">
+                                                    <img src="../assets/images/author/author-img4.jpg" alt="image">
                                                 </div>
                                                 <div class="notify-text">
                                                     <p>Aglae Mayer</p>
@@ -236,7 +236,7 @@ $user_role = $_SESSION['user_role'];
                                             </a>
                                             <a href="#" class="notify-item">
                                                 <div class="notify-thumb">
-                                                    <img src="assets/images/author/author-img2.jpg" alt="image">
+                                                    <img src="../assets/images/author/author-img2.jpg" alt="image">
                                                 </div>
                                                 <div class="notify-text">
                                                     <p>Aglae Mayer</p>
@@ -246,7 +246,7 @@ $user_role = $_SESSION['user_role'];
                                             </a>
                                             <a href="#" class="notify-item">
                                                 <div class="notify-thumb">
-                                                    <img src="assets/images/author/author-img1.jpg" alt="image">
+                                                    <img src="../assets/images/author/author-img1.jpg" alt="image">
                                                 </div>
                                                 <div class="notify-text">
                                                     <p>Aglae Mayer</p>
@@ -256,7 +256,7 @@ $user_role = $_SESSION['user_role'];
                                             </a>
                                             <a href="#" class="notify-item">
                                                 <div class="notify-thumb">
-                                                    <img src="assets/images/author/author-img3.jpg" alt="image">
+                                                    <img src="../assets/images/author/author-img3.jpg" alt="image">
                                                 </div>
                                                 <div class="notify-text">
                                                     <p>Aglae Mayer</p>
@@ -275,7 +275,7 @@ $user_role = $_SESSION['user_role'];
 
                             <div class="clearfix d-md-inline-block d-block">
                             <div class="user-profile m-0">
-                                <img class="avatar user-thumb" src="assets/images/author/avatar.png" alt="avatar">
+                                <img class="avatar user-thumb" src="../assets/images/author/avatar.png" alt="avatar">
                                 <h4 class="user-name dropdown-toggle" data-toggle="dropdown"><?php echo $user_name; ?><i class="fa fa-angle-down"></i></h4>
                                 <div class="dropdown-menu">
                                 <a class="dropdown-item" href="#">Message</a>
@@ -304,16 +304,16 @@ $user_role = $_SESSION['user_role'];
                             <nav>
                                 <ul id="nav_menu">
                                     <li <?php if($page_name == "dashboard" ){echo "class=\"active\"";} ?>>
-                                        <a href="dashboard.php"><i class='fa fa-bar-chart-o'></i><span>dashboard</span></a>
+                                        <a href="../Interface/dashboard.php"><i class='fa fa-bar-chart-o'></i><span>dashboard</span></a>
                                     </li>
                                     <li <?php if($page_name == "Payroll" ){echo "class=\"active\"";} ?>>
-                                        <a href="payroll.php"><i class='fa fa-history'></i><span>Payroll</span></a>
+                                        <a href="../Manage-Payroll/payroll.php"><i class='fa fa-history'></i><span>Payroll</span></a>
                                     </li>
-                                    <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="./task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li>
-                                    <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="./attendance-info.php"><i class="fa fa-calendar-check-o"></i>Attendance </a></li>
-                                    <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>><a href="./manage-admin.php"><i class="fa fa-user"></i>Administration</span></a></li>
-                                    <li <?php if($page_name == "Daily-Task-Report" ){echo "class=\"active\"";} ?>><a href="./daily-task-report.php"><i class="fa fa-tasks"></i>Task Report</a></li>
-                                    <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>><a href="./attendance.php"><i class="fa fa-envelope-o"></i>Attendance Report</a></li>
+                                    <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="../task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li>
+                                    <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance </a></li>
+                                    <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>><a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i>Administration</span></a></li>
+                                    <li <?php if($page_name == "Daily-Task-Report" ){echo "class=\"active\"";} ?>><a href="../daily-task-report.php"><i class="fa fa-tasks"></i>Task Report</a></li>
+                                    <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/report.php"><i class="fa fa-envelope-o"></i>Attendance Report</a></li>
                                 </ul>
 
     <?php 
@@ -323,8 +323,8 @@ $user_role = $_SESSION['user_role'];
           <!-- Collect the nav links, forms, and other content for toggling -->
   
       <ul id="nav_menu">
-        <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li>
-        <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="attendance-info.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
+        <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="../task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li>
+        <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
       </ul>
 
     
@@ -332,7 +332,7 @@ $user_role = $_SESSION['user_role'];
       <?php
 
      }else{
-       header('Location: login_and_sign-in_form.php');
+       header('Location: ../Interface/login.php');
      }
 
     ?>

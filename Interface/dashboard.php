@@ -1,7 +1,7 @@
 <?php
 $page_name="dashboard";
 
-include 'nav-and-footer/header-nav.php';
+include '../nav-and-footer/header-nav.php';
 
 // Database credentials
 $host_name='localhost';
@@ -291,7 +291,7 @@ try {
             </div>
         </div>
         <!-- main content area end -->
-        <?php include 'nav-and-footer/footer-area.php';?>  
+        <?php include '../nav-and-footer/footer-area.php';?>  
 </body>
 
 </html>

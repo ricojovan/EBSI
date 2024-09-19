@@ -1,6 +1,6 @@
 <?php
 $page_name = "Admin";
-include('nav-and-footer/header-nav.php');
+include('../nav-and-footer/header-nav.php');
 
 $user_id = $_SESSION['admin_id'];
 $security_key = $_SESSION['security_key'];
