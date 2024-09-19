@@ -50,7 +50,16 @@ if(isset($_POST['add_task_post'])){
                                 <div class="gap"></div>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <input type="date" id="date" value="<?= $date ?>" class="form-control rounded-0">
+                                            <label for="name_search">Search Name:</label>
+                                            <input type="text" id="name_search" value="<?= isset($_GET['name_search']) ? $_GET['name_search'] : '' ?>" class="form-control rounded-0" placeholder="Enter Name">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="start_date">Start Date:</label>
+                                        <input type="date" id="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="end_date">End Date:</label>
+                                        <input type="date" id="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
                                     </div>
                                     <div class="col-md-4">
                                         <button class="btn btn-primary btn-sm btn-menu" type="button" id="filter"><i class="glyphicon glyphicon-filter"></i> Filter</button>
@@ -74,17 +83,31 @@ if(isset($_POST['add_task_post'])){
                                         </thead>
                                         <tbody>
                                             <?php 
+                                            $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
+                                            $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
+                                            $name_search = isset($_GET['name_search']) ? $_GET['name_search'] : '';
+                                            
+                                            // Modify SQL query to filter by name if it's provided
                                             $sql = "SELECT a.*, b.fullname 
                                                     FROM attendance_info a
-                                                    LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id) where ('{$date}' BETWEEN date(a.in_time) and date(a.out_time))
-                                                    ORDER BY a.aten_id DESC";
+                                                    LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id) 
+                                                    WHERE date(a.in_time) BETWEEN '{$start_date}' AND '{$end_date}'";
+                                            
+                                            if (!empty($name_search)) {
+                                                $sql .= " AND b.fullname LIKE '%{$name_search}%'";
+                                            }
+                                            
+                                            $sql .= " ORDER BY date(a.in_time) ASC"; // Ascending order
+                                            
                                             $info = $obj_admin->manage_all_info($sql);
                                             $serial  = 1;
                                             $num_row = $info->rowCount();
-                                            if($num_row==0){
+                                            
+                                            if($num_row == 0){
                                                 echo '<tr><td colspan="7">No Data found</td></tr>';
                                             }
-                                            while( $row = $info->fetch(PDO::FETCH_ASSOC) ){
+                                            
+                                            while($row = $info->fetch(PDO::FETCH_ASSOC)){
                                             ?>
                                             <tr>
                                                 <td><?php echo $serial; $serial++; ?></td>
@@ -95,7 +118,7 @@ if(isset($_POST['add_task_post'])){
                                                     if($row['total_duration'] == null){
                                                         $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
                                                         $current_time = $date->format('d-m-Y H:i:s');
-
+                                            
                                                         $dteStart = new DateTime($row['in_time']);
                                                         $dteEnd   = new DateTime($current_time);
                                                         $dteDiff  = $dteStart->diff($dteEnd);
@@ -211,34 +234,46 @@ if(isset($_POST['add_task_post'])){
 </noscript>
 
 <script type="text/javascript">
-$(function(){
-    $('#filter').click(function(){
-        location.href="./attendance.php?date="+$('#date').val()
-    })
-    $('#print').click(function(){
-        var h = $('head').clone()
-        var ns = $($('noscript').html()).clone()
-        var p = $('#printout').clone()
+$(function() {
+    $('#name_search').on('keyup', function() {
+        var startDate = $('#start_date').val();
+        var endDate = $('#end_date').val();
+        var nameSearch = $('#name_search').val();
+        location.href = "./report.php?start_date=" + startDate + "&end_date=" + endDate + "&name_search=" + nameSearch;
+    });
+
+    $('#filter').click(function() {
+        var startDate = $('#start_date').val();
+        var endDate = $('#end_date').val();
+        var nameSearch = $('#name_search').val();
+        location.href = "./report.php?start_date=" + startDate + "&end_date=" + endDate + "&name_search=" + nameSearch;
+    });
+
+    $('#print').click(function() {
+        var h = $('head').clone();
+        var ns = $($('noscript').html()).clone();
+        var p = $('#printout').clone();
         var base = '<?= $base_url ?>';
-        h.find('link').each(function(){
+        h.find('link').each(function() {
             $(this).attr('href', base + $(this).attr('href'))
-        })
-        h.find('script').each(function(){
-            if($(this).attr('src') != "")
-            $(this).attr('src', base + $(this).attr('src'))
-        })
-        p.find('.table').addClass('table-bordered')
-        var nw = window.open("", "_blank","width:"+($(window).width() * .8)+",left:"+($(window).width() * .1)+",height:"+($(window).height() * .8)+",top:"+($(window).height() * .1))
-        nw.document.querySelector('head').innerHTML = h.html()
-        nw.document.querySelector('body').innerHTML = ns[0].outerHTML
-        nw.document.querySelector('body').innerHTML += p[0].outerHTML
-        nw.document.close()
+        });
+        h.find('script').each(function() {
+            if ($(this).attr('src') != "")
+                $(this).attr('src', base + $(this).attr('src'))
+        });
+        p.find('.table').addClass('table-bordered');
+        var nw = window.open("", "_blank", "width:" + ($(window).width() * .8) + ",left:" + ($(window).width() * .1) + ",height:" + ($(window).height() * .8) + ",top:" + ($(window).height() * .1));
+        nw.document.querySelector('head').innerHTML = h.html();
+        nw.document.querySelector('body').innerHTML = ns[0].outerHTML;
+        nw.document.querySelector('body').innerHTML += p[0].outerHTML;
+        nw.document.close();
         setTimeout(() => {
-            nw.print()
+            nw.print();
             setTimeout(() => {
-                nw.close()
+                nw.close();
             }, 200);
         }, 200);
-    })
-})
+    });
+});
+
 </script>
