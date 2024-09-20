@@ -382,51 +382,128 @@ class Admin_Class
 
 		
 	/* =================Attendance Related===================== */
-	public function add_punch_in($data){
-		// data insert 
+	public function add_punch_in($data) {
 		$date = new DateTime('now', new DateTimeZone('Asia/Manila'));
- 		
 		$user_id  = $this->test_form_input_data($data['user_id']);
 		$punch_in_time = $date->format('Y-m-d H:i:s');
-
-		try{
-			$add_attendance = $this->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time) VALUES ('$user_id', '$punch_in_time') ");
+	
+		try {
+			// Set pause_duration to '00:00:00' when punching in
+			$add_attendance = $this->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES ('$user_id', '$punch_in_time', '00:00:00')");
 			$add_attendance->execute();
-
+	
 			header('Location: ../Manage-Attendance/attendance.php');
-
-		}catch (PDOException $e) {
+		} catch (PDOException $e) {
 			echo $e->getMessage();
 		}
 	}
 
-
-	public function add_punch_out($data){
+	public function add_punch_out($data) {
 		$date = new DateTime('now', new DateTimeZone('Asia/Manila'));
 		$punch_out_time = $date->format('Y-m-d H:i:s');
 		$punch_in_time  = $this->test_form_input_data($data['punch_in_time']);
-
-		$dteStart = new DateTime($punch_in_time);
-        $dteEnd   = new DateTime($punch_out_time);
-        $dteDiff  = $dteStart->diff($dteEnd);
-        $total_duration = $dteDiff->format("%H:%I:%S");
-
 		$attendance_id  = $this->test_form_input_data($data['aten_id']);
-
-		try{
+	
+		// Get the total pause duration
+		$query = $this->db->prepare("SELECT pause_duration FROM attendance_info WHERE aten_id = :id");
+		$query->bindparam(':id', $attendance_id);
+		$query->execute();
+		$result = $query->fetch(PDO::FETCH_ASSOC);
+		$pause_duration = $result['pause_duration'] ?? '00:00:00'; // default to 0 if not set
+	
+		// Calculate total duration
+		$dteStart = new DateTime($punch_in_time);
+		$dteEnd   = new DateTime($punch_out_time);
+		$dteDiff  = $dteStart->diff($dteEnd);
+		$total_duration_seconds = ($dteDiff->h * 3600) + ($dteDiff->i * 60) + $dteDiff->s;
+	
+		// Convert pause duration to seconds
+		list($pause_hours, $pause_minutes, $pause_seconds) = explode(':', $pause_duration);
+		$pause_duration_seconds = ($pause_hours * 3600) + ($pause_minutes * 60) + $pause_seconds;
+	
+		// Calculate final duration in seconds
+		$final_duration_seconds = $total_duration_seconds - $pause_duration_seconds;
+	
+		// Ensure final duration is not negative
+		$final_duration_seconds = max($final_duration_seconds, 0);
+	
+		// Convert back to H:i:s format
+		$final_duration = sprintf('%02d:%02d:%02d', 
+			floor($final_duration_seconds / 3600),
+			floor(($final_duration_seconds % 3600) / 60),
+			$final_duration_seconds % 60
+		);
+	
+		try {
 			$update_user = $this->db->prepare("UPDATE attendance_info SET out_time = :x, total_duration = :y WHERE aten_id = :id ");
-
 			$update_user->bindparam(':x', $punch_out_time);
-			$update_user->bindparam(':y', $total_duration);
+			$update_user->bindparam(':y', $final_duration);
 			$update_user->bindparam(':id', $attendance_id);
-			
 			$update_user->execute();
-
+	
 			header('Location: ../Manage-Attendance/attendance.php');
-		}catch (PDOException $e) {
+		} catch (PDOException $e) {
 			echo $e->getMessage();
 		}
+	}
+	
+	
 
+
+
+
+	public function pause_time($data) {
+		$date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+		$pause_time = $date->format('Y-m-d H:i:s');
+		$attendance_id  = $this->test_form_input_data($data['aten_id']);
+	
+		try {
+			$update_pause = $this->db->prepare("UPDATE attendance_info SET pause_time = :pause_time WHERE aten_id = :id");
+			$update_pause->bindparam(':pause_time', $pause_time);
+			$update_pause->bindparam(':id', $attendance_id);
+			$update_pause->execute();
+	
+			header('Location: ../Manage-Attendance/attendance.php');
+		} catch (PDOException $e) {
+			echo $e->getMessage();
+		}
+	}
+
+	public function resume_time($data) {
+		$attendance_id  = $this->test_form_input_data($data['aten_id']);
+	
+		// Get the pause_time from the database
+		$query = $this->db->prepare("SELECT pause_time, pause_duration FROM attendance_info WHERE aten_id = :id");
+		$query->bindparam(':id', $attendance_id);
+		$query->execute();
+		$result = $query->fetch(PDO::FETCH_ASSOC);
+	
+		$pause_time = $result['pause_time'];
+		$current_pause_duration = $result['pause_duration'];
+	
+		$date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+		$resume_time = $date->format('Y-m-d H:i:s');
+	
+		// Calculate how long the pause lasted
+		$dtePauseStart = new DateTime($pause_time);
+		$dtePauseEnd = new DateTime($resume_time);
+		$pauseDiff = $dtePauseStart->diff($dtePauseEnd);
+	
+		// Add the new pause duration to the total pause duration
+		$pauseSeconds = strtotime($pauseDiff->format("%H:%I:%S")) - strtotime('TODAY');
+		$totalPauseDuration = date('H:i:s', strtotime($current_pause_duration) + $pauseSeconds);
+	
+		try {
+			// Update the attendance info with the new total pause duration and reset pause_time
+			$update_resume = $this->db->prepare("UPDATE attendance_info SET pause_duration = :pause_duration, pause_time = NULL WHERE aten_id = :id");
+			$update_resume->bindparam(':pause_duration', $totalPauseDuration);
+			$update_resume->bindparam(':id', $attendance_id);
+			$update_resume->execute();
+	
+			header('Location: ../Manage-Attendance/attendance.php');
+		} catch (PDOException $e) {
+			echo $e->getMessage();
+		}
 	}
 
 
