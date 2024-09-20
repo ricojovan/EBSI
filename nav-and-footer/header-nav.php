@@ -309,10 +309,10 @@ $user_role = $_SESSION['user_role'];
                                     <li <?php if($page_name == "Payroll" ){echo "class=\"active\"";} ?>>
                                         <a href="../Manage-Payroll/payroll.php"><i class='fa fa-history'></i><span>Payroll</span></a>
                                     </li>
-                                    <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="../task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li>
+                                    <!-- <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="../task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li> -->
                                     <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance </a></li>
                                     <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>><a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i>Administration</span></a></li>
-                                    <li <?php if($page_name == "Daily-Task-Report" ){echo "class=\"active\"";} ?>><a href="../daily-task-report.php"><i class="fa fa-tasks"></i>Task Report</a></li>
+                                    <!-- <li <?php if($page_name == "Daily-Task-Report" ){echo "class=\"active\"";} ?>><a href="../daily-task-report.php"><i class="fa fa-tasks"></i>Task Report</a></li> -->
                                     <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/report.php"><i class="fa fa-envelope-o"></i>Attendance Report</a></li>
                                 </ul>
 
@@ -323,7 +323,7 @@ $user_role = $_SESSION['user_role'];
           <!-- Collect the nav links, forms, and other content for toggling -->
   
       <ul id="nav_menu">
-        <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="../task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li>
+        <!-- <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="../task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li> -->
         <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
       </ul>
 

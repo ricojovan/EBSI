@@ -149,6 +149,9 @@ $page_name="Attendance";
                     <form method="post" role="form" action="">
                       <input type="hidden" name="punch_in_time" value="<?php echo $row['in_time']; ?>">
                       <input type="hidden" name="aten_id" value="<?php echo $row['aten_id']; ?>">
+
+                      <button type="submit" name="add_punch_out" class="btn btn-warning btn-xs rounded">Pause Time</button>
+                      
                       <button type="submit" name="add_punch_out" class="btn btn-danger btn-xs rounded" >Time Out</button>
                     </form>
                   </td>
