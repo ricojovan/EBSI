@@ -21,8 +21,32 @@ if (isset($_GET['delete_attendance'])) {
 }
 
 if (isset($_POST['add_punch_in'])) {
-    $obj_admin->add_punch_in($_POST);
+    // Check if the user has already punched in today
+    $today = date('Y-m-d');
+    $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
+    $stmt = $obj_admin->db->prepare($sql); // Use $obj_admin->db for PDO object
+    $stmt->execute(['user_id' => $user_id, 'today' => $today]);
+    
+    if ($stmt->rowCount() > 0) {
+        echo "<script>alert('You have already timed in today.');</script>";
+    } else {
+        // Proceed to add punch in
+        $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+        $punch_in_time = $date->format('Y-m-d H:i:s');
+
+        try {
+            // Set pause_duration to '00:00:00' when punching in
+            $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
+            $add_attendance->execute(['user_id' => $user_id, 'punch_in_time' => $punch_in_time]);
+
+            header('Location: ../Manage-Attendance/attendance.php');
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
 }
+
+
 
 if (isset($_POST['add_punch_out'])) {
     $obj_admin->add_punch_out($_POST);
@@ -37,6 +61,7 @@ if (isset($_POST['resume_time'])) {
 }
 
 ?>
+
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
@@ -109,6 +134,7 @@ if (isset($_POST['resume_time'])) {
                                             }
 
                                             while ($row = $info->fetch(PDO::FETCH_ASSOC)) {
+                                                  
                                             ?>
                                             <tr>
                                                 <td><?php echo $serial; $serial++; ?></td>
@@ -132,17 +158,16 @@ if (isset($_POST['resume_time'])) {
                                                 </td>
                                                 <?php if ($row['out_time'] == null) { ?>
                                                 <td>
-                                                    <form method="post" role="form" action="">
+                                                    <form method="post" role="form" action="" class="attendance-form">
                                                         <input type="hidden" name="punch_in_time" value="<?php echo $row['in_time']; ?>">
                                                         <input type="hidden" name="aten_id" value="<?php echo $row['aten_id']; ?>">
 
                                                         <?php if ($row['pause_time'] == null) { ?>
                                                         <button type="submit" name="pause_time" class="btn btn-warning btn-xs rounded">Pause Time</button>
+                                                        <button type="submit" name="add_punch_out" class="btn btn-danger btn-xs rounded" onclick="return confirm('Are you sure you want to Time Out?');">Time Out</button>
                                                         <?php } else { ?>
                                                         <button type="submit" name="resume_time" class="btn btn-success btn-xs rounded">Resume Time</button>
                                                         <?php } ?>
-
-                                                        <button type="submit" name="add_punch_out" class="btn btn-danger btn-xs rounded">Time Out</button>
                                                     </form>
                                                 </td>
                                                 <?php } else { ?>
@@ -172,10 +197,59 @@ if (isset($_POST['resume_time'])) {
 <!-- Bootstrap Grid End -->
 
 <?php
-
 include("../etms/include/footer.php");
 include("../nav-and-footer/footer-area.php");
-
 ?>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pauseButtons = document.querySelectorAll('button[name="pause_time"]');
+        const resumeButtons = document.querySelectorAll('button[name="resume_time"]');
+        const timeOutButtons = document.querySelectorAll('button[name="add_punch_out"]');
+
+        pauseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const timestamp = Date.now(); // Get the current timestamp
+                localStorage.setItem('pauseTimestamp', timestamp); // Store the timestamp in localStorage
+
+                // Hide Time Out button when Pause is clicked
+                const form = button.closest('form');
+                const timeOutButton = form.querySelector('button[name="add_punch_out"]');
+                if (timeOutButton) {
+                    timeOutButton.style.display = 'none'; // Hide the Time Out button
+                }
+            });
+        });
+
+        resumeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Show Time Out button when Resume is clicked
+                const form = button.closest('form');
+                const timeOutButton = form.querySelector('button[name="add_punch_out"]');
+                if (timeOutButton) {
+                    timeOutButton.style.display = 'inline'; // Show the Time Out button
+                }
+            });
+        });
+
+        // Check for the stored timestamp and calculate elapsed time
+        const pauseTimestamp = localStorage.getItem('pauseTimestamp');
+        if (pauseTimestamp) {
+            const elapsedTime = (Date.now() - parseInt(pauseTimestamp)) / 1000; // Calculate elapsed time in seconds
+
+            // If more than 10 seconds have passed since the pause time
+            if (elapsedTime >= 10) {
+                alert("Don't forget to resume before you continue to work!");
+                localStorage.removeItem('pauseTimestamp'); // Clear the timestamp after showing the alert
+            } else {
+                // Set a timeout for the remaining time until the alert should show
+                setTimeout(function() {
+                    alert("Don't forget to resume before you continue to work!");
+                    localStorage.removeItem('pauseTimestamp'); // Clear the timestamp after showing the alert
+                }, (10 - elapsedTime) * 1000); // Remaining time in milliseconds
+            }
+        }
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
