@@ -102,7 +102,7 @@ class Admin_Class
 				            $_SESSION['user_role'] = $userRow['user_role'];
 				            $_SESSION['temp_password'] = $userRow['temp_password'];
 
-				            header('Location: ../Interface/dashboard.php');
+				            header('Location: ../Manage-Attendance/attendance.php');
 			          }
 
 			}catch (PDOException $e) {

@@ -30,7 +30,7 @@
 <footer>
             <div class="footer-area">
                 <p>
-                Blk. 44, Lots 5 and 6, Batasan Hills, Commonwealth, Quezon City, Philippines</p>
+                Copyright © 2023 AeternitaS</p>
             </div>
         </footer>
         <!-- footer area end-->
