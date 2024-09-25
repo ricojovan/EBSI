@@ -51,7 +51,7 @@ class Admin_Class
 	            $_SESSION['temp_password'] = $userRow['temp_password'];
 
           		if($userRow['temp_password'] == null){
-	                header('Location: ../task-info.php');
+	                header('Location: ../Interface/dashboard.php');
           		}else{
           			header('Location: ../Manage-Employee/change-password.php');
           		}
@@ -102,7 +102,7 @@ class Admin_Class
 				            $_SESSION['user_role'] = $userRow['user_role'];
 				            $_SESSION['temp_password'] = $userRow['temp_password'];
 
-				            header('Location: ../task-info.php');
+				            header('Location: ../Interface/dashboard.php');
 			          }
 
 			}catch (PDOException $e) {

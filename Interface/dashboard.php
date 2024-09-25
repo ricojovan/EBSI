@@ -132,166 +132,23 @@ try {
                         </div>
                     </div>
                     <!-- seo fact area end -->
-                    <!-- Social Campain area start -->
-                    <div class="col-lg-4 mt-5">
-                        <div class="card">
-                            <div class="card-body pb-0">
-                                <h4 class="header-title">Work Summary</h4>
-                                <div id="socialads" style="height: 245px;"></div>
-                            </div>
+                     <!-- Map Area -->
+                <div class="col-lg-4 mt-5">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="header-title">Marketing Area</h4>
+                            <div id="seomap"></div>
                         </div>
                     </div>
-                    <!-- Social Campain area end -->
-                    <!-- Statistics area start -->
-                    <div class="col-lg-8 mt-5">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="header-title">User Statistics</h4>
-                                <div id="user-statistics"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Statistics area end -->
-                    <!-- Advertising area start -->
-                    <div class="col-lg-4 mt-5">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="header-title">Advertising & Marketing</h4>
-                                <canvas id="seolinechart8" height="233"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Advertising area end -->
-                    <!-- sales area start -->
-                    <div class="col-xl-8 col-lg-8 mt-5">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="header-title">Sales</h4>
-                                <div id="salesanalytic"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- sales area end -->
-                    <!-- timeline area start -->
-                    <div class="col-xl-4 col-lg-4 mt-5">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="header-title">Timeline</h4>
-                                <div class="timeline-area">
-                                    <div class="timeline-task">
-                                        <div class="icon bg1">
-                                            <i class="fa fa-envelope"></i>
-                                        </div>
-                                        <div class="tm-title">
-                                            <h4>Rashed sent you an email</h4>
-                                            <span class="time"><i class="ti-time"></i>09:35</span>
-                                        </div>
-                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse distinctio itaque at.
-                                        </p>
-                                    </div>
-                                    <div class="timeline-task">
-                                        <div class="icon bg2">
-                                            <i class="fa fa-exclamation-triangle"></i>
-                                        </div>
-                                        <div class="tm-title">
-                                            <h4>Rashed sent you an email</h4>
-                                            <span class="time"><i class="ti-time"></i>09:35</span>
-                                        </div>
-                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse distinctio itaque at.
-                                        </p>
-                                    </div>
-                                    <div class="timeline-task">
-                                        <div class="icon bg2">
-                                            <i class="fa fa-exclamation-triangle"></i>
-                                        </div>
-                                        <div class="tm-title">
-                                            <h4>Rashed sent you an email</h4>
-                                            <span class="time"><i class="ti-time"></i>09:35</span>
-                                        </div>
-                                    </div>
-                                    <div class="timeline-task">
-                                        <div class="icon bg3">
-                                            <i class="fa fa-bomb"></i>
-                                        </div>
-                                        <div class="tm-title">
-                                            <h4>Rashed sent you an email</h4>
-                                            <span class="time"><i class="ti-time"></i>09:35</span>
-                                        </div>
-                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse distinctio itaque at.
-                                        </p>
-                                    </div>
-                                    <div class="timeline-task">
-                                        <div class="icon bg3">
-                                            <i class="ti-signal"></i>
-                                        </div>
-                                        <div class="tm-title">
-                                            <h4>Rashed sent you an email</h4>
-                                            <span class="time"><i class="ti-time"></i>09:35</span>
-                                        </div>
-                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse distinctio itaque at.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- timeline area end -->
-                    <!-- map area start -->
-                    <div class="col-lg-5 mt-5">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="header-title">Marketing Area</h4>
-                                <div id="seomap"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- map area end -->
-                    <!-- testimonial area start -->
-                    <div class="col-lg-7 mt-5">
-                        <div class="card">
-                            <div class="card-body bg1">
-                                <h4 class="header-title text-white">Client Feadback</h4>
-                                <div class="testimonial-carousel owl-carousel">
-                                    <div class="tst-item">
-                                        <div class="tstu-img">
-                                            <img src="assets/images/team/team-author1.jpg" alt="author image">
-                                        </div>
-                                        <div class="tstu-content">
-                                            <h4 class="tstu-name">Abel Franecki</h4>
-                                            <span class="profsn">Designer</span>
-                                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae laborum ut nihil numquam a aliquam alias necessitatibus ipsa soluta quam!</p>
-                                        </div>
-                                    </div>
-                                    <div class="tst-item">
-                                        <div class="tstu-img">
-                                            <img src="assets/images/team/team-author2.jpg" alt="author image">
-                                        </div>
-                                        <div class="tstu-content">
-                                            <h4 class="tstu-name">Abel Franecki</h4>
-                                            <span class="profsn">Designer</span>
-                                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae laborum ut nihil numquam a aliquam alias necessitatibus ipsa soluta quam!</p>
-                                        </div>
-                                    </div>
-                                    <div class="tst-item">
-                                        <div class="tstu-img">
-                                            <img src="assets/images/team/team-author3.jpg" alt="author image">
-                                        </div>
-                                        <div class="tstu-content">
-                                            <h4 class="tstu-name">Abel Franecki</h4>
-                                            <span class="profsn">Designer</span>
-                                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae laborum ut nihil numquam a aliquam alias necessitatibus ipsa soluta quam!</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- testimonial area end -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Main content end -->
                 </div>
             </div>
         </div>
         <!-- main content area end -->
         <?php include '../nav-and-footer/footer-area.php';?>  
 </body>
-
 </html>

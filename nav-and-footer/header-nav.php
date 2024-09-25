@@ -72,10 +72,7 @@ $user_role = $_SESSION['user_role'];
   </script>
 
 </head>
-<body class="body-bg">
-
-                     
-
+<body class="body-bg">       
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif] -->
@@ -121,158 +118,11 @@ $user_role = $_SESSION['user_role'];
                 <div class="row align-items-center">
                     <div class="col-md-3">
                         <div class="logo">
-                            <a href="<?php if ($user_role == 1) { ?>dashboard.php<?php } ?>"><img src="../assets/images/icon/palinis-po-logo.png" alt="logo"></a>
+                            <a href="<?php if ($user_role == 1) { ?>dashboard.php<?php } ?>"><img src="../assets/images/icon/white-logo-small-aeternitas.png" alt="logo"></a>
                         </div>
                     </div>
                     <!-- profile info & task notification -->
                     <div class="col-md-9 clearfix text-right">
-                        <div class="d-md-inline-block d-block mr-md-4">
-                            <ul class="notification-area">
-                                <li id="full-view"><i class="ti-fullscreen"></i></li>
-                                <li id="full-view-exit"><i class="ti-zoom-out"></i></li>
-                                <li class="dropdown">
-                                    <i class="ti-bell dropdown-toggle" data-toggle="dropdown">
-                                        <span>2</span>
-                                    </i>
-                                    <div class="dropdown-menu bell-notify-box notify-box">
-                                        <span class="notify-title">You have 3 new notifications <a href="#">view all</a></span>
-                                        <div class="nofity-list">
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb"><i class="ti-key btn-danger"></i></div>
-                                                <div class="notify-text">
-                                                    <p>You have Changed Your Password</p>
-                                                    <span>Just Now</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb"><i class="ti-comments-smiley btn-info"></i></div>
-                                                <div class="notify-text">
-                                                    <p>New Commetns On Post</p>
-                                                    <span>30 Seconds ago</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb"><i class="ti-key btn-primary"></i></div>
-                                                <div class="notify-text">
-                                                    <p>Some special like you</p>
-                                                    <span>Just Now</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb"><i class="ti-comments-smiley btn-info"></i></div>
-                                                <div class="notify-text">
-                                                    <p>New Commetns On Post</p>
-                                                    <span>30 Seconds ago</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb"><i class="ti-key btn-primary"></i></div>
-                                                <div class="notify-text">
-                                                    <p>Some special like you</p>
-                                                    <span>Just Now</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb"><i class="ti-key btn-danger"></i></div>
-                                                <div class="notify-text">
-                                                    <p>You have Changed Your Password</p>
-                                                    <span>Just Now</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb"><i class="ti-key btn-danger"></i></div>
-                                                <div class="notify-text">
-                                                    <p>You have Changed Your Password</p>
-                                                    <span>Just Now</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="dropdown">
-                                    <i class="fa fa-envelope-o dropdown-toggle" data-toggle="dropdown"><span>3</span></i>
-                                    <div class="dropdown-menu notify-box nt-enveloper-box">
-                                        <span class="notify-title">You have 3 new notifications <a href="#">view all</a></span>
-                                        <div class="nofity-list">
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb">
-                                                    <img src="../assets/images/author/author-img1.jpg" alt="image">
-                                                </div>
-                                                <div class="notify-text">
-                                                    <p>Aglae Mayer</p>
-                                                    <span class="msg">Hey I am waiting for you...</span>
-                                                    <span>3:15 PM</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb">
-                                                    <img src="../assets/images/author/author-img2.jpg" alt="image">
-                                                </div>
-                                                <div class="notify-text">
-                                                    <p>Aglae Mayer</p>
-                                                    <span class="msg">When you can connect with me...</span>
-                                                    <span>3:15 PM</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb">
-                                                    <img src="../assets/images/author/author-img3.jpg" alt="image">
-                                                </div>
-                                                <div class="notify-text">
-                                                    <p>Aglae Mayer</p>
-                                                    <span class="msg">I missed you so much...</span>
-                                                    <span>3:15 PM</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb">
-                                                    <img src="../assets/images/author/author-img4.jpg" alt="image">
-                                                </div>
-                                                <div class="notify-text">
-                                                    <p>Aglae Mayer</p>
-                                                    <span class="msg">Your product is completely Ready...</span>
-                                                    <span>3:15 PM</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb">
-                                                    <img src="../assets/images/author/author-img2.jpg" alt="image">
-                                                </div>
-                                                <div class="notify-text">
-                                                    <p>Aglae Mayer</p>
-                                                    <span class="msg">Hey I am waiting for you...</span>
-                                                    <span>3:15 PM</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb">
-                                                    <img src="../assets/images/author/author-img1.jpg" alt="image">
-                                                </div>
-                                                <div class="notify-text">
-                                                    <p>Aglae Mayer</p>
-                                                    <span class="msg">Hey I am waiting for you...</span>
-                                                    <span>3:15 PM</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="notify-item">
-                                                <div class="notify-thumb">
-                                                    <img src="../assets/images/author/author-img3.jpg" alt="image">
-                                                </div>
-                                                <div class="notify-text">
-                                                    <p>Aglae Mayer</p>
-                                                    <span class="msg">Hey I am waiting for you...</span>
-                                                    <span>3:15 PM</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="settings-btn">
-                                    <i class="ti-settings"></i>
-                                </li>
-                            </ul>
-                        </div>
-
                             <div class="clearfix d-md-inline-block d-block">
                             <div class="user-profile m-0">
                                 <img class="avatar user-thumb" src="../assets/images/author/avatar.png" alt="avatar">
@@ -289,8 +139,6 @@ $user_role = $_SESSION['user_role'];
             </div>
         </div>
         <!-- main header area end -->
-
-
         <!-- header area start -->
         <div class="header-area header-bottom">
             <div class="container">
@@ -309,53 +157,31 @@ $user_role = $_SESSION['user_role'];
                                     <li <?php if($page_name == "Payroll" ){echo "class=\"active\"";} ?>>
                                         <a href="../Manage-Payroll/payroll.php"><i class='fa fa-history'></i><span>Payroll</span></a>
                                     </li>
-                                    <!-- <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="../task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li> -->
                                     <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance </a></li>
                                     <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>><a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i>Administration</span></a></li>
-                                    <!-- <li <?php if($page_name == "Daily-Task-Report" ){echo "class=\"active\"";} ?>><a href="../daily-task-report.php"><i class="fa fa-tasks"></i>Task Report</a></li> -->
                                     <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/report.php"><i class="fa fa-envelope-o"></i>Attendance Report</a></li>
                                 </ul>
-
-    <?php 
-     }else if($user_role == 2){
-
-      ?>
-          <!-- Collect the nav links, forms, and other content for toggling -->
-  
-      <ul id="nav_menu">
-        <!-- <li <?php if($page_name == "Task_Info" ){echo "class=\"active\"";} ?>><a href="../task-info.php"><i class='fa fa-pencil-square-o'></i>Task Management</a></li> -->
+<?php 
+    }else if($user_role == 2){
+?>
+    <ul id="nav_menu">
         <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
-      </ul>
-
-    
-
-      <?php
-
-     }else{
-       header('Location: ../Interface/login.php');
-     }
-
-    ?>
-
-
-                            </nav>
-                        </div>
-                    </div>
-
-
-
-
-                    <!-- nav and search button -->
-                    
-                    <!-- mobile_menu -->
-                    <div class="col-12 d-block d-lg-none">
-                        <div id="mobile_menu"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- header area end -->
-        
+    </ul>
+<?php
+    }else{
+        header('Location: ../Interface/login.php');
+    }
+?>
+</nav>
+</div>
+</div>  
+<!-- mobile_menu -->
+<div class="col-12 d-block d-lg-none">
+<div id="mobile_menu"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- header area end -->     
 </body>
-
 </html>
