@@ -232,7 +232,7 @@
 /*-------------------- 2.1.1 Horizontal Menu -------------------*/
 
 .body-bg {
-    background: #B8E3FF;
+    background: rgb(16,41,83);
 }
 
 .horizontal-main-wrapper {
@@ -259,8 +259,9 @@
 }
 
 .mainheader-area {
-    background: #fff;
-    border-bottom: 1px solid #f3f8fb;
+    background: rgb(16,41,83);
+    background: linear-gradient(0deg, rgba(16,41,83,1) 51%, rgba(36,41,74,1) 96%);
+    border-bottom: 1px solid rgb(16,41,83);
     padding-left: 15px;
     position: relative;
     z-index: 99;
@@ -283,7 +284,7 @@
     display: block;
     font-size: 15px;
     padding: 10px 20px;
-    color: #000000;
+    color: #dfdfdf;
     text-transform: capitalize;
     font-family:Arial, Helvetica, sans-serif;
     
@@ -399,7 +400,7 @@
 
 .header-area {
     padding: 15px 30px;
-    background: #fff;
+    background: rgb(16,41,83);
     border-bottom: 1px solid #d8e3e7;
 }
 
@@ -719,8 +720,7 @@ ul.breadcrumbs {
             align-items: center;
     -ms-flex-wrap: wrap;
         flex-wrap: wrap;
-    background: -webkit-linear-gradient(left, #007ACE 0%, #07588d 100%);
-    background: linear-gradient(to right, #0d6baa 0%, #1a6597 100%);
+    background: rgb(16,41,83);background: linear-gradient(0deg, rgba(16,41,83,1) 51%, rgba(36,41,74,1) 96%);
     padding: 17px 38px;
     position: relative;
 }
