@@ -91,13 +91,15 @@ if(isset($_POST['add_task_post'])){
                                             $serial  = 1;
                                             $num_row = $info->rowCount();
                                             
+                                            $total_seconds = 0; // Initialize total seconds
+                                            
                                             if($num_row==0){
                                                 echo '<tr><td colspan="7">No Data found</td></tr>';
                                             }
                                             while( $row = $info->fetch(PDO::FETCH_ASSOC) ){
                                             ?>
                                             <tr>
-                                                <td><?php echo $serial; $serial++; ?></td>
+                                                <td><?php echo $serial; ?></td>
                                                 <td><?php echo $row['fullname']; ?></td>
                                                 <td><?php echo $row['in_time']; ?></td>
                                                 <td><?php echo $row['out_time']; ?></td>
@@ -112,14 +114,26 @@ if(isset($_POST['add_task_post'])){
                                                         echo $dteDiff->format("%H:%I:%S"); 
                                                     } else {
                                                         echo $row['total_duration'];
+                                                        
+                                                        // Calculate total seconds from total_duration
+                                                        list($hours, $minutes, $seconds) = explode(':', $row['total_duration']);
+                                                        $total_seconds += ($hours * 3600) + ($minutes * 60) + $seconds;
                                                     }
-                                                    echo '</td>';
-                                                    echo '</tr>';
-                                                    $serial++;
                                                     ?>
                                                 </td>
                                             </tr>
-                                            <?php } ?>
+                                            <?php 
+                                            $serial++;
+                                            } 
+                                            
+                                            // Convert total seconds to hours, minutes, and seconds
+                                            $total_hours = floor($total_seconds / 3600);
+                                            $total_minutes = floor(($total_seconds % 3600) / 60);
+                                            $total_secs = $total_seconds % 60;
+                                            
+                                            // Format the total time as HH:MM:SS
+                                            $total_hours_formatted = sprintf('%02d:%02d:%02d', $total_hours, $total_minutes, $total_secs);
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -141,7 +155,9 @@ if(isset($_POST['add_task_post'])){
     // Handle the PDF generation
     document.getElementById('pdf').addEventListener('click', function () {
         // Get the date for the header
-        var currentDate = "<?= date("F d, Y", strtotime($date)) ?>";
+        
+        var start_date = "<?= date('F d, Y', strtotime($start_date)) ?>"; 
+        var end_date = "<?= date('F d, Y', strtotime($end_date)) ?>"; 
 
         // Create jsPDF instance
         const { jsPDF } = window.jspdf;
@@ -154,7 +170,8 @@ if(isset($_POST['add_task_post'])){
         pdf.text(300, 60, 'Attendance Report', { align: 'center' });
         pdf.setFont('Helvetica', 'normal');
         pdf.text(300, 80, 'as of', { align: 'center' });
-        pdf.text(300, 100, currentDate, { align: 'center' });
+
+        pdf.text(300, 100, start_date + ' - ' + end_date, { align: 'center' }); 
 
         // Draw a line below the header
         pdf.line(40, 110, 560, 110); // Horizontal line
@@ -185,6 +202,9 @@ if(isset($_POST['add_task_post'])){
             startY: 120 // Start below the header
         });
 
+        // Add the total hours below the table
+        pdf.text(40, pdf.autoTable.previous.finalY + 20, "Total Hours: <?= $total_hours_formatted ?>");
+
         // Get the real-time date for the filename
         var now = new Date();
         var dateString = now.getFullYear() + "-" +
@@ -192,83 +212,75 @@ if(isset($_POST['add_task_post'])){
                          ("0" + now.getDate()).slice(-2);
                          
         // Save the generated PDF with the real-time date in the filename
-        var filename = 'attendance_report_' + dateString + '.pdf';
-        pdf.save(filename);
-
-        // Save the generated PDF
-        // pdf.save('attendance_report.pdf');
+        pdf.save("Attendance_Report_" + dateString + ".pdf");
     });
 
 
-    // Handle CSV download
+    // Handle the CSV generation
     document.getElementById('csv').addEventListener('click', function () {
+        // Get the table element
         var table = document.querySelector("table");
-        var rows = [];
-        
-        // Get table rows
-        table.querySelectorAll("tbody tr").forEach(function (row) {
-            var rowData = [];
-            row.querySelectorAll("td").forEach(function (cell) {
-                rowData.push(cell.innerText);
-            });
-            rows.push(rowData.join(",")); // Join the row data as a comma-separated string
-        });
-        
-        // Get table headers
+
+        // Prepare an array to store CSV data
+        var csv = [];
+
+        // Get the table headers
         var headers = [];
         table.querySelectorAll("thead th").forEach(function (th) {
             headers.push(th.innerText);
         });
-        
-        // Add headers to the CSV
-        var csvContent = headers.join(",") + "\n" + rows.join("\n");
-        
-        // Create a Blob from the CSV content
-        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        
-        // Create a link element to download the CSV file
-        var link = document.createElement("a");
-        var url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        
-        // Set the real-time date for the filename
-        var now = new Date();
-        var dateString = now.getFullYear() + "-" +
-                        ("0" + (now.getMonth() + 1)).slice(-2) + "-" +
-                        ("0" + now.getDate()).slice(-2);
-        
-        link.setAttribute("download", 'attendance_report_' + dateString + '.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        
-        // Programmatically click the link to trigger the download
-        link.click();
-        document.body.removeChild(link);
+        csv.push(headers.join(",")); // Join the headers with commas
+
+        // Get the table rows
+        var totalSeconds = 0; // Initialize total seconds for all durations
+
+        table.querySelectorAll("tbody tr").forEach(function (row) {
+            var rowData = [];
+            row.querySelectorAll("td").forEach(function (cell, index) {
+                if (index === 4) { // If the column is "Total Duration"
+                    // Convert the total duration into seconds
+                    var duration = cell.innerText.split(':');
+                    var hours = parseInt(duration[0], 10);
+                    var minutes = parseInt(duration[1], 10);
+                    var seconds = parseInt(duration[2], 10);
+                    totalSeconds += (hours * 3600) + (minutes * 60) + seconds;
+                }
+                rowData.push(cell.innerText);
+            });
+            csv.push(rowData.join(",")); // Join row data with commas
+        });
+
+        // Calculate the total hours, minutes, and seconds
+        var totalHours = Math.floor(totalSeconds / 3600);
+        var totalMinutes = Math.floor((totalSeconds % 3600) / 60);
+        var totalSecondsRemaining = totalSeconds % 60;
+
+        // Format the total time as HH:MM:SS
+        var totalFormatted = `${String(totalHours).padStart(2, '0')}:${String(totalMinutes).padStart(2, '0')}:${String(totalSecondsRemaining).padStart(2, '0')}`;
+
+        // Add the total hours to the CSV
+        csv.push(`,,,,Total Hours: ${totalFormatted}`);
+
+        // Create a CSV Blob
+        var csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+
+        // Create a link element for download
+        var downloadLink = document.createElement("a");
+        var currentDate = "<?= date('Y-m-d') ?>"; // Current date for file name
+
+        downloadLink.download = `Attendance_Report_${currentDate}.csv`;
+
+        // Create a URL for the CSV file
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+
+        // Programmatically click the download link to trigger download
+        downloadLink.click();
     });
 
 
 
 </script>
 
-<!-- <noscript>
-    <div>
-        <style>
-            body {
-                background-image: none !important;
-            }
-            .mb-0 {
-                margin: 0px;
-            }
-        </style>
-        <div style="line-height:1em">
-            <h4 class="mb-0 text-center"><b>Human Resources Management System</b></h4>
-            <h4 class="mb-0 text-center"><b>Attendance Report</b></h4>
-            <div class="mb-0 text-center"><b>as of</b></div>
-            <div class="mb-0 text-center"><b><?= date("F d, Y", strtotime($date)) ?></b></div>
-        </div>
-        <hr>
-    </div>
-</noscript> -->
 
 <script type="text/javascript">
 
