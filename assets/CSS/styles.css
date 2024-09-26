@@ -159,7 +159,7 @@
 .metismenu li a {
     position: relative;
     display: block;
-    color: #8d97ad;
+    color: #f5f5f5;
     font-size: 15px;
     text-transform: capitalize;
     padding: 15px 15px;
@@ -168,7 +168,7 @@
 }
 
 .metismenu li a i {
-    color: #6a56a5;
+    color: #f5f5f5;
     -webkit-transition: all 0.3s ease 0s;
     transition: all 0.3s ease 0s;
 }

@@ -82,7 +82,7 @@ $user_role = $_SESSION['user_role'];
         <div class="loader"></div>
     </div> -->
     <!-- preloader area end -->
-     
+
     <!-- page container area start -->
     <div class="page-container">
         <!-- sidebar menu area start -->
@@ -100,8 +100,8 @@ $user_role = $_SESSION['user_role'];
                         if($user_role == 1){
                         ?>
                         <ul class="metismenu" id="menu">
-                                    <li <?php if($page_name == "dashboard" ){echo "class=\"active\"";} ?>>
-                                        <a href="../Interface/dashboard.php"><i class='fa fa-bar-chart-o'></i><span>dashboard</span></a>
+                                    <li <?php if($page_name == "Dashboard" ){echo "class=\"active\"";} ?>>
+                                        <a href="../Interface/dashboard.php"><i class='fa fa-bar-chart-o'></i><span>Dashboard</span></a>
                                     </li>
                                     <li <?php if($page_name == "Payroll" ){echo "class=\"active\"";} ?>>
                                         <a href="../Manage-Payroll/payroll.php"><i class='fa fa-history'></i><span>Payroll</span></a>
@@ -112,7 +112,7 @@ $user_role = $_SESSION['user_role'];
                                     <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>>
                                         <a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i>  Administration</span></a>
                                     </li>
-                                    <li <?php if($page_name == "Daily-Attennce-Report" ){echo "class=\"active\"";} ?>>
+                                    <li <?php if($page_name == "Attendance Report" ){echo "class=\"active\"";} ?>>
                                         <a href="../Manage-Attendance/report.php"><i class="fa fa-envelope-o"></i>  Attendance Report</a>
                                     </li>
                         </ul>
