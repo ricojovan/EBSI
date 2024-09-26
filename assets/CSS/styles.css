@@ -90,7 +90,9 @@
 
 .main-content {
     width: 100%;
-    background: #F3F8FB;
+    background: #24294a;
+    background: -webkit-radial-gradient(circle, #24294a 0%, #102953 100%);
+    background: radial-gradient(circle, #24294a 0%, #102953 100%);
 }
 
 .main-content-inner {
@@ -232,7 +234,9 @@
 /*-------------------- 2.1.1 Horizontal Menu -------------------*/
 
 .body-bg {
-    background: rgb(16,41,83);
+background: #24294a;
+background: -webkit-radial-gradient(circle, #24294a 0%, #102953 100%);
+background: radial-gradient(circle, #24294a 0%, #102953 100%);
 }
 
 .horizontal-main-wrapper {
@@ -268,7 +272,7 @@
 }
 
 .mainheader-area .logo a span {
-    color: #069AF1;
+    color: #000000;
 }
 
 .horizontal-menu {
@@ -282,7 +286,7 @@
 
 .horizontal-menu ul li a {
     display: block;
-    font-size: 15px;
+    font-size: 17px;
     padding: 10px 20px;
     color: #dfdfdf;
     text-transform: capitalize;
@@ -653,7 +657,9 @@
 
 .page-title-area {
     padding: 0 30px;
-    background: #38B6FF;
+    background: #343980;
+    background: -webkit-linear-gradient(290deg, #343980 0%, #265bb6 100%);
+    background: linear-gradient(290deg, #343980 0%, #265bb6 100%);
     position: relative;
 }
 
@@ -672,7 +678,7 @@
 .page-title {
     font-size: 24px;
     font-weight: 300;
-    color: #313b3d;
+    color: #f5f5f5;
     letter-spacing: 0;
     margin-right: 30px;
 }
@@ -706,7 +712,7 @@ ul.breadcrumbs {
 
 .breadcrumbs li span {
     margin-right: 0;
-    color: #768387;
+    color: #f5f5f5;
     text-transform: capitalize;
 }
 
@@ -716,11 +722,10 @@ ul.breadcrumbs {
     display: -ms-flexbox;
     display: flex;
     -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
     -ms-flex-wrap: wrap;
-        flex-wrap: wrap;
-    background: rgb(16,41,83);background: linear-gradient(0deg, rgba(16,41,83,1) 51%, rgba(36,41,74,1) 96%);
+    flex-wrap: wrap;
     padding: 17px 38px;
     position: relative;
 }

@@ -1,5 +1,5 @@
 <?php
-$page_name="dashboard";
+$page_name="Dashboard";
 
 include '../nav-and-footer/header-nav.php';
 
@@ -89,6 +89,7 @@ try {
 ?>
     
     <body>
+        
         <!-- page title area end -->
         <div class="main-content-inner">
             <div class="container">

@@ -8,7 +8,7 @@ $base_url = $protocol . "://".$_SERVER['SERVER_NAME'].'/' .(explode('/',$_SERVER
 ?>
 
 <?php
-$page_name = "Daily-Attennce-Report";
+$page_name = "Attendance Report";
 include('../nav-and-footer/header-nav.php');
 
 $user_id = $_SESSION['admin_id'];

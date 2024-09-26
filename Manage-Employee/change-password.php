@@ -43,7 +43,6 @@ if (isset($_POST['change_password_btn'])) {
         </div>
     </div>
 </div>
-
 <?php
 include("../etms/include/footer.php");
 ?>
