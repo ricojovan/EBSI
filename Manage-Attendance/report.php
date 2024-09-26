@@ -50,10 +50,6 @@ if(isset($_POST['add_task_post'])){
                                 <div class="gap"></div>
                                 <div class="row">
                                     <div class="col-md-4">
-                                            <label for="name_search">Search Name:</label>
-                                            <input type="text" id="name_search" value="<?= isset($_GET['name_search']) ? $_GET['name_search'] : '' ?>" class="form-control rounded-0" placeholder="Enter Name">
-                                    </div>
-                                    <div class="col-md-4">
                                         <label for="start_date">Start Date:</label>
                                         <input type="date" id="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
                                     </div>
@@ -66,12 +62,12 @@ if(isset($_POST['add_task_post'])){
                                         <button class="btn btn-success btn-sm btn-menu" type="button" id="print"><i class="glyphicon glyphicon-print"></i> Print</button>
                                         <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF</button>
                                     </div>
-                                </div>
+                                </div><br>
                                 <center><h3>Attendance Report</h3></center>
                                 <div class="gap"></div>
                                 <div class="gap"></div>
                                 <div class="table-responsive" id="printout">
-                                    <table class="table table-codensed table-custom table-hover">
+                                    <table id="group-e" class="table table-codensed table-custom table-hover">
                                         <thead class="text-uppercase bg-primary text-white">
                                             <tr>
                                                 <th>S.N.</th>
