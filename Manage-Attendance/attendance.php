@@ -95,8 +95,6 @@ if (isset($_POST['resume_time'])) {
                                     </div>
                                 </div>
 
-                                <center><h3>Manage Attendance</h3></center>
-
                                 <div class="table-responsive">
                                     <table id="group-d" class="table table-codensed table-custom table-hover">
                                         <thead class="text-uppercase bg-primary text-white">
