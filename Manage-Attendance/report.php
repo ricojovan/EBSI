@@ -62,7 +62,7 @@ if(isset($_POST['add_task_post'])){
                                         <button class="btn btn-primary btn-sm btn-menu" type="button" id="csv"><i class="glyphicon glyphicon-download"></i> CSV </button>
                                     </div>
                                 </div><br>
-                                <center><h3>Attendance Report</h3></center>
+                                
                                 <div class="gap"></div>
                                 <div class="gap"></div>
                                 <div class="table-responsive" id="printout">

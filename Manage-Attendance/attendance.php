@@ -87,7 +87,7 @@ if (isset($_POST['resume_time'])) {
                                             <div class="btn-group">
                                                 <form method="post" role="form" action="">
                                                     <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
-                                                    <button type="submit" name="add_punch_in" class="btn btn-primary btn-lg rounded">Time In</button>
+                                                    <button type="submit" name="add_punch_in" class="btn btn-primary btn-lg rounded mb-3">Time In</button>
                                                 </form>
                                             </div>
                                             <?php } ?>
