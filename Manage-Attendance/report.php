@@ -20,6 +20,7 @@ if ($user_id == NULL || $security_key == NULL) {
 
 $user_role = $_SESSION['user_role'];
 
+// Handle task deletion and addition
 if(isset($_GET['delete_task'])){
     $action_id = $_GET['task_id'];
     $sql = "DELETE FROM task_info WHERE task_id = :id";
@@ -36,109 +37,117 @@ if(isset($_POST['add_task_post'])){
 <div class="col-12 mt-5">
     <div class="card">
         <div class="card-body">
-            <!-- Start 12 column grid system -->
             <div class="row">
                 <div class="col-12">
-                    <?php $date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d') ?>
                     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 
                     <div class="row">
-                        <div class="col-md-12">
-                            <div class="well well-custom rounded-0">
-                                <div class="gap"></div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label for="start_date">Start Date:</label>
-                                        <input type="date" id="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="end_date">End Date:</label>
-                                        <input type="date" id="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF </button>
-                                        <button class="btn btn-primary btn-sm btn-menu" type="button" id="csv"><i class="glyphicon glyphicon-download"></i> CSV </button>
-                                    </div>
-                                </div><br>
-                                
-                                <div class="gap"></div>
-                                <div class="gap"></div>
-                                <div class="table-responsive" id="printout">
-                                    <table id="attendance-report" class="table table-codensed table-custom table-hover">
-                                        <thead class="text-uppercase bg-primary text-white">
-                                            <tr>
-                                                <th>S.N.</th>
-                                                <th>Name</th>
-                                                <th>In Time</th>
-                                                <th>Out Time</th>
-                                                <th>Total Duration</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php 
-                                            $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
-                                            $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
-                                            
-                                            $sql = "SELECT a.*, b.fullname 
-                                                    FROM attendance_info a
-                                                    LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id) 
-                                                    WHERE date(a.in_time) BETWEEN '{$start_date}' AND '{$end_date}'
-                                                    ORDER BY date(a.in_time) ASC"; // Order by start date
-                                            
-                                            $info = $obj_admin->manage_all_info($sql);
-                                            $serial  = 1;
-                                            $num_row = $info->rowCount();
-                                            
-                                            $total_seconds = 0; // Initialize total seconds
-                                            
-                                            if($num_row==0){
-                                                echo '<tr><td colspan="7">No Data found</td></tr>';
-                                            }
-                                            while( $row = $info->fetch(PDO::FETCH_ASSOC) ){
-                                            ?>
-                                            <tr>
-                                                <td><?php echo $serial; ?></td>
-                                                <td><?php echo $row['fullname']; ?></td>
-                                                <td><?php echo $row['in_time']; ?></td>
-                                                <td><?php echo $row['out_time']; ?></td>
-                                                <td><?php
-                                                    if($row['total_duration'] == null){
-                                                        $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
-                                                        $current_time = $date->format('d-m-Y H:i:s');
-                                            
-                                                        $dteStart = new DateTime($row['in_time']);
-                                                        $dteEnd   = new DateTime($current_time);
-                                                        $dteDiff  = $dteStart->diff($dteEnd);
-                                                        echo $dteDiff->format("%H:%I:%S"); 
-                                                    } else {
-                                                        echo $row['total_duration'];
-                                                        
-                                                        // Calculate total seconds from total_duration
-                                                        list($hours, $minutes, $seconds) = explode(':', $row['total_duration']);
-                                                        $total_seconds += ($hours * 3600) + ($minutes * 60) + $seconds;
-                                                    }
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            <?php 
-                                            $serial++;
-                                            } 
-                                            
-                                            // Convert total seconds to hours, minutes, and seconds
-                                            $total_hours = floor($total_seconds / 3600);
-                                            $total_minutes = floor(($total_seconds % 3600) / 60);
-                                            $total_secs = $total_seconds % 60;
-                                            
-                                            // Format the total time as HH:MM:SS
-                                            $total_hours_formatted = sprintf('%02d:%02d:%02d', $total_hours, $total_minutes, $total_secs);
-                                            ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                        <!-- Start Date -->
+                        <div class="col-md-3">
+                            <label for="start_date">Start Date:</label>
+                            <input type="date" id="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
                         </div>
+
+                        <!-- End Date -->
+                        <div class="col-md-3">
+                            <label for="end_date">End Date:</label>
+                            <input type="date" id="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
+                        </div>
+
+                        <!-- Name Search -->
+                        <div class="col-md-3">
+                            <label for="search_name">Search by Name:</label>
+                            <input type="text" id="search_name" value="<?= isset($_GET['name']) ? $_GET['name'] : '' ?>" class="form-control rounded-0" placeholder="Enter Name">
+                        </div>
+
+                        <!-- PDF and CSV buttons -->
+                        <div class="col-md-3">
+                            <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF </button>
+                            <button class="btn btn-primary btn-sm btn-menu" type="button" id="csv"><i class="glyphicon glyphicon-download"></i> CSV </button>
+                        </div>
+                    </div><br>
+
+                    <!-- Table for Attendance Data -->
+                    <div class="table-responsive" id="printout">
+                        <table id="group-e" class="table table-condensed table-custom table-hover">
+                            <thead class="text-uppercase bg-primary text-white">
+                                <tr>
+                                    <th>S.N.</th>
+                                    <th>Name</th>
+                                    <th>In Time</th>
+                                    <th>Out Time</th>
+                                    <th>Total Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
+                                $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
+                                $search_name = isset($_GET['name']) ? $_GET['name'] : '';
+
+                                // Adjust SQL to filter by date and name
+                                $sql = "SELECT a.*, b.fullname 
+                                        FROM attendance_info a
+                                        LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id) 
+                                        WHERE date(a.in_time) BETWEEN '{$start_date}' AND '{$end_date}'";
+
+                                if (!empty($search_name)) {
+                                    $sql .= " AND b.fullname LIKE '%{$search_name}%'"; // Add name filter
+                                }
+
+                                $sql .= " ORDER BY date(a.in_time) ASC";
+
+                                $info = $obj_admin->manage_all_info($sql);
+                                $serial  = 1;
+                                $num_row = $info->rowCount();
+                                
+                                $total_seconds = 0; // Initialize total seconds
+                                
+                                if($num_row==0){
+                                    echo '<tr><td colspan="5">No Data found</td></tr>';
+                                }
+                                while( $row = $info->fetch(PDO::FETCH_ASSOC) ){
+                                ?>
+                                <tr>
+                                    <td><?php echo $serial; ?></td>
+                                    <td><?php echo $row['fullname']; ?></td>
+                                    <td><?php echo $row['in_time']; ?></td>
+                                    <td><?php echo $row['out_time']; ?></td>
+                                    <td><?php
+                                        if($row['total_duration'] == null){
+                                            $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+                                            $current_time = $date->format('d-m-Y H:i:s');
+                                
+                                            $dteStart = new DateTime($row['in_time']);
+                                            $dteEnd   = new DateTime($current_time);
+                                            $dteDiff  = $dteStart->diff($dteEnd);
+                                            echo $dteDiff->format("%H:%I:%S"); 
+                                        } else {
+                                            echo $row['total_duration'];
+                                            
+                                            // Calculate total seconds from total_duration
+                                            list($hours, $minutes, $seconds) = explode(':', $row['total_duration']);
+                                            $total_seconds += ($hours * 3600) + ($minutes * 60) + $seconds;
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+                                <?php 
+                                $serial++;
+                                } 
+                                
+                                // Convert total seconds to hours, minutes, and seconds
+                                $total_hours = floor($total_seconds / 3600);
+                                $total_minutes = floor(($total_seconds % 3600) / 60);
+                                $total_secs = $total_seconds % 60;
+                                
+                                // Format the total time as HH:MM:SS
+                                $total_hours_formatted = sprintf('%02d:%02d:%02d', $total_hours, $total_minutes, $total_secs);
+                                ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -150,171 +159,106 @@ if(isset($_POST['add_task_post'])){
 <?php include("../etms/include/footer.php"); ?>
 <?php include("../nav-and-footer/footer-area.php"); ?>
 
-
+<!-- JavaScript for PDF and CSV generation and search filters -->
 <script>
-    // Handle the PDF generation
-    document.getElementById('pdf').addEventListener('click', function () {
-        // Get the date for the header
-        
-        var start_date = "<?= date('F d, Y', strtotime($start_date)) ?>"; 
-        var end_date = "<?= date('F d, Y', strtotime($end_date)) ?>"; 
+// Handle PDF generation
+document.getElementById('pdf').addEventListener('click', function () {
+    var start_date = "<?= date('F d, Y', strtotime($start_date)) ?>"; 
+    var end_date = "<?= date('F d, Y', strtotime($end_date)) ?>"; 
+    const { jsPDF } = window.jspdf;
+    var pdf = new jsPDF('p', 'pt', 'a4');
 
-        // Create jsPDF instance
-        const { jsPDF } = window.jspdf;
-        var pdf = new jsPDF('p', 'pt', 'a4');
+    // Add the header content
+    pdf.setFontSize(12);
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text(300, 40, 'Eternal Bright Sanctuary Inc.', { align: 'center' });
+    pdf.text(300, 60, 'Attendance Report', { align: 'center' });
+    pdf.setFont('Helvetica', 'normal');
+    pdf.text(300, 80, 'as of', { align: 'center' });
+    pdf.text(300, 100, start_date + ' - ' + end_date, { align: 'center' }); 
 
-        // Add the header content (from <noscript>)
-        pdf.setFontSize(12);
-        pdf.setFont('Helvetica', 'bold');
-        pdf.text(300, 40, 'Eternal Bright Sanctuary Inc.', { align: 'center' });
-        pdf.text(300, 60, 'Attendance Report', { align: 'center' });
-        pdf.setFont('Helvetica', 'normal');
-        pdf.text(300, 80, 'as of', { align: 'center' });
+    // Draw a line below the header
+    pdf.line(40, 110, 560, 110);
 
-        pdf.text(300, 100, start_date + ' - ' + end_date, { align: 'center' }); 
-
-        // Draw a line below the header
-        pdf.line(40, 110, 560, 110); // Horizontal line
-
-        // Prepare the table data
-        var table = document.querySelector("table");
-        var rows = [];
-        
-        // Get table rows
-        table.querySelectorAll("tbody tr").forEach(function (row) {
-            var rowData = [];
-            row.querySelectorAll("td").forEach(function (cell) {
-                rowData.push(cell.innerText);
-            });
-            rows.push(rowData);
+    // Prepare the table data
+    var table = document.querySelector("table");
+    var rows = [];
+    
+    // Get table rows
+    table.querySelectorAll("tbody tr").forEach(function (row) {
+        var rowData = [];
+        row.querySelectorAll("td").forEach(function (cell) {
+            rowData.push(cell.innerText);
         });
-
-        // Get table headers
-        var headers = [];
-        table.querySelectorAll("thead th").forEach(function (th) {
-            headers.push(th.innerText);
-        });
-
-        // Add the table to the PDF using autoTable
-        pdf.autoTable({
-            head: [headers],
-            body: rows,
-            startY: 120 // Start below the header
-        });
-
-        // Add the total hours below the table
-        pdf.text(40, pdf.autoTable.previous.finalY + 20, "Total Hours: <?= $total_hours_formatted ?>");
-
-        // Get the real-time date for the filename
-        var now = new Date();
-        var dateString = now.getFullYear() + "-" +
-                         ("0" + (now.getMonth() + 1)).slice(-2) + "-" +
-                         ("0" + now.getDate()).slice(-2);
-                         
-        // Save the generated PDF with the real-time date in the filename
-        pdf.save("Attendance_Report_" + dateString + ".pdf");
+        rows.push(rowData);
     });
 
+    // Get table headers
+    var headers = [];
+    table.querySelectorAll("thead th").forEach(function (th) {
+        headers.push(th.innerText);
+    });
 
-    // Handle the CSV generation
-    document.getElementById('csv').addEventListener('click', function () {
-        // Get the table element
-        var table = document.querySelector("table");
+    // Add the table to the PDF
+    pdf.autoTable({
+        startY: 120,
+        head: [headers],
+        body: rows,
+        theme: 'grid',
+        headStyles: { fillColor: [0, 0, 128] },
+    });
 
-        // Prepare an array to store CSV data
-        var csv = [];
+    // Add the total hours at the end of the report
+    var total_hours = '<?= $total_hours_formatted ?>';
+    pdf.setFont('Helvetica', 'bold');
+    pdf.text(500, pdf.lastAutoTable.finalY + 20, 'Total: ' + total_hours, { align: 'right' });
 
-        // Get the table headers
-        var headers = [];
-        table.querySelectorAll("thead th").forEach(function (th) {
-            headers.push(th.innerText);
+    // Save the generated PDF
+    pdf.save('attendance_report.pdf');
+});
+
+// Handle search filters for Name, Start Date, End Date
+const inputs = ['start_date', 'end_date', 'search_name'];
+inputs.forEach(function (inputId) {
+    document.getElementById(inputId).addEventListener('change', function () {
+        var startDate = document.getElementById('start_date').value;
+        var endDate = document.getElementById('end_date').value;
+        var name = document.getElementById('search_name').value;
+
+        var url = "?start_date=" + startDate + "&end_date=" + endDate + "&name=" + name;
+        window.location.href = url;
+    });
+});
+
+// Handle CSV generation
+document.getElementById('csv').addEventListener('click', function () {
+    var table = document.querySelector("table");
+    var csvContent = "";
+    
+    // Get table headers
+    var headers = [];
+    table.querySelectorAll("thead th").forEach(function (th) {
+        headers.push(th.innerText);
+    });
+    csvContent += headers.join(",") + "\n";
+
+    // Get table rows
+    table.querySelectorAll("tbody tr").forEach(function (row) {
+        var rowData = [];
+        row.querySelectorAll("td").forEach(function (cell) {
+            rowData.push(cell.innerText);
         });
-        csv.push(headers.join(",")); // Join the headers with commas
-
-        // Get the table rows
-        var totalSeconds = 0; // Initialize total seconds for all durations
-
-        table.querySelectorAll("tbody tr").forEach(function (row) {
-            var rowData = [];
-            row.querySelectorAll("td").forEach(function (cell, index) {
-                if (index === 4) { // If the column is "Total Duration"
-                    // Convert the total duration into seconds
-                    var duration = cell.innerText.split(':');
-                    var hours = parseInt(duration[0], 10);
-                    var minutes = parseInt(duration[1], 10);
-                    var seconds = parseInt(duration[2], 10);
-                    totalSeconds += (hours * 3600) + (minutes * 60) + seconds;
-                }
-                rowData.push(cell.innerText);
-            });
-            csv.push(rowData.join(",")); // Join row data with commas
-        });
-
-        // Calculate the total hours, minutes, and seconds
-        var totalHours = Math.floor(totalSeconds / 3600);
-        var totalMinutes = Math.floor((totalSeconds % 3600) / 60);
-        var totalSecondsRemaining = totalSeconds % 60;
-
-        // Format the total time as HH:MM:SS
-        var totalFormatted = `${String(totalHours).padStart(2, '0')}:${String(totalMinutes).padStart(2, '0')}:${String(totalSecondsRemaining).padStart(2, '0')}`;
-
-        // Add the total hours to the CSV
-        csv.push(`,,,,Total Hours: ${totalFormatted}`);
-
-        // Create a CSV Blob
-        var csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
-
-        // Create a link element for download
-        var downloadLink = document.createElement("a");
-        var currentDate = "<?= date('Y-m-d') ?>"; // Current date for file name
-
-        downloadLink.download = `Attendance_Report_${currentDate}.csv`;
-
-        // Create a URL for the CSV file
-        downloadLink.href = window.URL.createObjectURL(csvFile);
-
-        // Programmatically click the download link to trigger download
-        downloadLink.click();
+        csvContent += rowData.join(",") + "\n";
     });
 
-
-
-</script>
-
-
-<script type="text/javascript">
-
-function updateURLParameter(url, param, paramVal) {
-        var newAdditionalURL = "";
-        var tempArray = url.split("?");
-        var baseURL = tempArray[0];
-        var additionalURL = tempArray[1];
-        var temp = "";
-
-        if (additionalURL) {
-            var tempArray = additionalURL.split("&");
-            for (var i=0; i < tempArray.length; i++) {
-                if (tempArray[i].split('=')[0] != param) {
-                    newAdditionalURL += temp + tempArray[i];
-                    temp = "&";
-                }
-            }
-        }
-
-        var rows_txt = temp + "" + param + "=" + paramVal;
-        return baseURL + "?" + newAdditionalURL + rows_txt;
-    }
-
-    // Event listeners for the date inputs
-    document.getElementById('start_date').addEventListener('change', function() {
-        var newUrl = updateURLParameter(window.location.href, 'start_date', this.value);
-        window.location.href = updateURLParameter(newUrl, 'end_date', document.getElementById('end_date').value);
-    });
-
-    document.getElementById('end_date').addEventListener('change', function() {
-        var newUrl = updateURLParameter(window.location.href, 'end_date', this.value);
-        window.location.href = updateURLParameter(newUrl, 'start_date', document.getElementById('start_date').value);
-    });
-
+    // Download the CSV file
+    var csvBlob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    var csvUrl = URL.createObjectURL(csvBlob);
+    var hiddenElement = document.createElement("a");
+    hiddenElement.href = csvUrl;
+    hiddenElement.target = "_blank";
+    hiddenElement.download = "attendance_report.csv";
+    hiddenElement.click();
+});
 
 </script>
