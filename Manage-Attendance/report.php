@@ -66,7 +66,7 @@ if(isset($_POST['add_task_post'])){
                                 <div class="gap"></div>
                                 <div class="gap"></div>
                                 <div class="table-responsive" id="printout">
-                                    <table id="group-e" class="table table-codensed table-custom table-hover">
+                                    <table id="attendance-report" class="table table-codensed table-custom table-hover">
                                         <thead class="text-uppercase bg-primary text-white">
                                             <tr>
                                                 <th>S.N.</th>

@@ -74,7 +74,7 @@
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
-
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 
 
@@ -175,6 +175,27 @@
         });
     });
 });
+
+$(document).ready(function() {
+    // Suppress DataTables warnings
+    $.fn.dataTable.ext.errMode = 'none';
+
+    var tableIds = ['#attendance-report'];
+    tableIds.forEach(function(id) {
+        $(id).DataTable({
+            // Your DataTables options here,
+            searching: false,
+            initComplete: function(settings, json) {
+                var api = this.api();
+                if (api.page.info().recordsTotal === 0 && settings.jqXHR.responseJSON.error) {
+                    // If there are no records and there is an error, hide the warning message
+                    $('.dataTables_empty').hide();
+                }
+            }
+        });
+    });
+});
+
 
 
 

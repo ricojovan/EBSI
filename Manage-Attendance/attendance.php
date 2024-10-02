@@ -28,22 +28,27 @@ if (isset($_POST['add_punch_in'])) {
     $stmt->execute(['user_id' => $user_id, 'today' => $today]);
     
     if ($stmt->rowCount() > 0) {
-        echo "<script>alert('You have already timed in today.');</script>";
+        echo "<script>
+                $(document).ready(function() {
+                    $('#timed-in-modal').modal('show');
+                });
+              </script>";
     } else {
         // Proceed to add punch in
         $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
         $punch_in_time = $date->format('Y-m-d H:i:s');
-
+    
         try {
             // Set pause_duration to '00:00:00' when punching in
             $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
             $add_attendance->execute(['user_id' => $user_id, 'punch_in_time' => $punch_in_time]);
-
+    
             header('Location: ../Manage-Attendance/attendance.php');
         } catch (PDOException $e) {
             echo $e->getMessage();
         }
     }
+    
 }
 
 
@@ -62,6 +67,24 @@ if (isset($_POST['resume_time'])) {
 
 ?>
 
+<div class="modal fade" id="timed-in-modal" tabindex="-1" role="dialog" aria-labelledby="timedInModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="timedInModalLabel">Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>You have already timed in today.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
@@ -85,11 +108,11 @@ if (isset($_POST['resume_time'])) {
                                             if ($num_row == 0) {
                                             ?>
                                             <div class="btn-group">
-                                                <form method="post" role="form" action="">
-                                                    <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
-                                                    <button type="submit" name="add_punch_in" class="btn btn-primary btn-lg rounded mb-3">Time In</button>
-                                                </form>
-                                            </div>
+    <form method="post" role="form" action="">
+        <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+        <button type="submit" name="add_punch_in" class="btn btn-primary btn-lg rounded mb-3">Time In</button>
+    </form>
+</div>
                                             <?php } ?>
                                         </div>
                                     </div>
@@ -162,7 +185,27 @@ if (isset($_POST['resume_time'])) {
 
                                                         <?php if ($row['pause_time'] == null) { ?>
                                                         <button type="submit" name="pause_time" class="btn btn-warning btn-xs rounded">Pause Time</button>
-                                                        <button type="submit" name="add_punch_out" class="btn btn-danger btn-xs rounded" onclick="return confirm('Are you sure you want to Time Out?');">Time Out</button>
+                                                        <button type="button" class="btn btn-danger btn-xs rounded" data-toggle="modal" data-target="#exampleModalCenter">Time Out</button>
+                                                        
+                                                        <div class="modal fade" id="exampleModalCenter">
+                                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">Modal title</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius voluptates explicabo natus nobis, aperiam placeat aliquid nisi ut exercitationem dolor quisquam nam tempora voluptatem. Unde dignissimos est aliquid quidem porro dolorum ipsam suscipit animi quas, debitis ea, sunt quo distinctio doloribus eveniet dolores tempore delectus voluptatum! Possimus earum asperiores animi.</p>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                        <button type="submit" name="add_punch_out" class="btn btn-primary">Save changes</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
                                                         <?php } else { ?>
                                                         <button type="submit" name="resume_time" class="btn btn-success btn-xs rounded">Resume Time</button>
                                                         <?php } ?>
@@ -174,7 +217,26 @@ if (isset($_POST['resume_time'])) {
 
                                                 <?php if ($user_role == 1) { ?>
                                                 <td>
-                                                    <a title="Delete" href="?delete_attendance=delete_attendance&aten_id=<?php echo $row['aten_id']; ?>" onclick=" return check_delete();"><i class="fa fa-trash-o"></i></a>
+                                                    
+                                                    <button type="button" class="btn btn-danger btn-xs rounded" data-toggle="modal" data-target="#delete-modal"><i class="fa fa-trash-o"></i></button>
+
+                                                    <div class="modal fade" id="delete-modal">
+                                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">Are you sure you want to delete this?</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p>THIS CONFIRMATION IF YOU YES THIS WILL BE DELETE FOREVER AND EVER</p>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                        <a title="Delete" href="?delete_attendance=delete_attendance&aten_id=<?php echo $row['aten_id']; ?>" class="btn btn-danger btn-sm" ><i class="fa fa-trash-o"></i></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                 </td>
                                                 <?php } else { ?>
                                                 <td></td>
