@@ -108,11 +108,11 @@ if (isset($_POST['resume_time'])) {
                                             if ($num_row == 0) {
                                             ?>
                                             <div class="btn-group">
-    <form method="post" role="form" action="">
-        <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
-        <button type="submit" name="add_punch_in" class="btn btn-primary btn-lg rounded mb-3">Time In</button>
-    </form>
-</div>
+                                                <form method="post" role="form" action="">
+                                                    <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+                                                    <button type="submit" name="add_punch_in" class="btn btn-primary btn-lg rounded mb-3">Time In</button>
+                                                </form>
+                                            </div>
                                             <?php } ?>
                                         </div>
                                     </div>
@@ -191,11 +191,11 @@ if (isset($_POST['resume_time'])) {
                                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title">Modal title</h5>
+                                                                        <h5 class="modal-title">Confirm Time Out</h5>
                                                                         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                                                                     </div>
                                                                     <div class="modal-body">
-                                                                        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius voluptates explicabo natus nobis, aperiam placeat aliquid nisi ut exercitationem dolor quisquam nam tempora voluptatem. Unde dignissimos est aliquid quidem porro dolorum ipsam suscipit animi quas, debitis ea, sunt quo distinctio doloribus eveniet dolores tempore delectus voluptatum! Possimus earum asperiores animi.</p>
+                                                                        <p>Are you sure you want to time out? Please ensure that all your work is saved before proceeding.</p>
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -224,11 +224,11 @@ if (isset($_POST['resume_time'])) {
                                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title">Are you sure you want to delete this?</h5>
+                                                                        <h5 class="modal-title">Confirm Deletion</h5>
                                                                         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                                                                     </div>
                                                                     <div class="modal-body">
-                                                                        <p>THIS CONFIRMATION IF YOU YES THIS WILL BE DELETE FOREVER AND EVER</p>
+                                                                        <p>Are you sure you want to permanently remove this item?</p>
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
