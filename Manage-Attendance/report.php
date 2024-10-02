@@ -71,7 +71,7 @@ if(isset($_POST['add_task_post'])){
 
                     <!-- Table for Attendance Data -->
                     <div class="table-responsive" id="printout">
-                        <table id="group-e" class="table table-condensed table-custom table-hover">
+                        <table id="attendance-report" class="table table-condensed table-custom table-hover">
                             <thead class="text-uppercase bg-primary text-white">
                                 <tr>
                                     <th>S.N.</th>
