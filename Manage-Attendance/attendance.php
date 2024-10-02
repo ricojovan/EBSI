@@ -255,7 +255,7 @@ if (isset($_POST['resume_time'])) {
     </div>
 </div>
 <!-- Bootstrap Grid End -->
-
+<div id="alert-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"></div>
 <?php
 include("../etms/include/footer.php");
 include("../nav-and-footer/footer-area.php");
@@ -294,21 +294,43 @@ include("../nav-and-footer/footer-area.php");
 
         // Check for the stored timestamp and calculate elapsed time
         const pauseTimestamp = localStorage.getItem('pauseTimestamp');
-        if (pauseTimestamp) {
-            const elapsedTime = (Date.now() - parseInt(pauseTimestamp)) / 1000; // Calculate elapsed time in seconds
+if (pauseTimestamp) {
+    const elapsedTime = (Date.now() - parseInt(pauseTimestamp)) / 1000; // Calculate elapsed time in seconds
 
-            // If more than 10 seconds have passed since the pause time
-            if (elapsedTime >= 10) {
-                alert("Don't forget to resume before you continue to work!");
-                localStorage.removeItem('pauseTimestamp'); // Clear the timestamp after showing the alert
-            } else {
-                // Set a timeout for the remaining time until the alert should show
-                setTimeout(function() {
-                    alert("Don't forget to resume before you continue to work!");
-                    localStorage.removeItem('pauseTimestamp'); // Clear the timestamp after showing the alert
-                }, (10 - elapsedTime) * 1000); // Remaining time in milliseconds
-            }
-        }
+    // Function to create and show the alert
+    function showAlert() {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            <strong>Hello!</strong> Don't forget to resume before you continue to work!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span class="fa fa-times"></span>
+            </button>
+        `;
+
+        // Append the alert to the container
+        document.getElementById('alert-container').appendChild(alertDiv);
+
+        // Automatically fade out the alert after 5 seconds
+        setTimeout(() => {
+            $(alertDiv).alert('close');
+        },10000);
+    }
+
+    // If more than 10 seconds have passed since the pause time
+    if (elapsedTime >= 10) {
+        showAlert();
+        localStorage.removeItem('pauseTimestamp'); // Clear the timestamp after showing the alert
+    } else {
+        // Set a timeout for the remaining time until the alert should show
+        setTimeout(function() {
+            showAlert();
+            localStorage.removeItem('pauseTimestamp'); // Clear the timestamp after showing the alert
+        }, (10 - elapsedTime) * 1000); // Remaining time in milliseconds
+    }
+}
+
     });
 </script>
 
