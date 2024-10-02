@@ -176,6 +176,7 @@
     });
 });
 
+
 $(document).ready(function() {
     // Suppress DataTables warnings
     $.fn.dataTable.ext.errMode = 'none';
