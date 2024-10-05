@@ -58,7 +58,7 @@
     width: 100%;
     height: 100%;
     min-height: 100vh;
-    padding-left: 280px;
+    padding-left: 220px;
     -webkit-transition: padding-left 0.3s ease 0s;
     transition: padding-left 0.3s ease 0s;
 }
@@ -90,9 +90,8 @@
 
 .main-content {
     width: 100%;
-    background: #24294a;
-    background: -webkit-radial-gradient(circle, #24294a 0%, #102953 100%);
-    background: radial-gradient(circle, #24294a 0%, #102953 100%);
+    background: #EFEFEF;
+    
 }
 
 .main-content-inner {
@@ -110,9 +109,9 @@
     top: 0;
     z-index: 99;
     height: 100vh;
-    width: 280px;
+    width: 220px;
     overflow: hidden;
-    background: #303641;
+    background: #24294A;
     box-shadow: 2px 0 32px rgba(0, 0, 0, 0.05);
     -webkit-transition: all 0.3s ease 0s;
     transition: all 0.3s ease 0s;
@@ -142,8 +141,8 @@
 
 .sidebar-header {
     padding: 19px 32px 20px;
-    background: #303641;
-    border-bottom: 1px solid #343e50;
+    background: #24294A;
+    border-bottom: 1px solid #24294A;
 }
 .sidebar-menu .logo{
     text-align: center;
@@ -159,7 +158,7 @@
 .metismenu li a {
     position: relative;
     display: block;
-    color: #8b8b8b;
+    color: #f8f8f8;
     font-size: 15px;
     text-transform: capitalize;
     padding: 15px 15px;
@@ -168,7 +167,7 @@
 }
 
 .metismenu li a i {
-    color: #8b8b8b;
+    color: #fafafa;
     -webkit-transition: all 0.3s ease 0s;
     transition: all 0.3s ease 0s;
 }
@@ -211,8 +210,8 @@
 .metismenu >li:hover>a,
 .metismenu >li.active>a {
     color: #fff;
-    background: #343942;
-    font-size: 16px;
+    background: #636eb1;
+    border-radius: 0 5px 5px 0px;
 }
 
 .metismenu li:hover>a,
@@ -405,7 +404,7 @@ background: radial-gradient(circle, #24294a 0%, #102953 100%);
 
 .header-area {
     padding: 15px 30px;
-    background: rgb(16,41,83);
+    background: #ffffff;
     border-bottom: 1px solid #d8e3e7;
 }
 
@@ -658,9 +657,7 @@ background: radial-gradient(circle, #24294a 0%, #102953 100%);
 
 .page-title-area {
     padding: 0 30px;
-    background: #343980;
-    background: -webkit-linear-gradient(290deg, #343980 0%, #265bb6 100%);
-    background: linear-gradient(290deg, #343980 0%, #265bb6 100%);
+    background: #ffffff;
     position: relative;
 }
 
@@ -669,9 +666,9 @@ background: radial-gradient(circle, #24294a 0%, #102953 100%);
     position: absolute;
     left: 0;
     top: 50%;
-    width: 4px;
+    width: 6px;
     height: 36px;
-    background: var(--primary-color);
+    background: #24294A;
     -webkit-transform: translateY(-50%);
             transform: translateY(-50%);
 }
@@ -679,7 +676,7 @@ background: radial-gradient(circle, #24294a 0%, #102953 100%);
 .page-title {
     font-size: 24px;
     font-weight: 300;
-    color: #f5f5f5;
+    color: #1d1d1d;
     letter-spacing: 0;
     margin-right: 30px;
 }
@@ -697,7 +694,7 @@ ul.breadcrumbs {
     display: block;
     font-size: 14px;
     font-weight: 400;
-    color: #7801ff;
+    color: #24294A;
     letter-spacing: 0;
     margin-right: 16px;
     position: relative;
@@ -741,7 +738,7 @@ ul.breadcrumbs {
 .user-name {
     font-size: 17px;
     font-weight: 500;
-    color: #fff;
+    color: #1d1d1d;
     letter-spacing: 0;
     cursor: pointer;
     -webkit-user-select: none;
@@ -1193,6 +1190,7 @@ table.dbkit-table tr td {
     text-align: center;
     padding: 23px 0 19px;
     background: #fff;
+
 }
 
 .footer-area p {
