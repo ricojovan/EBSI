@@ -110,7 +110,7 @@ if (isset($_POST['resume_time'])) {
                                             <div class="btn-group">
                                                 <form method="post" role="form" action="">
                                                     <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
-                                                    <button type="submit" name="add_punch_in" class="btn btn-primary btn-lg rounded mb-3">Time In</button>
+                                                    <button type="submit" name="add_punch_in" class="btn btn-default table-bg-default btn-lg rounded mb-3">Time In</button>
                                                 </form>
                                             </div>
                                             <?php } ?>
@@ -119,8 +119,8 @@ if (isset($_POST['resume_time'])) {
                                 </div>
 
                                 <div class="table-responsive">
-                                    <table id="group-d" class="table table-codensed table-custom table-hover">
-                                        <thead class="text-uppercase bg-primary text-white">
+                                    <table id="group-d" class="table table-custom table-hover">
+                                        <thead class="text-uppercase table-bg-default text-white">
                                             <tr>
                                                 <th>S.N.</th>
                                                 <th>Name</th>
@@ -219,6 +219,7 @@ if (isset($_POST['resume_time'])) {
                                                 <td>
                                                     
                                                     <button type="button" class="btn btn-danger btn-xs rounded" data-toggle="modal" data-target="#delete-modal"><i class="fa fa-trash-o"></i></button>
+                                                    
 
                                                     <div class="modal fade" id="delete-modal">
                                                             <div class="modal-dialog modal-dialog-centered" role="document">

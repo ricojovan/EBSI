@@ -36,17 +36,16 @@ if (isset($_POST['add_new_employee'])) {
                         <div class="btn-group">
                             <button class="btn btn-primary-custom btn-menu" data-toggle="modal" data-target="#myModal">Add New Employee</button>
                         </div>
-                        <center><h3>Manage Employee</h3></center>
                         <div class="gap"></div>
                         <div class="gap"></div>
                         <ul class="nav nav-tabs nav-justified nav-tabs-custom">
-                            <li><a href="../Manage-Admin/manage-admin.php" class="btn btn-primary btn-xs mb-3 mr-4 mt-3">Manage Admin</a></li>
-                            <li class="active"><a href="../Manage-Admin/manage-user.php" class="btn btn-outline-primary btn-xs mb-3 mt-3 disabled-link">Manage Employee</a></li>
+                            <li><a href="../Manage-Admin/manage-admin.php" class="btn btn-default mb-3 mr-4 mt-3">Manage Admin</a></li>
+                            <li class="active"><a href="../Manage-Admin/manage-user.php" class="btn btn-outline-secondary mb-3 mt-3 disabled-link">Manage Employee</a></li>
                         </ul>
 
                         <div class="table-responsive">
-                            <table id="group-b" class="table table-condensed table-custom table-hover">
-                                <thead class="text-uppercase bg-primary text-white">
+                            <table id="group-b" class="table table-custom table-hover">
+                                <thead class="text-uppercase table-bg-default text-white">
                                     <tr>
                                         <th>Serial No.</th>
                                         <th>Fullname</th>

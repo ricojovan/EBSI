@@ -44,8 +44,8 @@ $row = $info->fetch(PDO::FETCH_ASSOC);
                         <div class="col-md-12">
                             <div class="well well-custom">
                                 <ul class="nav nav-tabs nav-justified nav-tabs-custom">
-                                    <li><a href="../Manage-Admin/manage-admin.php" class="btn btn-primary btn-xs mb-3 mr-4">Manage Admin</a></li>
-                                    <li><a href="../Manage-Admin/manage-user.php" class="btn btn-primary btn-xs mb-3">Manage Employee</a></li>
+                                    <li><a href="../Manage-Admin/manage-admin.php" class="btn btn-default mb-3 mr-4">Manage Admin</a></li>
+                                    <li><a href="../Manage-Admin/manage-user.php" class="btn btn-default mb-3">Manage Employee</a></li>
                                 </ul>
 
                                 <div class="row">
@@ -78,7 +78,7 @@ $row = $info->fetch(PDO::FETCH_ASSOC);
                                                 </div>
                                             </form> 
                                             <div class="col-md-5 offset-md-2">
-                                                <a href="../Manage-Employee/password-change.php?admin_id=<?php echo $row['user_id'];?>">Change Password</a>
+                                                <a href="../Manage-Admin/admin-password-change.php?admin_id=<?php echo $row['user_id'];?>">Change Password</a>
                                             </div>
                                         </div>
                                     </div>

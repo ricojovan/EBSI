@@ -164,6 +164,7 @@
     padding: 15px 15px;
     letter-spacing: 0;
     font-weight: 400;
+    margin-bottom: 3px;
 }
 
 .metismenu li a i {
@@ -1833,6 +1834,15 @@ table.dbkit-table tr td {
     border-radius: 50px;
 }
 
+.btn-default {
+    background-color:#363E74;
+    color: white;
+}
+.btn-default:hover{
+    background-color:#8F9CF1;
+    color: white;
+}
+
 /*-------------------- END Button ------------------- */
 
 /*-------------------- 12. Cards ------------------- */
@@ -2160,6 +2170,10 @@ table.dataTable thead td {
     color: #9f98f7;
     background-color: #f9f9f9;
     border-color: #c9c6f5;
+}
+
+.table-bg-default {
+    background-color: #5A68C3;
 }
 
 

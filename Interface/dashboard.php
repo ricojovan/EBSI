@@ -91,65 +91,133 @@ try {
     <body>
         
         <!-- page title area end -->
-        <div class="main-content-inner">
-            <div class="container">
-                <div class="row">
-                    <!-- seo fact area start -->
-                    <div class="col-lg-8">
-                        <div class="row">
-                            <div class="col-md-6 mt-5 mb-3">
-                                <div class="card">
-                                    <div class="seo-fact sbg1">
-                                        <div class="p-4 d-flex justify-content-between align-items-center">
-                                            <div class="seofct-icon"><i class="fa fa-user"></i> Employees</div>
-                                            <h2><?php echo $employeeCount; ?></h2>
-                                        </div>
-                                        <canvas id="seolinechart1" height="50"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-md-5 mb-3">
-                                <div class="card">
-                                    <div class="seo-fact sbg2">
-                                        <div class="p-4 d-flex justify-content-between align-items-center">
-                                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> In Progress Task</div>
-                                            <h2><?php echo $inProgressCount; ?></h2>
-                                        </div>
-                                        <canvas id="seolinechart2" height="50"></canvas>
-                                    </div>
-                                </div>
-                            </div>
+        
+                                    
 
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="seo-fact sbg4">
-                                        <div class="p-4 d-flex justify-content-between align-items-center">
-                                            <div class="seofct-icon">Incomplete</div>
-                                            <h2><?php echo $incompleteCount; ?></h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+<div class="main-content-inner">
+    <div class="container-fluid">
+        <div class="row justify-content-start"> 
+            <!-- seo fact area start -->
+            <div class="col-lg-4 col-md-6 mt-3 mb-3">
+                <div class="card">
+                    <div class="seo-fact sbg1">
+                        <div class="p-4 d-flex justify-content-between align-items-center">
+                            <div class="seofct-icon"><i class="fa fa-user"></i> Employees</div>
+                            <h2><?php echo $employeeCount; ?></h2>
                         </div>
+                        <canvas id="seolinechart1" height="50"></canvas>
                     </div>
-                    <!-- seo fact area end -->
-                     <!-- Map Area -->
-                <div class="col-lg-4 mt-5">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h4 class="header-title">Marketing Area</h4>
-                            <div id="seomap"></div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mt-3 mb-3">
+                <div class="card">
+                    <div class="seo-fact sbg2">
+                        <div class="p-4 d-flex justify-content-between align-items-center">
+                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> In Progress Task</div>
+                            <h2><?php echo $inProgressCount; ?></h2>
+                        </div>
+                        <canvas id="seolinechart2" height="50"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mt-3 mb-3">
+                <div class="card">
+                    <div class="seo-fact sbg3">
+                        <div class="p-4 d-flex justify-content-between align-items-center">
+                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> Incomplete</div>
+                            <h2><?php echo $incompleteCount; ?></h2>
+                        </div>
+                        <canvas id="seolinechart2" height="50"></canvas>
+                    </div>
+                </div>
+            </div>    
+            <!-- seo fact area end -->
+            <div class="col-12 mt-2">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="table-responsive">
+                                <table id="group-d" class="table table-condensed table-custom table-hover">
+                                    <thead class="text-uppercase table-bg-default text-white">
+                                        <tr>
+                                            <th>S.N.</th>
+                                            <th>Name</th>
+                                            <th>In Time</th>
+                                            <th>Out Time</th>
+                                            <th>Total Duration</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                        if ($user_role == 1) {
+                                            $sql = "SELECT a.*, b.fullname 
+                                                    FROM attendance_info a
+                                                    LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id)
+                                                    ORDER BY a.aten_id DESC";
+                                        } else {
+                                            $sql = "SELECT a.*, b.fullname 
+                                                    FROM attendance_info a
+                                                    LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id)
+                                                    WHERE atn_user_id = $user_id
+                                                    ORDER BY a.aten_id DESC";
+                                        }
+                                    
+                                        $info = $obj_admin->manage_all_info($sql);
+                                        $serial = 1;
+                                        $num_row = $info->rowCount();
+                                    
+                                        if ($num_row == 0) {
+                                            echo '<tr><td colspan="7">No Data found</td></tr>';
+                                        }
+                                    
+                                        while ($row = $info->fetch(PDO::FETCH_ASSOC)) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $serial; $serial++; ?></td>
+                                            <td><?php echo $row['fullname']; ?></td>
+                                            <td><?php echo $row['in_time']; ?></td>
+                                            <td><?php echo $row['out_time']; ?></td>
+                                            <td>
+                                                <?php
+                                                if ($row['total_duration'] == null) {
+                                                    $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+                                                    $current_time = $date->format('d-m-Y H:i:s');
+                                                
+                                                    $dteStart = new DateTime($row['in_time']);
+                                                    $dteEnd = new DateTime($current_time);
+                                                    $dteDiff = $dteStart->diff($dteEnd);
+                                                    echo $dteDiff->format("%H:%I:%S");
+                                                } else {
+                                                    echo $row['total_duration'];
+                                                }
+                                                ?>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Main content end -->
-                </div>
-            </div>
-        </div>
+</div>
+
+           
+        
+    
+
+
+
+
+   <!-- Main content end -->
+</div>
+
+
         <!-- main content area end -->
         <?php include '../nav-and-footer/footer-area.php';?>  
-</body>
-</html>
+

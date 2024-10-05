@@ -30,17 +30,13 @@ if ($user_role != 1) {
                         <div class="col-md-12">
                             <div class="well well-custom">
                                 <ul class="nav nav-pills">
-                                    <li class="active"><a href="manage-admin.php" class="btn btn-outline-primary btn-xs mb-3 mr-4 disabled-link" disabled>Manage Admin</a></li>
-                                    <li><a href="../Manage-Admin/manage-user.php" class="btn btn-primary btn-xs mb-3">Manage Employee</a></li>
+                                    <li class="active"><a href="manage-admin.php" class="btn btn-outline-secondary mb-3 mr-4 disabled-link" disabled>Manage Admin</a></li>
+                                    <li><a href="../Manage-Admin/manage-user.php" class="btn btn-default mb-3">Manage Employee</a></li>
                                 </ul>
-
-                                <center>
-                                    <h3>Manage Admin</h3>
-                                </center>
                                 <div class="gap"></div>
                                 <div class="table-responsive">
                                     <table id="group-a" class="table table-codensed table-custom table-hover">
-                                        <thead class="text-uppercase bg-primary text-white">
+                                        <thead class="text-uppercase table-bg-default text-white">
                                             <tr>
                                                 <th>Serial No.</th>
                                                 <th>Name</th>
@@ -66,7 +62,7 @@ if ($user_role != 1) {
                                                     <td><?php echo $row['email']; ?></td>
                                                     <td><?php echo $row['username']; ?></td>
 
-                                                    <td><a title="Update Admin" href="update-admin.php?admin_id=<?php echo $row['user_id']; ?>"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;</td>
+                                                    <td><a title="Update Admin" href="../Manage-Admin/update.php?admin_id=<?php echo $row['user_id']; ?>"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;</td>
                                                 </tr>
 
                                             <?php  } ?>
