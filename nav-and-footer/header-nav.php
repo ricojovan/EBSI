@@ -106,14 +106,22 @@ $user_role = $_SESSION['user_role'];
                                     <li <?php if($page_name == "Payroll" ){echo "class=\"active\"";} ?>>
                                         <a href="../Manage-Payroll/payroll.php"><i class='fa fa-history'></i><span>Payroll</span></a>
                                     </li>
-                                    <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>>
-                                        <a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>  Attendance </a>
-                                    </li>
-                                    <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>>
-                                        <a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i>  Administration</span></a>
+                                    <li>
+                                        <a href="javascript:void(0)" aria-expanded="true"><i class="fa fa-clock-o"></i><span>Time Keeping</span></a>
+                                            <ul class="collapse metismenu" id="menu">
+                                                
+                                                <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"></i><span>Attendance</span></a></li>
+                                                <li><a href="#"></i><span>Leave Report</span></a></li>
+                                                <li><a href="#"></i><span>OT Report</span></a></li>
+                                                <li><a href="#"></i><span>Scheduling</span></a></li>
+                                                
+                                            </ul>
                                     </li>
                                     <li <?php if($page_name == "Attendance Report" ){echo "class=\"active\"";} ?>>
-                                        <a href="../Manage-Attendance/report.php"><i class="fa fa-envelope-o"></i>  Attendance Report</a>
+                                        <a href="../Manage-Attendance/report.php"><i class="fa fa-envelope-o"></i>&nbsp;Attendance Report</a>
+                                    </li>
+                                    <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>>
+                                        <a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i><span>Administration</span></a>
                                     </li>
                         </ul>
                         <?php 
