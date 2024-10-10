@@ -45,13 +45,13 @@ if(isset($_POST['add_task_post'])){
 
                     <div class="row">
                         <!-- Start Date -->
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="start_date">Start Date:</label>
                             <input type="date" id="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
                         </div>
 
                         <!-- End Date -->
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="end_date">End Date:</label>
                             <input type="date" id="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d') ?>" class="form-control rounded-0">
                         </div>
@@ -72,7 +72,7 @@ if(isset($_POST['add_task_post'])){
                     <!-- Table for Attendance Data -->
                     <div class="table-responsive" id="printout">
                         <table id="attendance-report" class="table table-condensed table-custom table-hover">
-                            <thead class="text-uppercase bg-primary text-white">
+                            <thead class="text-uppercase table-bg-default text-white">
                                 <tr>
                                     <th>S.N.</th>
                                     <th>Name</th>

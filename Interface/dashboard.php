@@ -114,7 +114,7 @@ try {
                 <div class="card">
                     <div class="seo-fact sbg2">
                         <div class="p-4 d-flex justify-content-between align-items-center">
-                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> In Progress Task</div>
+                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> Time in</div>
                             <h2><?php echo $inProgressCount; ?></h2>
                         </div>
                         <canvas id="seolinechart2" height="50"></canvas>
@@ -126,7 +126,7 @@ try {
                 <div class="card">
                     <div class="seo-fact sbg3">
                         <div class="p-4 d-flex justify-content-between align-items-center">
-                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> Incomplete</div>
+                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> **********</div>
                             <h2><?php echo $incompleteCount; ?></h2>
                         </div>
                         <canvas id="seolinechart2" height="50"></canvas>

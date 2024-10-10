@@ -201,6 +201,6 @@ $user_role = $_SESSION['user_role'];
 <div class="col-12 d-block d-lg-none">
 <div id="mobile_menu"></div>
 </div>   
- 
+<div id="alert-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"></div>
 </body>
 </html>
