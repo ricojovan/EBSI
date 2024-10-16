@@ -52,10 +52,57 @@ if (isset($_POST['add_punch_in'])) {
 }
 
 
-
 if (isset($_POST['add_punch_out'])) {
-    $obj_admin->add_punch_out($_POST);
+    $punch_out_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
+    $out_time = $punch_out_time->format('Y-m-d H:i:s');
+    
+    // Get the punch-in time from the database
+    $aten_id = $_POST['aten_id'];
+    $sql = "SELECT in_time, total_duration FROM attendance_info WHERE aten_id = :aten_id";
+    $stmt = $obj_admin->db->prepare($sql);
+    $stmt->execute(['aten_id' => $aten_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $punch_in_time = new DateTime($row['in_time']);
+    $existing_duration = !empty($row['total_duration']) ? $row['total_duration'] : '00:00:00';
+    
+    // Calculate duration between punch-in and punch-out
+    $total_duration = $punch_in_time->diff($punch_out_time);
+
+    // If there is an existing duration (from the active "Time In" session), add it
+    if (!empty($existing_duration)) {
+        // Convert existing duration to seconds
+        $existing_parts = explode(':', $existing_duration);
+        $existing_seconds = ($existing_parts[0] * 3600) + ($existing_parts[1] * 60) + $existing_parts[2];
+        
+        // Add the new time span to the existing duration
+        $new_duration_seconds = ($total_duration->h * 3600) + ($total_duration->i * 60) + $total_duration->s;
+        $final_duration_seconds = $existing_seconds + $new_duration_seconds;
+
+        // Convert total duration back to hours, minutes, seconds
+        $hours = floor($final_duration_seconds / 3600);
+        $minutes = floor(($final_duration_seconds % 3600) / 60);
+        $seconds = $final_duration_seconds % 60;
+
+        $formatted_duration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+    } else {
+        // No existing duration, use the new calculation
+        $formatted_duration = $total_duration->format('%H:%I:%S');
+    }
+
+    // Update attendance info with punch-out time and total duration
+    $sql_update = "UPDATE attendance_info SET out_time = :out_time, total_duration = :total_duration WHERE aten_id = :aten_id";
+    $stmt_update = $obj_admin->db->prepare($sql_update);
+    $stmt_update->execute([
+        'out_time' => $out_time,
+        'total_duration' => $formatted_duration,
+        'aten_id' => $aten_id
+    ]);
+
+    header('Location: ../Manage-Attendance/attendance.php');
 }
+
+
 
 if (isset($_POST['pause_time'])) {
     $obj_admin->pause_time($_POST);
@@ -160,22 +207,90 @@ if (isset($_POST['resume_time'])) {
                                             <tr>
                                                 <td><?php echo $serial; $serial++; ?></td>
                                                 <td><?php echo $row['fullname']; ?></td>
-                                                <td><?php echo $row['in_time']; ?></td>
+                                                <td>
+                                                <?php
+                                                    // Extract the time component from the 'in_time'
+                                                    $in_time = new DateTime($row['in_time']);
+                                                    $time_only = $in_time->format('H:i');
+
+                                                    // Compare the time with 8:10 AM and apply red color if late
+                                                    if ($time_only > '08:10') {
+                                                        echo "<span style='color: red;'>{$row['in_time']}</span>";
+                                                    } else {
+                                                        echo $row['in_time'];
+                                                    }
+                                                    ?>
+                                                </td>
                                                 <td><?php echo $row['out_time']; ?></td>
                                                 <td>
-                                                    <?php
-                                                    if ($row['total_duration'] == null) {
-                                                        $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
-                                                        $current_time = $date->format('d-m-Y H:i:s');
+                                                <?php
+                                                    // Get the current time
+                                                    $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
+                                                    $current_time_formatted = $current_time->format('H:i');
 
+                                                    // If it's past 5 PM and there's no punch out, set it to 5 PM
+                                                    if ($current_time_formatted > '17:00' && empty($row['out_time'])) {
+                                                        $out_time = new DateTime($row['in_time']);
+                                                        $out_time->setTime(17, 0); // Set time to 5:00 PM
+
+                                                        // Update out_time in the database
+                                                        $sql_auto_timeout = "UPDATE attendance_info SET out_time = :out_time WHERE aten_id = :aten_id";
+                                                        $stmt_auto_timeout = $obj_admin->db->prepare($sql_auto_timeout);
+                                                        $stmt_auto_timeout->execute([
+                                                            'out_time' => $out_time->format('Y-m-d H:i:s'),
+                                                            'aten_id' => $row['aten_id']
+                                                        ]);
+                                                    }
+
+                                                    if ($row['total_duration'] == null) {
+                                                        // Get the current time
+                                                        $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+                                                        $current_time = $date->format('Y-m-d H:i:s');
+
+                                                        // Get punch in and current time
                                                         $dteStart = new DateTime($row['in_time']);
                                                         $dteEnd = new DateTime($current_time);
+
+                                                        // Calculate total duration between punch in and current time
                                                         $dteDiff = $dteStart->diff($dteEnd);
-                                                        echo $dteDiff->format("%H:%I:%S");
+
+                                                        // Convert the difference to seconds
+                                                        $totalDurationInSeconds = ($dteDiff->h * 3600) + ($dteDiff->i * 60) + $dteDiff->s;
+
+                                                        // Check if the time period spans across the break time (12 PM - 1 PM)
+                                                        $inTimeHour = (int)$dteStart->format('H');
+                                                        $outTimeHour = (int)$dteEnd->format('H');
+
+                                                        // Subtract 1 hour if the time spans 12 PM - 1 PM
+                                                        $breakTimeToSubtract = 0;
+                                                        if ($inTimeHour <= 12 && $outTimeHour >= 13) {
+                                                            $breakTimeToSubtract = 1; // Subtract 1 hour for the break time
+                                                        }
+
+                                                        // Adjust total duration by subtracting break time
+                                                        $totalDurationInSeconds -= ($breakTimeToSubtract * 3600);
+
+                                                        // Handling pause duration if any
+                                                        if (!empty($row['pause_duration'])) {
+                                                            $pauseDurationInSeconds = strtotime($row['pause_duration']) - strtotime('TODAY');
+                                                            $totalDurationInSeconds -= $pauseDurationInSeconds; // Subtract the pause time
+                                                        }
+
+                                                        // Convert total duration back to hours, minutes, seconds
+                                                        $hours = floor($totalDurationInSeconds / 3600);
+                                                        $minutes = floor(($totalDurationInSeconds % 3600) / 60);
+                                                        $seconds = $totalDurationInSeconds % 60;
+
+                                                        // Format the total duration
+                                                        $totalDurationFormatted = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+
+                                                        // Output the total duration
+                                                        echo $totalDurationFormatted;
                                                     } else {
                                                         echo $row['total_duration'];
                                                     }
-                                                    ?>
+                                                ?>
+
                                                 </td>
                                                 <?php if ($row['out_time'] == null) { ?>
                                                 <td>
@@ -184,7 +299,7 @@ if (isset($_POST['resume_time'])) {
                                                         <input type="hidden" name="aten_id" value="<?php echo $row['aten_id']; ?>">
 
                                                         <?php if ($row['pause_time'] == null) { ?>
-                                                        <button type="submit" name="pause_time" class="btn btn-warning btn-xs rounded">Pause Time</button>
+                                                        
                                                         <button type="button" class="btn btn-danger btn-xs rounded" data-toggle="modal" data-target="#exampleModalCenter">Time Out</button>
                                                         
                                                         <div class="modal fade" id="exampleModalCenter">
