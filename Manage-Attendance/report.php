@@ -154,9 +154,10 @@ if(isset($_POST['add_task_post'])){
         </div>
     </div>
 </div>
+</div>
 <!-- Bootstrap Grid end -->
 
-<?php include("../etms/include/footer.php"); ?>
+
 <?php include("../nav-and-footer/footer-area.php"); ?>
 
 <!-- JavaScript for PDF and CSV generation and search filters -->

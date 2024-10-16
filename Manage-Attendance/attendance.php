@@ -136,7 +136,7 @@ if (isset($_POST['resume_time'])) {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <!-- Bootstrap Grid Start -->
-<div class="col-12 mt-5">
+<div class="col-12 mt-3 mb-3">
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -370,10 +370,10 @@ if (isset($_POST['resume_time'])) {
         </div>
     </div>
 </div>
+
 <!-- Bootstrap Grid End -->
 <div id="alert-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"></div>
 <?php
-include("../etms/include/footer.php");
 include("../nav-and-footer/footer-area.php");
 ?>
 
