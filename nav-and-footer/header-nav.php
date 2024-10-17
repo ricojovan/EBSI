@@ -54,6 +54,21 @@ $user_role = $_SESSION['user_role'];
     <!-- Modernizr (for legacy browser support) -->
     <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
 
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Popper.js (for dropdowns) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+    
+    
     <!-- Confirmation Function (can stay here if it's small) -->
     <script type="text/javascript">
         function check_delete() {

@@ -54,6 +54,7 @@
 <script src="../assets/js/maps.js"></script>
 <script src="../assets/js/plugins.js"></script>
 <script src="../assets/js/scripts.js"></script>
+<script src="..assets/js/popper.min.js"></script>
 
 <!-- Datepicker JS -->
 <script src="../etms/assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
