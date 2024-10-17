@@ -21,57 +21,47 @@ $user_role = $_SESSION['user_role'];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="../assets/images/icon/palinis-po-icon.png" type="image/png">
     <link rel="shortcut icon" type="image/png" href="../assets/images/icon/favicon.ico">
+    
+    <!-- Bootstrap and core CSS -->
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/font-awesome.min.css">
     <link rel="stylesheet" href="../assets/css/themify-icons.css">
     <link rel="stylesheet" href="../assets/css/metisMenu.css">
     <link rel="stylesheet" href="../assets/css/owl.carousel.min.css">
     <link rel="stylesheet" href="../assets/css/slicknav.min.css">
-    <!-- amchart css -->
-    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
-    <!-- others css -->
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/typography.css">
     <link rel="stylesheet" href="../assets/css/default-css.css">
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/responsive.css">
-    <!-- modernizr css -->
+
+    <!-- Datepicker and FullCalendar -->
+    <link rel="stylesheet" href="../etms/assets/bootstrap-datepicker/css/datepicker.css">
+    <link rel="stylesheet" href="../etms/assets/bootstrap-datepicker/css/datepicker-custom.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/main.min.css' rel='stylesheet' />
+
+    <!-- Amcharts CSS -->
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
+
+    <!-- Modernizr (for legacy browser support) -->
     <script src="../assets/js/vendor/modernizr-2.8.3.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <!--datatable bootstrap 5-->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" />
 
-    <!-- Start datatable css -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.jqueryui.min.css">
-
-
-    <link rel="stylesheet" href="../etms//assets/bootstrap-datepicker/css/datepicker.css">
-    <link rel="stylesheet" href="./etms//assets/bootstrap-datepicker/css/datepicker-custom.css">
-
-    
-    
-    <script src="../etms//assets/js/custom.js"></script>
-    <script src="../etms//assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-    <script src="../etms//assets/bootstrap-datepicker/js/datepicker-custom.js"></script>
-
+    <!-- Confirmation Function (can stay here if it's small) -->
     <script type="text/javascript">
-    
-    /* delete function confirmation  */
-    function check_delete() {
-      var check = confirm('Are you sure you want to delete this?');
-        if (check) {
-         
-            return true;
-        } else {
-            return false;
-      }
-    }
-  </script>
-
+        function check_delete() {
+            return confirm('Are you sure you want to delete this?');
+        }
+    </script>
 </head>
+
 <body class="body-bg">       
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>

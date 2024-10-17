@@ -17,44 +17,50 @@
         </footer>
         <!-- footer area end-->
     </div>
-    <!-- jquery latest version -->
-    <script src="../assets/js/vendor/jquery-2.2.4.min.js"></script>
-    <!-- bootstrap 4 js -->
-    <script src="../assets/js/popper.min.js"></script>
-    
-    <script src="../assets/js/owl.carousel.min.js"></script>
-    <script src="../assets/js/metisMenu.min.js"></script>
-    <script src="../assets/js/jquery.slimscroll.min.js"></script>
-    <script src="../assets/js/jquery.slicknav.min.js"></script>
+    <!-- JQuery and Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!-- start highcharts js -->
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <!-- start amcharts -->
-    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
-    <script src="https://www.amcharts.com/lib/3/ammap.js"></script>
-    <script src="https://www.amcharts.com/lib/3/maps/js/worldLow.js"></script>
-    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
-    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
-    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
-    <!-- all line chart activation -->
-    <script src="../assets/js/line-chart.js"></script>
-    <!-- all pie chart -->
-    <script src="../assets/js/pie-chart.js"></script>
-    <!-- all bar chart -->
-    <script src="../assets/js/bar-chart.js"></script>
-    <!-- all map chart -->
-    <script src="../assets/js/maps.js"></script>
-    <!-- others plugins -->
-    <script src="../assets/js/plugins.js"></script>
-    <script src="../assets/js/scripts.js"></script>
-     <!-- datatable -->
-    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<!-- Bootstrap, Owl Carousel, SlickNav, and MetisMenu -->
+<script src="../assets/js/vendor/jquery-2.2.4.min.js"></script>
+<script src="../assets/js/popper.min.js"></script>
+<script src="../assets/js/owl.carousel.min.js"></script>
+<script src="../assets/js/metisMenu.min.js"></script>
+<script src="../assets/js/jquery.slimscroll.min.js"></script>
+<script src="../assets/js/jquery.slicknav.min.js"></script>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.7/main.min.js'></script>
+
+<!-- Highcharts -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+<!-- Amcharts -->
+<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+<script src="https://www.amcharts.com/lib/3/ammap.js"></script>
+<script src="https://www.amcharts.com/lib/3/maps/js/worldLow.js"></script>
+<script src="https://www.amcharts.com/lib/3/serial.js"></script>
+<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+<!-- Custom JS -->
+<script src="../assets/js/line-chart.js"></script>
+<script src="../assets/js/pie-chart.js"></script>
+<script src="../assets/js/bar-chart.js"></script>
+<script src="../assets/js/maps.js"></script>
+<script src="../assets/js/plugins.js"></script>
+<script src="../assets/js/scripts.js"></script>
+
+<!-- Datepicker JS -->
+<script src="../etms/assets/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script src="../etms/assets/bootstrap-datepicker/js/datepicker-custom.js"></script>
+
+
+
 
     <script>
         $(document).ready(function() {
