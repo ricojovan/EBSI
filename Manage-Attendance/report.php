@@ -109,11 +109,19 @@ if(isset($_POST['add_task_post'])){
                                     echo '<tr><td colspan="5">No Data found</td></tr>';
                                 }
                                 while( $row = $info->fetch(PDO::FETCH_ASSOC) ){
+                                    // Convert In Time to DateTime object for comparison
+                                    $in_time = new DateTime($row['in_time']);
+                                    $threshold_time = new DateTime($in_time->format('Y-m-d') . ' 08:10:00');
+                                    
+                                    // Set the color based on whether in_time is past 8:10 AM
+                                    $font_color = ($in_time > $threshold_time) ? 'red' : 'black';
                                 ?>
                                 <tr>
                                     <td><?php echo $serial; ?></td>
                                     <td><?php echo $row['fullname']; ?></td>
-                                    <td><?php echo $row['in_time']; ?></td>
+                                    <td style="color: <?php echo $font_color; ?>;">
+                                        <?php echo $in_time->format('m-d-Y H:i:s'); ?>
+                                    </td>
                                     <td><?php echo $row['out_time']; ?></td>
                                     <td><?php
                                         if($row['total_duration'] == null){
@@ -161,7 +169,9 @@ if(isset($_POST['add_task_post'])){
 <?php include("../nav-and-footer/footer-area.php"); ?>
 
 <!-- JavaScript for PDF and CSV generation and search filters -->
+
 <script>
+
 // Handle PDF generation
 document.getElementById('pdf').addEventListener('click', function () {
     var start_date = "<?= date('F d, Y', strtotime($start_date)) ?>"; 
@@ -188,8 +198,25 @@ document.getElementById('pdf').addEventListener('click', function () {
     // Get table rows
     table.querySelectorAll("tbody tr").forEach(function (row) {
         var rowData = [];
-        row.querySelectorAll("td").forEach(function (cell) {
-            rowData.push(cell.innerText);
+        row.querySelectorAll("td").forEach(function (cell, index) {
+            var cellText = cell.innerText;
+
+            // Check if it is the "In Time" column (assuming column index 2)
+            if (index === 2) {
+                var inTime = new Date(cellText);
+                var thresholdTime = new Date(inTime);
+                thresholdTime.setHours(8, 10, 0); // Set the threshold to 08:10 AM
+
+                // If In Time is after 08:10 AM, mark it as red
+                if (inTime > thresholdTime) {
+                    cellText = 'LATE: ' + cellText; // Indicate lateness
+                    rowData.push({ content: cellText, styles: { textColor: 'red' } }); // Red font color
+                } else {
+                    rowData.push(cellText);
+                }
+            } else {
+                rowData.push(cellText);
+            }
         });
         rows.push(rowData);
     });
@@ -217,6 +244,7 @@ document.getElementById('pdf').addEventListener('click', function () {
     // Save the generated PDF
     pdf.save('attendance_report.pdf');
 });
+
 
 // Handle search filters for Name, Start Date, End Date
 const inputs = ['start_date', 'end_date', 'search_name'];
@@ -246,11 +274,29 @@ document.getElementById('csv').addEventListener('click', function () {
     // Get table rows
     table.querySelectorAll("tbody tr").forEach(function (row) {
         var rowData = [];
-        row.querySelectorAll("td").forEach(function (cell) {
-            rowData.push(cell.innerText);
+        row.querySelectorAll("td").forEach(function (cell, index) {
+            var cellText = cell.innerText;
+
+            // Check if it is the "In Time" column (assuming column index 2)
+            if (index === 2) {
+                var inTime = new Date(cellText);
+                var thresholdTime = new Date(inTime);
+                thresholdTime.setHours(8, 10, 0); // Set the threshold to 08:10 AM
+
+                // If In Time is after 08:10 AM, mark it as "LATE"
+                if (inTime > thresholdTime) {
+                    cellText = 'LATE: ' + cellText; // Indicate lateness
+                }
+            }
+
+            rowData.push(cellText);
         });
         csvContent += rowData.join(",") + "\n";
     });
+
+    // Append total duration at the end of the CSV
+    var total_hours = '<?= $total_hours_formatted ?>';
+    csvContent += "\nTotal Hours," + total_hours + "\n";
 
     // Download the CSV file
     var csvBlob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -261,5 +307,6 @@ document.getElementById('csv').addEventListener('click', function () {
     hiddenElement.download = "attendance_report.csv";
     hiddenElement.click();
 });
+
 
 </script>
