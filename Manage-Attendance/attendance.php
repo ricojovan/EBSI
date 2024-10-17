@@ -53,44 +53,37 @@ if (isset($_POST['add_punch_in'])) {
 
 
 if (isset($_POST['add_punch_out'])) {
+    // Get the current punch-out time
     $punch_out_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
     $out_time = $punch_out_time->format('Y-m-d H:i:s');
-    
-    // Get the punch-in time from the database
+
+    // Fetch the punch-in time from the database
     $aten_id = $_POST['aten_id'];
-    $sql = "SELECT in_time, total_duration FROM attendance_info WHERE aten_id = :aten_id";
+    $sql = "SELECT in_time FROM attendance_info WHERE aten_id = :aten_id";
     $stmt = $obj_admin->db->prepare($sql);
     $stmt->execute(['aten_id' => $aten_id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $punch_in_time_raw = $row['in_time'];
+    echo "Raw punch-in time from DB: " . $punch_in_time_raw . "<br>";
+
+    // Convert punch-in time to DateTime object
+    $punch_in_time = new DateTime($punch_in_time_raw, new DateTimeZone('Asia/Manila'));
+    echo "Formatted punch-in time: " . $punch_in_time->format('Y-m-d H:i:s') . "<br>";
     
-    $punch_in_time = new DateTime($row['in_time']);
-    $existing_duration = !empty($row['total_duration']) ? $row['total_duration'] : '00:00:00';
-    
-    // Calculate duration between punch-in and punch-out
+    echo "Punch-out time: " . $punch_out_time->format('Y-m-d H:i:s') . "<br>";
+
+    // Calculate the total duration between punch-in and punch-out
     $total_duration = $punch_in_time->diff($punch_out_time);
 
-    // If there is an existing duration (from the active "Time In" session), add it
-    if (!empty($existing_duration)) {
-        // Convert existing duration to seconds
-        $existing_parts = explode(':', $existing_duration);
-        $existing_seconds = ($existing_parts[0] * 3600) + ($existing_parts[1] * 60) + $existing_parts[2];
-        
-        // Add the new time span to the existing duration
-        $new_duration_seconds = ($total_duration->h * 3600) + ($total_duration->i * 60) + $total_duration->s;
-        $final_duration_seconds = $existing_seconds + $new_duration_seconds;
+    // Debug: Output the duration details
+    echo "Total Duration: " . $total_duration->format('%H:%I:%S') . "<br>";
+    echo "Difference (Raw): " . print_r($total_duration, true) . "<br>";
 
-        // Convert total duration back to hours, minutes, seconds
-        $hours = floor($final_duration_seconds / 3600);
-        $minutes = floor(($final_duration_seconds % 3600) / 60);
-        $seconds = $final_duration_seconds % 60;
+    // Format the total duration for storing in the database
+    $formatted_duration = $total_duration->format('%H:%I:%S');
 
-        $formatted_duration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
-    } else {
-        // No existing duration, use the new calculation
-        $formatted_duration = $total_duration->format('%H:%I:%S');
-    }
-
-    // Update attendance info with punch-out time and total duration
+    // Now update the punch-out time and total duration in the database
     $sql_update = "UPDATE attendance_info SET out_time = :out_time, total_duration = :total_duration WHERE aten_id = :aten_id";
     $stmt_update = $obj_admin->db->prepare($sql_update);
     $stmt_update->execute([
@@ -100,7 +93,13 @@ if (isset($_POST['add_punch_out'])) {
     ]);
 
     header('Location: ../Manage-Attendance/attendance.php');
+    
+    
 }
+
+
+
+
 
 
 
@@ -228,10 +227,10 @@ if (isset($_POST['resume_time'])) {
                                                     $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
                                                     $current_time_formatted = $current_time->format('H:i');
 
-                                                    // If it's past 5 PM and there's no punch out, set it to 5 PM
+                                                    
                                                     if ($current_time_formatted > '17:00' && empty($row['out_time'])) {
                                                         $out_time = new DateTime($row['in_time']);
-                                                        $out_time->setTime(17, 0); // Set time to 5:00 PM
+                                                        $out_time->setTime(17, 0); 
 
                                                         // Update out_time in the database
                                                         $sql_auto_timeout = "UPDATE attendance_info SET out_time = :out_time WHERE aten_id = :aten_id";
