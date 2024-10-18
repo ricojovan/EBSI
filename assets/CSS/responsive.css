@@ -9,13 +9,6 @@
 /*Medium Desktop Device*/
 
 @media screen and (min-width: 1200px) and (max-width: 1440px) {
-    .horizontal-menu ul li a {
-        padding: 10px 10px;
-    }
-    .seo-fact #seolinechart3,
-    .seo-fact #seolinechart4 {
-        max-width: 144px;
-    }
     .col-ml-6 {
         -webkit-box-flex: 0;
         -ms-flex: 0 0 50%;
@@ -124,37 +117,34 @@
 
     /* sidebar */
     .sidebar-menu {
-        width: 365px;
+        position: fixed;
+        left: -90%;
+        top: 0;
+        height: 100vh;
+        width: 220px;
     }
-    .nav-btn {
+    .sbar_collapsed .logo a span {
+        display: block;
+    }
+    .sbar_collapsed .sidebar-menu {
+        width: 220px;
+        left: 0;
+    }
+    .minisidebar.main-menu {
+        margin-right: 0;
+    }
+    .sbar_collapsed .nav-btn {
+        margin-right: 15px;
         position: fixed;
         z-index: 99;
-        left: 363px;
+        left: 0px;
         background: #303641;
         padding: 14px;
         top: 0;
         margin: 0;
     }
-    .nav-btn span {
-        background: #fffbfb;
-    }
-    .sbar_collapsed .sidebar-menu {
-        left: -90%;
-    }
-    .sbar_collapsed .nav-btn {
-        position: initial;
-        background: none;
-        padding: 0;
-        margin: 10px 30px 0 0;
-    }
     .sbar_collapsed .nav-btn span {
-        background: #b3aaaa;
-    }
-    .sbar_collapsed .logo a span {
-        display: block;
-    }
-    .minisidebar.main-menu {
-        margin-right: 0;
+        background: #fffbfb;
     }
     /* main content */
     .main-content-inner {
@@ -181,37 +171,34 @@
     }
     /* sidebar */
     .sidebar-menu {
-        width: 306px;
+        position: fixed;
+        left: -90%;
+        top: 0;
+        height: 100vh;
+        width: 365px;
     }
-    .nav-btn {
+    .sbar_collapsed .logo a span {
+        display: block;
+    }
+    .sbar_collapsed .sidebar-menu {
+        width: 306px;
+        left: 0;
+    }
+    .minisidebar.main-menu {
+        margin-right: 0;
+    }
+    .sbar_collapsed .nav-btn {
+        margin-right: 15px;
         position: fixed;
         z-index: 99;
-        left: 304px;
+        left: 306px;
         background: #303641;
         padding: 14px;
         top: 0;
         margin: 0;
     }
-    .nav-btn span {
-        background: #fffbfb;
-    }
-    .sbar_collapsed .sidebar-menu {
-        left: -90%;
-    }
-    .sbar_collapsed .nav-btn {
-        position: initial;
-        background: none;
-        padding: 0;
-        margin: 10px 30px 0 0;
-    }
     .sbar_collapsed .nav-btn span {
-        background: #b3aaaa;
-    }
-    .sbar_collapsed .logo a span {
-        display: block;
-    }
-    .minisidebar.main-menu {
-        margin-right: 0;
+        background: #fffbfb;
     }
     /* main content */
     .main-content-inner {
@@ -292,37 +279,34 @@
     /* dashboard one */
     /* sidebar */
     .sidebar-menu {
+        position: fixed;
+        left: -90%;
+        top: 0;
+        height: 100vh;
         width: 306px;
     }
-    .nav-btn {
+    .sbar_collapsed .logo a span {
+        display: block;
+    }
+    .sbar_collapsed .sidebar-menu {
+        width: 306px;
+        left: 0;
+    }
+    .minisidebar.main-menu {
+        margin-right: 0;
+    }
+    .sbar_collapsed .nav-btn {
+        margin-right: 15px;
         position: fixed;
         z-index: 99;
-        left: 304px;
+        left: 306px;
         background: #303641;
         padding: 14px;
         top: 0;
         margin: 0;
     }
-    .nav-btn span {
-        background: #fffbfb;
-    }
-    .sbar_collapsed .sidebar-menu {
-        left: -90%;
-    }
-    .sbar_collapsed .nav-btn {
-        position: initial;
-        background: none;
-        padding: 0;
-        margin: 10px 30px 0 0;
-    }
     .sbar_collapsed .nav-btn span {
-        background: #b3aaaa;
-    }
-    .sbar_collapsed .logo a span {
-        display: block;
-    }
-    .minisidebar.main-menu {
-        margin-right: 0;
+        background: #fffbfb;
     }
     .sbar_collapsed .metismenu li a span,
     .sbar_collapsed .metismenu li a:after,
@@ -437,37 +421,34 @@
     }
     /* sidebar */
     .sidebar-menu {
+        position: fixed;
+        left: -90%;
+        top: 0;
+        height: 100vh;
         width: 365px;
     }
-    .nav-btn {
+    .sbar_collapsed .logo a span {
+        display: block;
+    }
+    .sbar_collapsed .sidebar-menu {
+        width: 365px;
+        left: 0;
+    }
+    .minisidebar.main-menu {
+        margin-right: 0;
+    }
+    .sbar_collapsed .nav-btn {
+        margin-right: 15px;
         position: fixed;
         z-index: 99;
-        left: 363px;
+        left: 364px;
         background: #303641;
         padding: 14px;
         top: 0;
         margin: 0;
     }
-    .nav-btn span {
-        background: #fffbfb;
-    }
-    .sbar_collapsed .sidebar-menu {
-        left: -90%;
-    }
-    .sbar_collapsed .nav-btn {
-        position: initial;
-        background: none;
-        padding: 0;
-        margin: 10px 30px 0 0;
-    }
     .sbar_collapsed .nav-btn span {
-        background: #b3aaaa;
-    }
-    .sbar_collapsed .logo a span {
-        display: block;
-    }
-    .minisidebar.main-menu {
-        margin-right: 0;
+        background: #fffbfb;
     }
     /* main content */
     .main-content-inner {
@@ -552,37 +533,34 @@
     /* dashboard one */
     /* sidebar */
     .sidebar-menu {
-        width: calc(100% - 48px);
-    }
-    .nav-btn {
         position: fixed;
-        z-index: 99;
-        right: 0;
-        background: #303641;
-        padding: 14px;
+        left: -90%;
         top: 0;
-        margin: 0;
-    }
-    .nav-btn span {
-        background: #fffbfb;
-    }
-    .sbar_collapsed .sidebar-menu {
-        left: -100%;
-    }
-    .sbar_collapsed .nav-btn {
-        position: initial;
-        background: none;
-        padding: 0;
-        margin: 10px 30px 0 0;
-    }
-    .sbar_collapsed .nav-btn span {
-        background: #b3aaaa;
+        height: 100vh;
+        width: 90%;
     }
     .sbar_collapsed .logo a span {
         display: block;
     }
+    .sbar_collapsed .sidebar-menu {
+        width: 85%;
+        left: 0;
+    }
     .minisidebar.main-menu {
         margin-right: 0;
+    }
+    .sbar_collapsed .nav-btn {
+        margin-right: 15px;
+        position: fixed;
+        z-index: 99;
+        right: 0;
+        top: 0;
+        background: #303641;
+        margin: 0;
+        padding: 14px;
+    }
+    .sbar_collapsed .nav-btn span {
+        background: #fffbfb;
     }
     /* main content */
     .main-content-inner {
@@ -598,6 +576,9 @@
     /* hedaer */
     .search-box input {
         width: 223px;
+    }
+    .nav-btn {
+        margin-right: 15px;
     }
     .notification-area {
         text-align: center;

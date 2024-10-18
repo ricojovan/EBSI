@@ -101,26 +101,24 @@ if (isset($_POST['add_new_employee'])) {
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
-                    <form role="form" action="" method="post" autocomplete="off">
-    <div class="form-group">
-        <label class="control-label">Fullname</label>
-        <input type="text" placeholder="Enter Employee Name" name="em_fullname" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid name (letters only)" class="form-control input-custom" id="fullname" required oninput="validateFullname()">
-
-    </div>
-    <div class="form-group">
-        <label class="control-label">Username</label>
-        <input type="text" placeholder="Enter Employee Username" name="em_username" class="form-control input-custom" required>
-    </div>
-    <div class="form-group">
-        <label class="control-label">Email</label>
-        <input type="email" placeholder="Enter Employee Email" name="em_email" class="form-control input-custom" required>
-    </div>
-    <div class="form-group text-center">
-        <button type="submit" name="add_new_employee" class="btn btn-primary rounded-0 mr-4">Add Employee</button>
-        <button type="button" class="btn btn-default rounded-0" data-dismiss="modal">Cancel</button>
-    </div>
-</form>
-
+                        <form role="form" action="" method="post" autocomplete="off">
+                            <div class="form-group">
+                                <label class="control-label">Fullname</label>
+                                <input type="text" placeholder="Enter Employee Name" name="em_fullname" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid name (letters only)" class="form-control input-custom" id="fullname" required oninput="validateFullname()">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Username</label>
+                                <input type="text" placeholder="Enter Employee Username" name="em_username" class="form-control input-custom" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Email</label>
+                                <input type="email" placeholder="Enter Employee Email" name="em_email" class="form-control input-custom" required>
+                            </div>
+                            <div class="form-group text-center">
+                                <button type="submit" name="add_new_employee" class="btn btn-primary rounded-0 mr-4">Add Employee</button>
+                                <button type="button" class="btn btn-default rounded-0" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

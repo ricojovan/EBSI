@@ -45,7 +45,7 @@
             $sql_fetch_employees = "SELECT emp_id, full_name, position, `group`, username, age, start_date, phone FROM employees";
             $result = $conn->query($sql_fetch_employees);
             ?>
-<body>
+
     <?php include '../nav-and-footer/header-nav.php';?>
     <!-- No gutters start -->
     <div class="col-12 mt-5">
@@ -385,5 +385,3 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     
-</body>
-</html>

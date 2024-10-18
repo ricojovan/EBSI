@@ -162,7 +162,7 @@ if(isset($_POST['add_task_post'])){
         </div>
     </div>
 </div>
-</div>
+
 <!-- Bootstrap Grid end -->
 
 

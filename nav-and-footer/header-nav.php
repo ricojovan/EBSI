@@ -159,12 +159,6 @@ $user_role = $_SESSION['user_role'];
                             <span></span>
                             <span></span>
                         </div>
-                        <div class="search-box pull-left">
-                            <form action="#">
-                                <input type="text" name="search" placeholder="Search..." required>
-                                <i class="ti-search"></i>
-                            </form>
-                        </div>
                     </div>
                     <!-- profile info & task notification -->
                     <div class="col-md-6 col-sm-4 clearfix">
@@ -212,10 +206,6 @@ $user_role = $_SESSION['user_role'];
                 </div>
             </div>
             <!-- page title area end -->
-             <!-- mobile_menu -->
-<div class="col-12 d-block d-lg-none">
-<div id="mobile_menu"></div>
-</div>   
+ 
 <div id="alert-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"></div>
-</body>
-</html>
+

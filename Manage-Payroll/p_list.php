@@ -337,7 +337,7 @@ if (isset($payslips) && !empty($payslips)) {
 
         </div>
     </div>
-</div>
+
 
 <?php
 include("../etms/include/footer.php");

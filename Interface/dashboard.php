@@ -88,11 +88,7 @@ try {
 }
 ?>
     
-    <body>
-        
         <!-- page title area end -->
-        
-                                    
 
 <div class="main-content-inner">
     <div class="container-fluid">
@@ -207,16 +203,7 @@ try {
     </div>
 </div>
 
-           
-        
-    
-
-
-
-
    <!-- Main content end -->
-</div>
-
 
         <!-- main content area end -->
         <?php include '../nav-and-footer/footer-area.php';?>  
