@@ -220,7 +220,7 @@ if (isset($_GET['delete_task']) && isset($_GET['id'])) {
 
 
 <?php
-include("../etms/include/footer.php");
+
 include("../nav-and-footer/footer-area.php");
 ?>
 

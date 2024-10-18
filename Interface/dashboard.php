@@ -204,7 +204,6 @@ try {
 </div>
 
    <!-- Main content end -->
-
         <!-- main content area end -->
         <?php include '../nav-and-footer/footer-area.php';?>  
 

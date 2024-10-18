@@ -340,7 +340,7 @@ if (isset($payslips) && !empty($payslips)) {
 
 
 <?php
-include("../etms/include/footer.php");
+
 include("../nav-and-footer/footer-area.php");
 ?>
 

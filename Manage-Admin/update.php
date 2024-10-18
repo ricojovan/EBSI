@@ -97,7 +97,7 @@ $row = $info->fetch(PDO::FETCH_ASSOC);
 
 <?php
 
-include("../etms/include/footer.php");
+
 include("../nav-and-footer/footer-area.php");
 
 

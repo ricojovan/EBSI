@@ -100,7 +100,7 @@ if(isset($_POST['btn_admin_password'])){
 
 <?php
 
-include("../etms/include/footer.php");
+
 include("../nav-and-footer/footer-area.php");
 
 ?>

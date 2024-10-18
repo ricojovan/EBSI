@@ -237,7 +237,7 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
 </div>
 
 <?php
-include("../etms/include/footer.php");
+
 include("../nav-and-footer/footer-area.php");
 ?>
 
