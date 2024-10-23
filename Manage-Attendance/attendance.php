@@ -3,6 +3,7 @@
 $page_name = "Attendance";
 include('../nav-and-footer/header-nav.php');
 
+
 // User session and authentication check
 $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
@@ -23,33 +24,64 @@ if (isset($_GET['delete_attendance'])) {
 if (isset($_POST['add_punch_in'])) {
     // Check if the user has already punched in today
     $today = date('Y-m-d');
-    $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
-    $stmt = $obj_admin->db->prepare($sql); // Use $obj_admin->db for PDO object
-    $stmt->execute(['user_id' => $user_id, 'today' => $today]);
     
-    if ($stmt->rowCount() > 0) {
-        echo "<script>
-                $(document).ready(function() {
-                    $('#timed-in-modal').modal('show');
-                });
-              </script>";
-    } else {
-        // Proceed to add punch in
-        $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
-        $punch_in_time = $date->format('Y-m-d H:i:s');
+    // Query the user's schedule from the `scheduling` table
+    $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+    $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
+    $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
     
-        try {
-            // Set pause_duration to '00:00:00' when punching in
-            $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
-            $add_attendance->execute(['user_id' => $user_id, 'punch_in_time' => $punch_in_time]);
-    
-            header('Location: ../Manage-Attendance/attendance.php');
-        } catch (PDOException $e) {
-            echo $e->getMessage();
+    if ($stmt_schedule->rowCount() > 0) {
+        $schedule = $stmt_schedule->fetch(PDO::FETCH_ASSOC);
+        
+        // Get the current date and time
+        $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
+        $current_time_str = $current_time->format('H:i:s');
+        
+        // Get the assigned in-time and out-time from the schedule
+        $schedule_in_time = $schedule['intime'];
+        $schedule_out_time = $schedule['outtime'];
+        
+        // Compare current time with scheduled in-time and out-time
+        if ($current_time_str >= $schedule_in_time && $current_time_str <= $schedule_out_time) {
+            // Proceed to check if the user has already punched in
+            $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
+            $stmt = $obj_admin->db->prepare($sql); // Use $obj_admin->db for PDO object
+            $stmt->execute(['user_id' => $user_id, 'today' => $today]);
+
+            if ($stmt->rowCount() > 0) {
+                echo "<script>
+                        $(document).ready(function() {
+                            $('#timed-in-modal').modal('show');
+                        });
+                      </script>";
+            } else {
+                // Proceed to add punch in
+                $punch_in_time = $current_time->format('Y-m-d H:i:s');
+                
+                try {
+                    // Set pause_duration to '00:00:00' when punching in
+                    $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
+                    $add_attendance->execute(['user_id' => $user_id, 'punch_in_time' => $punch_in_time]);
+
+                    header('Location: ../Manage-Attendance/attendance.php');
+                } catch (PDOException $e) {
+                    echo $e->getMessage();
+                }
+            }
+        } else {
+            // User is trying to time in outside their schedule
+            echo "<script>
+                    alert('You can only time in during your scheduled hours.');
+                  </script>";
         }
+    } else {
+        // No schedule found for the user
+        echo "<script>
+                alert('No schedule assigned for today.');
+              </script>";
     }
-    
 }
+
 
 
 if (isset($_POST['add_punch_out'])) {
@@ -97,12 +129,6 @@ if (isset($_POST['add_punch_out'])) {
     
 }
 
-
-
-
-
-
-
 if (isset($_POST['pause_time'])) {
     $obj_admin->pause_time($_POST);
 }
@@ -112,6 +138,8 @@ if (isset($_POST['resume_time'])) {
 }
 
 ?>
+
+
 
 <div class="modal fade" id="timed-in-modal" tabindex="-1" role="dialog" aria-labelledby="timedInModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -131,6 +159,7 @@ if (isset($_POST['resume_time'])) {
         </div>
     </div>
 </div>
+
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
@@ -156,7 +185,19 @@ if (isset($_POST['resume_time'])) {
                                             <div class="btn-group">
                                                 <form method="post" role="form" action="">
                                                     <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
-                                                    <button type="submit" name="add_punch_in" class="btn btn-default table-bg-default btn-lg rounded mb-3">Time In</button>
+                                                    <?php 
+                                                    // Check if the user has already timed in
+                                                    $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
+                                                    $stmt = $obj_admin->db->prepare($sql);
+                                                    $stmt->execute(['user_id' => $user_id, 'today' => date('Y-m-d')]);
+                                                    $timed_in_today = $stmt->rowCount() > 0;
+
+                                                    // Show "Time In" button or modal trigger if already timed in
+                                                    if (!$timed_in_today) { ?>
+                                                        <button type="submit" name="add_punch_in" class="btn btn-default table-bg-default btn-lg rounded mb-3">Time In</button>
+                                                    <?php } else { ?>
+                                                        <button type="button" class="btn btn-default table-bg-default btn-lg rounded mb-3" data-toggle="modal" data-target="#timed-in-modal">Time In</button>
+                                                    <?php } ?>
                                                 </form>
                                             </div>
                                             <?php } ?>
@@ -351,7 +392,7 @@ if (isset($_POST['resume_time'])) {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <?php } else { ?>
                                                 <td></td>
@@ -370,11 +411,14 @@ if (isset($_POST['resume_time'])) {
     </div>
 </div>
 
+
 <!-- Bootstrap Grid End -->
 <div id="alert-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"></div>
 <?php
 include("../nav-and-footer/footer-area.php");
 ?>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -450,3 +494,4 @@ if (pauseTimestamp) {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+

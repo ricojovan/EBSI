@@ -96,6 +96,7 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js'></script>
 
+
 <style>
     #calendar {
         max-width: 100%;
@@ -139,20 +140,23 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
           border-radius: 50%; /* Circular initials */
       }
 
-      /* Tooltip customization for a rectangle shape */
-      .tooltip-inner {
-          background-color: #333;
-          color: #fff;
-          font-size: 14px;
-          padding: 8px;
-          border-radius: 5px; /* Rounded rectangle */
-      }
+      
+      
 
-      .tooltip {
-          opacity: 1 !important; /* Ensure visibility */
-          width: auto !important;
-          white-space: nowrap;
-      }
+      #full-name-display {
+        font-size: 14px;
+        padding: 30px;
+        background-color: #333;
+        color: white;
+        border-radius: 5px;
+        position: absolute;
+        display: none;
+        z-index: 1000;
+        white-space: nowrap;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    }
+
+
 
     /* Responsive styles */
     @media (max-width: 768px) {
@@ -162,6 +166,36 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
         .fc-event {
             height: 30px;
             width: 30px;
+        }
+        .fc-event div {
+        width: 25px;
+        height: 25px;
+        font-size: 12px; 
+        line-height: 25px;
+        }
+    }
+    @media (max-width: 576px) {
+        #calendar {
+            font-size: 0.7rem; /* Smaller font size for mobile phones */
+        }
+        .fc-event div {
+            width: 20px;
+            height: 20px;
+            font-size: 10px; /* Adjust font size even smaller for initials */
+            line-height: 20px;
+        }
+
+        /* Modal adjustments for small screens */
+        .modal-dialog {
+            max-width: 90%;
+            margin: 1.75rem auto;
+        }
+
+        /* Full name display adjustment for small screens */
+        #full-name-display {
+            font-size: 12px;
+            padding: 10px;
+            max-width: 150px;
         }
     }
 </style>
@@ -179,6 +213,10 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
                         <div class="col-md-12">
                             <div class="well well-custom">
                                 <div id="calendar"></div>
+
+                                <div id="full-name-display" style="position: absolute; background-color: #333; color: #fff; padding: 5px; border-radius: 5px; display: none; z-index: 1000;">
+                                </div>
+
                                 
                                 <!-- Modal for assigning time in/out -->
                                 <div class="modal fade" id="timeModal" tabindex="-1" role="dialog" aria-labelledby="timeModalLabel" aria-hidden="true">
@@ -212,6 +250,7 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                                     <?php } ?>
                                                 </select>
                                             </div>
+                                            
                                             <div class="form-group">
                                                 <label for="intime">In Time:</label>
                                                 <input type="time" id="intime" name="intime" class="form-control" required>
@@ -258,6 +297,7 @@ include("../nav-and-footer/footer-area.php");
 
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
+    var fullNameDisplay = document.getElementById('full-name-display');
     var selectedRange = {};
     var openModalButton = document.getElementById('openModalButton');
 
@@ -265,76 +305,77 @@ document.addEventListener('DOMContentLoaded', function() {
     var scheduleEvents = <?php echo json_encode($scheduleEvents); ?>;
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        selectable: true,
-        selectMirror: true,
-        height: 'auto',
-        contentHeight: 'auto',
-        aspectRatio: 1.35,
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        initialDate: new Date(),
-        nowIndicator: true,
+    initialView: 'dayGridMonth',
+    selectable: true,
+    selectMirror: true,
+    height: 'auto',
+    contentHeight: 'auto',
+    aspectRatio: 1.35,
+    headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    initialDate: new Date(),
+    nowIndicator: true,
 
-        // When a date range is selected
-        select: function(info) {
-            selectedRange.start = info.startStr;
-            selectedRange.end = info.endStr;
+    select: function(info) {
+        selectedRange.start = info.startStr;  // Store the start date
+        selectedRange.end = info.endStr;      // Store the end date
+        openModalButton.disabled = false;     // Enable the "Assign Employee" button
+    },
 
-            // Enable the Assign Employee button once a date range is selected
-            openModalButton.disabled = false;
-        },
+    // Custom event content for initials
+    eventContent: function(info) {
+        var attendees = [info.event.title];
+        var initialsToShow = attendees.slice(0, 4);
+        var moreCount = attendees.length > 4 ? `...${attendees.length - 4}` : '';
 
-        // Custom event content for limiting initials and showing tooltips
-        eventContent: function(info) {
-            var attendees = [info.event.title];  
-            var initialsToShow = attendees.slice(0, 4);  
-            var moreCount = attendees.length > 4 ? `...${attendees.length - 4}` : '';
-            
-            var container = document.createElement('div');
-            container.classList.add('event-initials-container');
-            
-            // Add initials to the container
-            initialsToShow.forEach(function(initial) {
-                var initialDiv = document.createElement('div');
-                initialDiv.innerText = initial;
-                initialDiv.style.backgroundColor = info.event.backgroundColor; // Set color
-                container.appendChild(initialDiv);
-            });
+        var container = document.createElement('div');
+        container.classList.add('event-initials-container');
 
-            // Add "more" count if applicable
-            if (moreCount) {
-                var moreDiv = document.createElement('div');
-                moreDiv.innerText = moreCount;
-                container.appendChild(moreDiv);
-            }
+        // Add initials to the container
+        initialsToShow.forEach(function(initial) {
+            var initialDiv = document.createElement('div');
+            initialDiv.innerText = initial;
+            initialDiv.style.backgroundColor = info.event.backgroundColor; // Set color
+            container.appendChild(initialDiv);
+        });
 
-            return { domNodes: [container] };
-        },
-
-        events: scheduleEvents,
-
-       
-        
-        eventMouseEnter: function(info) {
-            // Show full name as tooltip on hover
-            $(info.el).tooltip({
-                title: info.event.extendedProps.fullName,
-                placement: 'top',
-                trigger: 'hover',
-                container: 'body'
-            });
-            $(info.el).tooltip('show');
-        },
-
-        eventMouseLeave: function(info) {
-            // Remove tooltip when mouse leaves
-            $(info.el).tooltip('dispose');
+        // Add "more" count if applicable
+        if (moreCount) {
+            var moreDiv = document.createElement('div');
+            moreDiv.innerText = moreCount;
+            container.appendChild(moreDiv);
         }
-    });
+
+        return { domNodes: [container] };
+    },
+
+    events: scheduleEvents,
+
+    eventMouseEnter: function(info) {
+        // Show full name display
+        fullNameDisplay.style.display = 'block';
+        fullNameDisplay.innerText = info.event.extendedProps.fullName;
+
+        // Get the position of the event element (the initials div)
+        var eventRect = info.el.getBoundingClientRect();
+        
+        // Adjust positioning to be next to the initials
+        fullNameDisplay.style.left = (eventRect.right + window.scrollX + -235) + 'px'; 
+        fullNameDisplay.style.top = (eventRect.top + window.scrollY + -233) + 'px';  
+
+        // Adjust positioning based on screen width
+        var screenWidth = window.innerWidth;
+        var leftOffset = screenWidth < 576 ? -100 : 5; // Smaller offset for mobile screens
+    },
+
+    eventMouseLeave: function(info) {
+        // Hide the full name display when the mouse leaves
+        fullNameDisplay.style.display = 'none';
+    }
+});
 
     calendar.render();
 
@@ -349,5 +390,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-</script>
 
+
+</script>
