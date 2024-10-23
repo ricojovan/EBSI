@@ -2,6 +2,7 @@
 
 class Admin_Class
 {	
+	public $db; // Declare the property
 
 /* -------------------------set_database_connection_using_PDO---------------------- */
 

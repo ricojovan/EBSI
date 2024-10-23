@@ -98,6 +98,56 @@
     padding: 0 30px 50px;
 }
 
+/*------------------------- Leave report -------------------*/
+
+
+
+.form-title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #343a40;
+    font-weight: bold;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-section label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-section input, .form-section textarea {
+    border-radius: 4px;
+}
+
+.leave-type-checkbox {
+    margin-bottom: 10px;
+}
+
+.radio-inline input {
+    margin-right: 5px;
+}
+
+.separator {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.btn-submit {
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.btn-submit:hover {
+    background-color: #0056b3;
+}
+
 /*------------------------- END Core Css -------------------*/
 
 
