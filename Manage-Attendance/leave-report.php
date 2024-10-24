@@ -9,6 +9,7 @@ include('../nav-and-footer/header-nav.php');
             <div class="row">
                 <div class="col-12">
                     <div class="container">
+
                         <div class="form-container">
                             <h2 class="form-title">E-BRIGHT RETAIL CORP.<br>Leave Form Application</h2>
                             <p class="text-center text-muted">
@@ -169,14 +170,180 @@ include('../nav-and-footer/header-nav.php');
 
                                 <div class="form-section">
                                     <label for="received-by">Received By (HRD):</label>
-                                    <input type="text" id="received-by" class="form-control" placeholder="Enter HRD receiver's name" required>
+                                    <input type="text" id="received-by" class="form-control" placeholder="Enter receiver's name" required>
                                 </div>
 
-                                <!-- Submit Button -->
-                                <div class="text-center mt-4">
-                                    <button type="button" class="btn btn-primary btn-flat btn-lg mt-3" onclick="showModal()">Submit Form</button>
+                                <!-- Buttons -->
+                                <div class="d-flex justify-content-between">
+                                    <button type="reset" class="btn btn-secondary">Reset</button>
+                                    <button type="button" class="btn btn-primary" id="showModalBtn">Submit</button>
                                 </div>
                             </form>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="leaveModal" tabindex="-1" aria-labelledby="leaveModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-primary text-white">
+                                            <h5 class="modal-title" id="leaveModalLabel">Leave Application Summary</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="modal-employee-name" class="form-label">Employee Name</label>
+                                                    <input type="text" class="form-control" id="modal-employee-name" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="modal-department" class="form-label">Department</label>
+                                                    <input type="text" class="form-control" id="modal-department" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="modal-position" class="form-label">Position</label>
+                                                    <input type="text" class="form-control" id="modal-position" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="modal-pay" class="form-label">Pay</label>
+                                                    <input type="text" class="form-control" id="modal-pay" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-4">
+                                                    <label for="modal-date-filed" class="form-label">Date Filed</label>
+                                                    <input type="text" class="form-control" id="modal-date-filed" readonly>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="modal-date-from" class="form-label">Date From</label>
+                                                    <input type="text" class="form-control" id="modal-date-from" readonly>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="modal-date-to" class="form-label">Date To</label>
+                                                    <input type="text" class="form-control" id="modal-date-to" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="modal-absences-days" class="form-label">Absences Days</label>
+                                                    <input type="text" class="form-control" id="modal-absences-days" readonly>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="modal-number-of-days" class="form-label">Number of Days</label>
+                                                    <input type="text" class="form-control" id="modal-number-of-days" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="modal-reason" class="form-label">Reason</label>
+                                                <textarea class="form-control" id="modal-reason" rows="3" readonly></textarea>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-4">
+                                                    <label for="modal-verified-by" class="form-label">Verified By</label>
+                                                    <input type="text" class="form-control" id="modal-verified-by" readonly>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="modal-requested-by" class="form-label">Requested By</label>
+                                                    <input type="text" class="form-control" id="modal-requested-by" readonly>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="modal-received-by" class="form-label">Received By</label>
+                                                    <input type="text" class="form-control" id="modal-received-by" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary">Confirm Submission</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <script>
+                                // Function to highlight empty fields
+                                function highlightEmptyFields() {
+                                    const requiredFields = document.querySelectorAll('#leaveForm [required]');
+                                    requiredFields.forEach(field => {
+                                        if (!field.value.trim()) {
+                                            field.style.borderColor = '#D91656';
+                                        } else {
+                                            field.style.borderColor = '';
+                                        }
+                                    });
+                                }
+
+                                // Add event listeners to all required fields
+                                const requiredFields = document.querySelectorAll('#leaveForm [required]');
+                                requiredFields.forEach(field => {
+                                    field.addEventListener('blur', highlightEmptyFields);
+                                    field.addEventListener('input', function() {
+                                        if (this.value.trim()) {
+                                            this.style.borderColor = '';
+                                        }
+                                    });
+                                });
+
+                                document.getElementById("showModalBtn").addEventListener("click", function () {
+                                    // Check if the form is valid
+                                    if (!document.getElementById("leaveForm").checkValidity()) {
+                                        // If the form is not valid, trigger the browser's default validation UI
+                                        document.getElementById("leaveForm").reportValidity();
+                                        highlightEmptyFields();
+                                        return; // Exit the function early if the form is not valid
+                                    }
+
+                                    // Getting form data
+                                    const employeeName = document.getElementById("employee-name").value.trim();
+                                    const department = document.getElementById("department").value.trim();
+                                    const position = document.getElementById("position").value.trim();
+                                    const pay = document.querySelector('input[name="pay"]:checked')?.value;
+                                    const dateFiled = document.getElementById("date-filed").value.trim();
+                                    const dateFrom = document.getElementById("date-from").value.trim();
+                                    const dateTo = document.getElementById("date-to").value.trim();
+                                    const absencesDays = document.getElementById("absences-days").value.trim();
+                                    const numberOfDays = document.getElementById("number-of-days").value.trim();
+                                    const reason = document.getElementById("reason").value.trim();
+                                    const verifiedBy = document.getElementById("verified-by").value.trim();
+                                    const requestedBy = document.getElementById("requested-by").value.trim();
+                                    const receivedBy = document.getElementById("received-by").value.trim();
+
+                                    // Additional check for radio buttons and checkboxes
+                                    const leaveType = document.querySelector('input[type="checkbox"]:checked');
+                                    const approval = document.querySelector('input[name="approval"]:checked');
+
+                                    if (!leaveType) {
+                                        alert("Please select a leave type.");
+                                        return;
+                                    }
+
+                                    if (!approval) {
+                                        alert("Please select an approval status.");
+                                        return;
+                                    }
+
+                                    // Set modal content
+                                    document.getElementById("modal-employee-name").value = employeeName;
+                                    document.getElementById("modal-department").value = department;
+                                    document.getElementById("modal-position").value = position;
+                                    document.getElementById("modal-pay").value = pay;
+                                    document.getElementById("modal-date-filed").value = dateFiled;
+                                    document.getElementById("modal-date-from").value = dateFrom;
+                                    document.getElementById("modal-date-to").value = dateTo;
+                                    document.getElementById("modal-absences-days").value = absencesDays;
+                                    document.getElementById("modal-number-of-days").value = numberOfDays;
+                                    document.getElementById("modal-reason").value = reason;
+                                    document.getElementById("modal-verified-by").value = verifiedBy;
+                                    document.getElementById("modal-requested-by").value = requestedBy;
+                                    document.getElementById("modal-received-by").value = receivedBy;
+
+                                    // Show the modal
+                                    var leaveModal = new bootstrap.Modal(document.getElementById('leaveModal'));
+                                    leaveModal.show();
+                                });
+                            </script>
+
                         </div>
                     </div>
                 </div>
@@ -185,82 +352,4 @@ include('../nav-and-footer/header-nav.php');
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Confirm Leave Application</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Please review your leave application before submitting:</p>
-                <ul id="reviewList"></ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function showModal() {
-    const form = document.getElementById('leaveForm');
-    const reviewList = document.getElementById('reviewList');
-    reviewList.innerHTML = ''; // Clear previous list
-
-    // Gather form data for review
-    const employeeName = document.getElementById('employee-name').value;
-    const department = document.getElementById('department').value;
-    const employeeStatus = document.getElementById('employee-status').value;
-    const position = document.getElementById('position').value;
-    const leaveType = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.nextElementSibling.textContent).join(', ');
-    const payType = document.querySelector('input[name="pay"]:checked').nextElementSibling.textContent;
-    const dateFiled = document.getElementById('date-filed').value;
-    const dateFrom = document.getElementById('date-from').value;
-    const dateTo = document.getElementById('date-to').value;
-    const reason = document.getElementById('reason').value;
-    const leaveBalance = document.getElementById('leave-balance').value;
-    const leaveRequest = document.getElementById('leave-request').value;
-    const newBalance = document.getElementById('new-balance').value;
-    const verifiedBy = document.getElementById('verified-by').value;
-    const requestedBy = document.getElementById('requested-by').value;
-    const receivedBy = document.getElementById('received-by').value;
-
-    // Add items to review list
-    reviewList.innerHTML += `<li>Employee Name: ${employeeName}</li>`;
-    reviewList.innerHTML += `<li>Department: ${department}</li>`;
-    reviewList.innerHTML += `<li>Employee Status: ${employeeStatus}</li>`;
-    reviewList.innerHTML += `<li>Position: ${position}</li>`;
-    reviewList.innerHTML += `<li>Leave Type: ${leaveType}</li>`;
-    reviewList.innerHTML += `<li>Pay Type: ${payType}</li>`;
-    reviewList.innerHTML += `<li>Date Filed: ${dateFiled}</li>`;
-    reviewList.innerHTML += `<li>From: ${dateFrom}</li>`;
-    reviewList.innerHTML += `<li>To: ${dateTo}</li>`;
-    reviewList.innerHTML += `<li>Reason: ${reason}</li>`;
-    reviewList.innerHTML += `<li>Leave Balance: ${leaveBalance}</li>`;
-    reviewList.innerHTML += `<li>Leave Request: ${leaveRequest}</li>`;
-    reviewList.innerHTML += `<li>New Balance: ${newBalance}</li>`;
-    reviewList.innerHTML += `<li>Verified By: ${verifiedBy}</li>`;
-    reviewList.innerHTML += `<li>Requested By: ${requestedBy}</li>`;
-    reviewList.innerHTML += `<li>Received By: ${receivedBy}</li>`;
-
-    // Show modal
-    $('#reviewModal').modal('show');
-}
-
-function submitForm() {
-    // This function would handle actual form submission logic
-    alert('Form submitted successfully!'); // Placeholder for form submission
-    $('#reviewModal').modal('hide');
-    document.getElementById('leaveForm').reset(); // Reset form after submission
-}
-</script>
-
-<?php
-include('../nav-and-footer/footer-area.php');
-?>
+<?php include('../nav-and-footer/footer-area.php'); ?>
