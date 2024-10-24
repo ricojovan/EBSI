@@ -10,6 +10,9 @@ $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 $user_role = $_SESSION['user_role'];
 
+// Define today's date at the top
+$today = date('Y-m-d');
+
 if ($user_id == NULL || $security_key == NULL) {
     header('Location: ../Interface/login.php');
 }
@@ -22,65 +25,69 @@ if (isset($_GET['delete_attendance'])) {
 }
 
 if (isset($_POST['add_punch_in'])) {
-    // Check if the user has already punched in today
+    // Get today's date
     $today = date('Y-m-d');
-    
-    // Query the user's schedule from the `scheduling` table
+
+    // Query the user's schedule from the scheduling table
     $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
     $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
     $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
-    
-    if ($stmt_schedule->rowCount() > 0) {
+
+    $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
+
+    // If the user doesn't have a schedule, assign default schedule
+    if ($stmt_schedule->rowCount() == 0) {
+        // Default in-time is 8:00 AM, out-time is 5:00 PM
+        $schedule_in_time = new DateTime('08:00:00', new DateTimeZone('Asia/Manila'));
+        $schedule_out_time = new DateTime('17:00:00', new DateTimeZone('Asia/Manila'));
+    } else {
+        // Use the schedule from the database
         $schedule = $stmt_schedule->fetch(PDO::FETCH_ASSOC);
-        
-        // Get the current date and time
-        $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
-        $current_time_str = $current_time->format('H:i:s');
-        
-        // Get the assigned in-time and out-time from the schedule
-        $schedule_in_time = $schedule['intime'];
-        $schedule_out_time = $schedule['outtime'];
-        
-        // Compare current time with scheduled in-time and out-time
-        if ($current_time_str >= $schedule_in_time && $current_time_str <= $schedule_out_time) {
-            // Proceed to check if the user has already punched in
-            $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
-            $stmt = $obj_admin->db->prepare($sql); // Use $obj_admin->db for PDO object
-            $stmt->execute(['user_id' => $user_id, 'today' => $today]);
+        $schedule_in_time = new DateTime($schedule['intime'], new DateTimeZone('Asia/Manila'));
+        $schedule_out_time = new DateTime($schedule['outtime'], new DateTimeZone('Asia/Manila'));
+    }
 
-            if ($stmt->rowCount() > 0) {
-                echo "<script>
-                        $(document).ready(function() {
-                            $('#timed-in-modal').modal('show');
-                        });
-                      </script>";
-            } else {
-                // Proceed to add punch in
-                $punch_in_time = $current_time->format('Y-m-d H:i:s');
-                
-                try {
-                    // Set pause_duration to '00:00:00' when punching in
-                    $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
-                    $add_attendance->execute(['user_id' => $user_id, 'punch_in_time' => $punch_in_time]);
+    // Allow punch in up to 1 hour before the scheduled in-time
+    $early_in_limit = clone $schedule_in_time;
+    $early_in_limit->modify('-1 hour');
 
-                    header('Location: ../Manage-Attendance/attendance.php');
-                } catch (PDOException $e) {
-                    echo $e->getMessage();
-                }
-            }
-        } else {
-            // User is trying to time in outside their schedule
+    if ($current_time >= $early_in_limit && $current_time <= $schedule_out_time) {
+        // Use the scheduled time if the punch-in is earlier than the scheduled in-time
+        $punch_in_time = ($current_time <= $schedule_in_time) 
+            ? $schedule_in_time->format('Y-m-d H:i:s')  // Set punch-in to scheduled in-time
+            : $current_time->format('Y-m-d H:i:s'); // Otherwise, use the current time
+
+        // Check if the user has already punched in today
+        $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
+        $stmt = $obj_admin->db->prepare($sql); 
+        $stmt->execute(['user_id' => $user_id, 'today' => $today]);
+
+        if ($stmt->rowCount() > 0) {
+            // Already timed in today
             echo "<script>
-                    alert('You can only time in during your scheduled hours.');
+                    $(document).ready(function() {
+                        $('#timed-in-modal').modal('show');
+                    });
                   </script>";
+        } else {
+            // Insert the time-in record
+            try {
+                $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
+                $add_attendance->execute(['user_id' => $user_id, 'punch_in_time' => $punch_in_time]);
+
+                header('Location: ../Manage-Attendance/attendance.php');
+            } catch (PDOException $e) {
+                echo $e->getMessage();
+            }
         }
     } else {
-        // No schedule found for the user
+        // Not within allowable punch-in window
         echo "<script>
-                alert('No schedule assigned for today.');
+                alert('You can only time in during your scheduled hours.');
               </script>";
     }
 }
+
 
 
 
@@ -248,21 +255,36 @@ if (isset($_POST['resume_time'])) {
                                                 <td><?php echo $serial; $serial++; ?></td>
                                                 <td><?php echo $row['fullname']; ?></td>
                                                 <td>
-                                                <?php
-                                                    // Extract the time component from the 'in_time'
-                                                    $in_time = new DateTime($row['in_time']);
-                                                    $time_only = $in_time->format('H:i');
+                                                    <?php
+                                                        // Extract the time component from the 'in_time'
+                                                        $in_time = new DateTime($row['in_time']);
+                                                        $time_only = $in_time->format('H:i');
 
-                                                    // Compare the time with 8:10 AM and apply red color if late
-                                                    if ($time_only > '08:10') {
-                                                        echo "<span style='color: red;'>{$row['in_time']}</span>";
-                                                    } else {
-                                                        echo $row['in_time'];
-                                                    }
+                                                        // Fetch the user's schedule for the day
+                                                        $sql_schedule = "SELECT intime FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+                                                        $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
+                                                        $stmt_schedule->execute(['user_name' => $row['fullname'], 'today' => $today]);
+
+                                                        if ($stmt_schedule->rowCount() > 0) {
+                                                            $schedule = $stmt_schedule->fetch(PDO::FETCH_ASSOC);
+                                                            $schedule_in_time = new DateTime($schedule['intime']);
+                                                        } else {
+                                                            // Use default schedule if no schedule is found
+                                                            $schedule_in_time = new DateTime('08:00:00');
+                                                        }
+
+                                                        // Check if the user is late (more than 10 minutes after scheduled in-time)
+                                                        $late_threshold = $schedule_in_time->modify('+10 minutes')->format('H:i:s');
+
+                                                        if ($time_only > $late_threshold) {
+                                                            echo "<span style='color: red;'>{$row['in_time']}</span>";
+                                                        } else {
+                                                            echo "<span style='color: black;'>{$row['in_time']}</span>";
+                                                        }
                                                     ?>
                                                 </td>
-                                                <td><?php echo $row['out_time']; ?></td>
-                                                <td>
+                                                    <td><?php echo $row['out_time']; ?></td>
+                                                    <td>
                                                 <?php
                                                     // Get the current time
                                                     $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
