@@ -56,7 +56,7 @@ if(isset($_POST['login_btn'])){
       <div class="panels-container">
         <div class="panel left-panel">
           <div class="content">
-            <h3>Welcome to Palinis po!</h3>
+            <h3>Welcome to </h3>
             <p>
               Enter your details and start your journey with us!
             </p>
