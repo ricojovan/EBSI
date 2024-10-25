@@ -114,6 +114,14 @@ if (isset($_POST['add_new_employee'])) {
                                 <label class="control-label">Email</label>
                                 <input type="email" placeholder="Enter Employee Email" name="em_email" class="form-control input-custom" required>
                             </div>
+                            <div class="form-group">
+                                <label class="control-label">Role</label>
+                                <select name="em_role" class="form-control input-custom" required>
+                                    <option value="">Select Role</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="employee">Employee</option>
+                                </select>
+                            </div>
                             <div class="form-group text-center">
                                 <button type="submit" name="add_new_employee" class="btn btn-primary rounded-0 mr-4">Add Employee</button>
                                 <button type="button" class="btn btn-default rounded-0" data-dismiss="modal">Cancel</button>

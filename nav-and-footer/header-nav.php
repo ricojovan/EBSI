@@ -162,26 +162,65 @@ $user_role = $_SESSION['user_role'];
                     </div>
                     <!-- profile info & task notification -->
                     <div class="col-md-6 col-sm-4 clearfix">
-                        <ul class="notification-area pull-right">
-                            <li class="dropdown">
-                                <i class="ti-bell dropdown-toggle" data-toggle="dropdown">
-                                    <span>2</span>
-                                </i>
-                                <div class="dropdown-menu bell-notify-box notify-box">
-                                    <span class="notify-title">You have 3 new notifications <a href="#">view all</a></span>
-                                    <div class="nofity-list">
-                                        <a href="#" class="notify-item">
-                                            <div class="notify-thumb"><i class="ti-key btn-danger"></i></div>
-                                            <div class="notify-text">
-                                                <p>You have Changed Your Password</p>
-                                                <span>Just Now</span>
-                                            </div>
-                                        </a>
-                                    </div>
+                        <div class="float-right">
+                            <div id="currentDateTime" class="text-right d-flex align-items-center bg-light rounded p-2 shadow-sm" style="cursor: pointer;" data-toggle="modal" data-target="#dateDetailsModal">
+                                <i class="fa fa-calendar mr-2 text-primary" aria-hidden="true"></i>
+                                <div>
+                                    <div id="currentDate" class="font-weight-bold"></div>
+                                    <div id="currentTime" class="text-muted"></div>
                                 </div>
-                            </li>
-                            
-                        </ul>
+                            </div>
+                        </div>
+                        <script>
+                            function updateDateTime() {
+                                var now = new Date();
+                                var date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                                var time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                                document.getElementById('currentDate').textContent = date;
+                                document.getElementById('currentTime').textContent = time;
+                            }
+                            updateDateTime();
+                            setInterval(updateDateTime, 1000);
+
+                            document.getElementById('currentDateTime').addEventListener('click', function() {
+                                var now = new Date();
+                                var details = {
+                                    dayOfWeek: now.toLocaleDateString('en-US', { weekday: 'long' }),
+                                    dayOfMonth: now.getDate(),
+                                    month: now.toLocaleDateString('en-US', { month: 'long' }),
+                                    year: now.getFullYear(),
+                                    dayOfYear: Math.floor((now - new Date(now.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24)),
+                                    weekNumber: Math.ceil((((now - new Date(now.getFullYear(), 0, 1)) / 86400000) + 1) / 7)
+                                };
+                                
+                                var modalBody = document.querySelector('#dateDetailsModal .modal-body');
+                                modalBody.innerHTML = `
+                                    <p><strong>Day of Week:</strong> ${details.dayOfWeek}</p>
+                                    <p><strong>Day of Month:</strong> ${details.dayOfMonth}</p>
+                                    <p><strong>Month:</strong> ${details.month}</p>
+                                    <p><strong>Year:</strong> ${details.year}</p>
+                                    <p><strong>Day of Year:</strong> ${details.dayOfYear}</p>
+                                    <p><strong>Week of Year:</strong> ${details.weekNumber}</p>
+                                `;
+                            });
+                        </script>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="dateDetailsModal" tabindex="-1" role="dialog" aria-labelledby="dateDetailsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title" id="dateDetailsModalLabel">Date Details</h5>
+                                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Date details will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

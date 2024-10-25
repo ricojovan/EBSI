@@ -89,7 +89,10 @@ try {
 ?>
     
         <!-- page title area end -->
-
+        <?php
+                        $user_role = $_SESSION['user_role'];
+                        if($user_role == 1){
+                        ?>
 <div class="main-content-inner">
     <div class="container-fluid">
         <div class="row justify-content-start"> 
@@ -202,7 +205,13 @@ try {
         </div>
     </div>
 </div>
-
+<?php 
+    }else if($user_role == 2){
+?>
+Hello
+<?php
+    }
+?>
    <!-- Main content end -->
         <!-- main content area end -->
         <?php include '../nav-and-footer/footer-area.php';?>  

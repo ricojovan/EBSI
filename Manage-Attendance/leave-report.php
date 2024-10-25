@@ -9,7 +9,24 @@ include('../nav-and-footer/header-nav.php');
             <div class="row">
                 <div class="col-12">
                     <div class="container">
+                        <!-- <button class="btn btn-primary mb-3" id="printButton">Print</button>
+                        <button class="btn btn-success mb-3 ml-2" id="fillFormButton">Fill Form</button>
 
+                        <script>
+                        document.getElementById('fillFormButton').addEventListener('click', function() {
+                            document.getElementById('employee-name').value = 'John Doe';
+                            document.getElementById('department').value = 'IT Department';
+                            document.getElementById('employee-status').value = 'Full-time';
+                            document.getElementById('position').value = 'Software Developer';
+                            
+                            // Randomly check one of the leave types
+                            const leaveTypes = ['undertime', 'absences', 'bereavement', 'changeshift'];
+                            const randomLeaveType = leaveTypes[Math.floor(Math.random() * leaveTypes.length)];
+                            document.getElementById(randomLeaveType).checked = true;
+                            
+                            // You can add more fields here as needed
+                        });
+                        </script> -->
                         <div class="form-container">
                             <h2 class="form-title">E-BRIGHT RETAIL CORP.<br>Leave Form Application</h2>
                             <p class="text-center text-muted">
