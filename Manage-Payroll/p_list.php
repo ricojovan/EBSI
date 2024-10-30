@@ -36,11 +36,15 @@ if(isset($_GET['id'])) {
             FROM payslip p
             JOIN tbl_admin a ON p.employee_id = a.user_id
             WHERE p.payroll_id = :payroll_id";
+
     $stmt = $admin_class->db->prepare($sql);
     $stmt->bindParam(':payroll_id', $payroll_id);
     $stmt->execute();
     $payslips = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 }
+
+
 
 //Checks if the payslip record is deleted before the website refreshes
 if (isset($_POST['delete_id'])) {
@@ -63,6 +67,42 @@ if (isset($_POST['delete_id'])) {
   }
 }
 
+
+if (isset($_POST['add_payslip_button'])) {
+  $payroll_id = $_GET['id'];
+  $userRole = 2;
+
+  // Check if payslips already exist for the payroll ID
+  $check_sql = "SELECT COUNT(*) FROM payslip WHERE payroll_id = :payroll_id";
+  $check_stmt = $admin_class->db->prepare($check_sql);
+  $check_stmt->bindParam(':payroll_id', $payroll_id);
+  $check_stmt->execute();
+
+  if ($check_stmt->fetchColumn() == 0) {
+      // Only insert if no payslips exist for this payroll ID
+      $insert_sql = "
+          INSERT INTO payslip (payroll_id, employee_id)
+          SELECT :payroll_id, a.user_id
+          FROM tbl_admin a
+          JOIN attendance_info ai ON a.user_id = ai.atn_user_id
+          JOIN payroll_list pl ON pl.id = :payroll_id
+          WHERE a.user_role = :userRole
+            AND DATE(ai.in_time) >= pl.start_date
+            AND DATE(ai.out_time) <= pl.end_date
+            AND ai.total_duration >= 8
+            AND a.user_id NOT IN (
+              SELECT employee_id 
+              FROM payslip 
+              WHERE payroll_id = :payroll_id
+            )
+          GROUP BY a.user_id";
+
+      $insert_stmt = $admin_class->db->prepare($insert_sql);
+      $insert_stmt->bindParam(':payroll_id', $payroll_id);
+      $insert_stmt->bindParam(':userRole', $userRole, PDO::PARAM_INT);
+      $insert_stmt->execute();
+  }
+}
 
 ?>
 
@@ -153,7 +193,10 @@ if (isset($_POST['delete_id'])) {
     <div class="text-right">
     <div class="d-flex align-items-center">
         <button type="button" class="btn btn-primary ml-2 print-link">Print Payslip List</button>
-        <button type="button" class="btn btn-primary ml-3">Add New Payslip</button>
+
+        <form method="post" style="display:inline;">
+          <button type="submit" class="btn btn-primary ml-3" name="add_payslip_button">Add New Payslip</button>
+        </form>
         <!-- This line below is the old button -->
         <!-- <button type="button" class="btn btn-primary ml-3" data-toggle="modal" data-target="#addPayslipModal">Add New Payslip</button> -->
     </div>
@@ -264,7 +307,6 @@ if (isset($_POST['delete_id'])) {
                             <th>Project Based Pay</th>
                             <th>Gross Pay</th>
                             <th>Total Pay</th>
-                            <!-- <th>Print</th> -->
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -405,3 +447,4 @@ $(document).ready(function() {
 
 
 </script>
+
