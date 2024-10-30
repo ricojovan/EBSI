@@ -21,6 +21,9 @@ if (isset($_GET['delete_user'])) {
 if (isset($_POST['add_new_employee'])) {
     $error = $obj_admin->add_new_user($_POST);
 }
+
+
+
 ?>
 
 <div class="col-12 mt-5">
@@ -57,7 +60,7 @@ if (isset($_POST['add_new_employee'])) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $sql = "SELECT * FROM tbl_admin WHERE user_role = 2 ORDER BY user_id DESC";
+                                    $sql = "SELECT * FROM tbl_admin WHERE user_role IN (2,3) ORDER BY user_id DESC";
                                     $info = $obj_admin->manage_all_info($sql);
                                     $serial  = 1;
                                     $num_row = $info->rowCount();
@@ -122,8 +125,8 @@ if (isset($_POST['add_new_employee'])) {
                     <div class="row mb-4">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="control-label">Surname</label>
-                                <input type="text" placeholder="Enter Surname" name="em_surname" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid surname (letters only)" class="form-control" id="surname" required oninput="validateFullname()">
+                                <label class="control-label">Last Name</label>
+                                <input type="text" placeholder="Enter Last Name" name="em_lastname" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid Last Name (letters only)" class="form-control" id="lastname" required oninput="validateFullname()">
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -135,7 +138,7 @@ if (isset($_POST['add_new_employee'])) {
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Middle Name (Optional)</label>
-                                <input type="text" placeholder="Enter Middle Name" name="em_middlename" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid middle name (letters only)" class="form-control" id="middlename" oninput="validateFullname()">
+                                <input type="text" placeholder="Enter Middle Name" name="em_middlename" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" class="form-control" id="middlename" oninput="validateFullname()">
                             </div>
                         </div>
                     </div>

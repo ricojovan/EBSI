@@ -133,52 +133,80 @@ class Admin_Class
 
 /*----------- add_new_user--------------*/
 
-	public function add_new_user($data){
-		$user_fullname  = $this->test_form_input_data($data['em_fullname']);
+	public function add_new_user($data) {
+		
+		// Retrieve Employee ID
+		$user_id = $this->test_form_input_data($data['em_id']);
+
+		// Combine the first, middle, and last names into a single fullname
+		$user_fullname = $this->test_form_input_data(trim($data['em_lastname'] . ' ' . $data['em_firstname'] . ' ' . $data['em_middlename']));
+		
+		// Additional form data
 		$user_username = $this->test_form_input_data($data['em_username']);
 		$user_email = $this->test_form_input_data($data['em_email']);
-		$temp_password = rand(000000001,10000000);
-		$user_password = $this->test_form_input_data(md5($temp_password));
-		$user_role = 2;
-		try{
-			$sqlEmail = "SELECT email FROM tbl_admin WHERE email = '$user_email' ";
-			$query_result_for_email = $this->manage_all_info($sqlEmail);
-			$total_email = $query_result_for_email->rowCount();
+		$department = $this->test_form_input_data($data['em_department']);
+		$position = $this->test_form_input_data($data['em_position']);
+		$status = $this->test_form_input_data($data['em_status']);
+		$role = ($data['em_role'] == 'employee') ? 2 : 3; // Set user role based on selection
+		$temp_password = rand(100000, 999999); // Generate a temporary password
+		$user_password = md5($temp_password); // Hash the password
 
-			$sqlUsername = "SELECT username FROM tbl_admin WHERE username = '$user_username' ";
-			$query_result_for_username = $this->manage_all_info($sqlUsername);
-			$total_username = $query_result_for_username->rowCount();
+		// Handle file upload if provided
+		$profile_pic = $_FILES['em_profile_pic']['name'];
+		$target_dir = "../assets/images/team/"; // 
+		$target_file = $target_dir . basename($profile_pic);
+	
+		
+		if (!is_dir($target_dir)) {
+			mkdir($target_dir, 0777, true); 
+		}
 
-			if($total_email != 0 && $total_username != 0){
-				$message = "Email and Password both are already taken";
-            	return $message;
+		if ($profile_pic && !move_uploaded_file($_FILES['em_profile_pic']['tmp_name'], $target_file)) {
+			return "Failed to upload profile picture.";
+		}
 
-			}elseif($total_username != 0){
-				$message = "Username Already Taken";
-            	return $message;
+		try {
+			// Check if email or username already exists
+			$sqlEmail = "SELECT email FROM tbl_admin WHERE email = :email";
+			$query_result_for_email = $this->db->prepare($sqlEmail);
+			$query_result_for_email->execute([':email' => $user_email]);
+			
+			$sqlUsername = "SELECT username FROM tbl_admin WHERE username = :username";
+			$query_result_for_username = $this->db->prepare($sqlUsername);
+			$query_result_for_username->execute([':username' => $user_username]);
 
-			}elseif($total_email != 0){
-				$message = "Email Already Taken";
-            	return $message;
+			if ($query_result_for_email->rowCount() > 0) {
+				return "Email is already taken";
+			} elseif ($query_result_for_username->rowCount() > 0) {
+				return "Username is already taken";
+			} else {
+				// Prepare SQL query to insert user data
+				$add_user = $this->db->prepare("INSERT INTO tbl_admin (user_id, fullname, username, email, password, temp_password, em_department, em_position, em_status, em_profile, user_role) 
+					VALUES (:em_id, :fullname, :username, :email, :password, :temp_password, :department, :position, :status, :profile, :role)");
 
-			}else{
-				$add_user = $this->db->prepare("INSERT INTO tbl_admin (fullname, username, email, password, temp_password, user_role) VALUES (:x, :y, :z, :a, :b, :c) ");
+				// Bind parameters
+				$add_user->bindParam(':em_id', $user_id);
+				$add_user->bindParam(':fullname', $user_fullname);
+				$add_user->bindParam(':username', $user_username);
+				$add_user->bindParam(':email', $user_email);
+				$add_user->bindParam(':password', $user_password);
+				$add_user->bindParam(':temp_password', $temp_password);
+				$add_user->bindParam(':department', $department);
+				$add_user->bindParam(':position', $position);
+				$add_user->bindParam(':status', $status);
+				$add_user->bindParam(':profile', $target_file);
+				$add_user->bindParam(':role', $role);
 
-				$add_user->bindparam(':x', $user_fullname);
-				$add_user->bindparam(':y', $user_username);
-				$add_user->bindparam(':z', $user_email);
-				$add_user->bindparam(':a', $user_password);
-				$add_user->bindparam(':b', $temp_password);
-				$add_user->bindparam(':c', $user_role);
-
+				// Execute the query
 				$add_user->execute();
+
+				
 			}
-
-
-		}catch (PDOException $e) {
-			echo $e->getMessage();
+		} catch (PDOException $e) {
+			return "Error: " . $e->getMessage();
 		}
 	}
+
 
 
 /* ---------update_user_data----------*/
