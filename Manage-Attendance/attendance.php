@@ -18,11 +18,14 @@ if ($user_id == NULL || $security_key == NULL) {
 }
 
 if (isset($_GET['delete_attendance'])) {
-    $action_id = $_GET['aten_id'];
+    $aten_id = $_GET['aten_id'];  // Get the specific aten_id to delete
     $sql = "DELETE FROM attendance_info WHERE aten_id = :id";
     $sent_po = "../Manage-Attendance/attendance.php";
-    $obj_admin->delete_data_by_this_method($sql, $action_id, $sent_po);
+
+    // Pass the specific aten_id to the delete method
+    $obj_admin->delete_data_by_this_method($sql, $aten_id, $sent_po);
 }
+
 
 if (isset($_POST['add_punch_in'])) {
     // Get today's date
@@ -89,52 +92,43 @@ if (isset($_POST['add_punch_in'])) {
 }
 
 
-
-
 if (isset($_POST['add_punch_out'])) {
     // Get the current punch-out time
     $punch_out_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
     $out_time = $punch_out_time->format('Y-m-d H:i:s');
 
-    // Fetch the punch-in time from the database
+    // Fetch the punch-in time from the database based on the specific aten_id
     $aten_id = $_POST['aten_id'];
     $sql = "SELECT in_time FROM attendance_info WHERE aten_id = :aten_id";
     $stmt = $obj_admin->db->prepare($sql);
     $stmt->execute(['aten_id' => $aten_id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $punch_in_time_raw = $row['in_time'];
-    echo "Raw punch-in time from DB: " . $punch_in_time_raw . "<br>";
+    if ($row) {
+        $punch_in_time_raw = $row['in_time'];
 
-    // Convert punch-in time to DateTime object
-    $punch_in_time = new DateTime($punch_in_time_raw, new DateTimeZone('Asia/Manila'));
-    echo "Formatted punch-in time: " . $punch_in_time->format('Y-m-d H:i:s') . "<br>";
-    
-    echo "Punch-out time: " . $punch_out_time->format('Y-m-d H:i:s') . "<br>";
+        // Convert punch-in time to DateTime object
+        $punch_in_time = new DateTime($punch_in_time_raw, new DateTimeZone('Asia/Manila'));
+        
+        // Calculate the total duration between punch-in and punch-out
+        $total_duration = $punch_in_time->diff($punch_out_time);
 
-    // Calculate the total duration between punch-in and punch-out
-    $total_duration = $punch_in_time->diff($punch_out_time);
+        // Format the total duration for storing in the database
+        $formatted_duration = $total_duration->format('%H:%I:%S');
 
-    // Debug: Output the duration details
-    echo "Total Duration: " . $total_duration->format('%H:%I:%S') . "<br>";
-    echo "Difference (Raw): " . print_r($total_duration, true) . "<br>";
+        // Update the punch-out time and total duration in the database
+        $sql_update = "UPDATE attendance_info SET out_time = :out_time, total_duration = :total_duration WHERE aten_id = :aten_id";
+        $stmt_update = $obj_admin->db->prepare($sql_update);
+        $stmt_update->execute([
+            'out_time' => $out_time,
+            'total_duration' => $formatted_duration,
+            'aten_id' => $aten_id
+        ]);
 
-    // Format the total duration for storing in the database
-    $formatted_duration = $total_duration->format('%H:%I:%S');
-
-    // Now update the punch-out time and total duration in the database
-    $sql_update = "UPDATE attendance_info SET out_time = :out_time, total_duration = :total_duration WHERE aten_id = :aten_id";
-    $stmt_update = $obj_admin->db->prepare($sql_update);
-    $stmt_update->execute([
-        'out_time' => $out_time,
-        'total_duration' => $formatted_duration,
-        'aten_id' => $aten_id
-    ]);
-
-    header('Location: ../Manage-Attendance/attendance.php');
-    
-    
+        header('Location: ../Manage-Attendance/attendance.php');
+    }
 }
+
 
 if (isset($_POST['pause_time'])) {
     $obj_admin->pause_time($_POST);
@@ -354,51 +348,51 @@ if (isset($_POST['resume_time'])) {
                                                 ?>
 
                                                 </td>
+                                                
                                                 <?php if ($row['out_time'] == null) { ?>
-                                                <td>
-                                                    <form method="post" role="form" action="" class="attendance-form">
-                                                        <input type="hidden" name="punch_in_time" value="<?php echo $row['in_time']; ?>">
-                                                        <input type="hidden" name="aten_id" value="<?php echo $row['aten_id']; ?>">
+                                                    <td>
+                                                        <form method="post" role="form" action="" class="attendance-form">
+                                                            <input type="hidden" name="aten_id" value="<?php echo $row['aten_id']; ?>"> <!-- Pass unique aten_id -->
 
-                                                        <?php if ($row['pause_time'] == null) { ?>
-                                                        
-                                                        <button type="button" class="btn btn-danger btn-xs rounded" data-toggle="modal" data-target="#exampleModalCenter">Time Out</button>
-                                                        
-                                                        <div class="modal fade" id="exampleModalCenter">
-                                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title">Confirm Time Out</h5>
-                                                                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <p>Are you sure you want to time out? Please ensure that all your work is saved before proceeding.</p>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                        <button type="submit" name="add_punch_out" class="btn btn-primary">Save changes</button>
+                                                            <?php if ($row['pause_time'] == null) { ?>
+                                                                <button type="button" class="btn btn-danger btn-xs rounded" data-toggle="modal" data-target="#modal-<?php echo $row['aten_id']; ?>">Time Out</button>
+
+                                                                <!-- Modal specific to the employee -->
+                                                                <div class="modal fade" id="modal-<?php echo $row['aten_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title">Confirm Time Out</h5>
+                                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                    <span aria-hidden="true">&times;</span>
+                                                                                </button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <p>Are you sure you want to time out? Please ensure that all your work is saved before proceeding.</p>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                                <button type="submit" name="add_punch_out" class="btn btn-primary">Save changes</button>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </div>
-
-
-                                                        <?php } else { ?>
-                                                        <button type="submit" name="resume_time" class="btn btn-success btn-xs rounded">Resume Time</button>
-                                                        <?php } ?>
-                                                    </form>
-                                                </td>
+                                                            <?php } ?>
+                                                        </form>
+                                                    </td>
                                                 <?php } else { ?>
                                                 <td class="text-center">------</td>
                                                 <?php } ?>
 
                                                 <?php if ($user_role == 1) { ?>
-                                                <td>
-                                                    
-                                                    <button type="button" class="btn btn-danger btn-xs rounded" data-toggle="modal" data-target="#delete-modal"><i class="fa fa-trash-o"></i></button>
-                                                    
+                                                    <td>
+                                                        <!-- Button to trigger deletion modal with unique modal ID for each aten_id -->
+                                                        <button type="button" class="btn btn-danger btn-xs rounded" data-toggle="modal" data-target="#delete-modal-<?php echo $row['aten_id']; ?>">
+                                                            <i class="fa fa-trash-o"></i>
+                                                        </button>
 
-                                                    <div class="modal fade" id="delete-modal">
+                                                        <!-- Modal with unique ID for each attendance record -->
+                                                        <div class="modal fade" id="delete-modal-<?php echo $row['aten_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog modal-dialog-centered" role="document">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
@@ -410,14 +404,17 @@ if (isset($_POST['resume_time'])) {
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                        <a title="Delete" href="?delete_attendance=delete_attendance&aten_id=<?php echo $row['aten_id']; ?>" class="btn btn-danger btn-sm" ><i class="fa fa-trash-o"></i></a>
+                                                                        <!-- Link to delete attendance with specific aten_id -->
+                                                                        <a title="Delete" href="?delete_attendance=delete_attendance&aten_id=<?php echo $row['aten_id']; ?>" class="btn btn-danger btn-sm">
+                                                                            <i class="fa fa-trash-o"></i> Delete
+                                                                        </a>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                    </div>
-                                                </td>
+                                                        </div>
+                                                    </td>
                                                 <?php } else { ?>
-                                                <td></td>
+                                                    <td></td>
                                                 <?php } ?>
                                             </tr>
                                             <?php } ?>
