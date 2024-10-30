@@ -136,6 +136,7 @@ $user_role = $_SESSION['user_role'];
 ?>
     <ul class="metismenu" id="menu">
         <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
+        <li <?php if($page_name == "Leave Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/leave-report.php"><span>Leave Report</span></a></li>
     </ul>
 <?php
     }else{

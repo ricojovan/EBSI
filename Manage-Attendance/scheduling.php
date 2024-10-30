@@ -155,9 +155,6 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
         white-space: nowrap;
         box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     }
-
-
-
     /* Responsive styles */
     @media (max-width: 768px) {
         #calendar {
@@ -199,74 +196,137 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
         }
     }
 </style>
-
 <div class="col-12 mt-3 mb-3">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-12">
-                    <div class="assign-button-container">
-                        <button type="button" id="openModalButton" class="btn btn-primary" disabled>Assign Employee</button>
-                    </div>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" id="schedulingTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="calendar-tab" data-toggle="tab" href="#calendarView" role="tab" aria-controls="calendarView" aria-selected="true">Calendar View</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="table-tab" data-toggle="tab" href="#tableView" role="tab" aria-controls="tableView" aria-selected="false">Schedule List</a>
+                </li>
+            </ul>
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="well well-custom">
-                                <div id="calendar"></div>
+            <!-- Tab content -->
+            <div class="tab-content" id="schedulingTabContent">
+                <!-- Calendar View Tab -->
+                <div class="tab-pane fade show active" id="calendarView" role="tabpanel" aria-labelledby="calendar-tab">
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="assign-button-container">
+                                <button type="button" id="openModalButton" class="btn btn-primary" disabled>Assign Employee</button>
+                            </div>
 
-                                <div id="full-name-display" style="position: absolute; background-color: #333; color: #fff; padding: 5px; border-radius: 5px; display: none; z-index: 1000;">
-                                </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="well well-custom">
+                                        <div id="calendar"></div>
 
-                                
-                                <!-- Modal for assigning time in/out -->
-                                <div class="modal fade" id="timeModal" tabindex="-1" role="dialog" aria-labelledby="timeModalLabel" aria-hidden="true">
-                                  <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                      <div class="modal-header">
-                                        <h5 class="modal-title" id="timeModalLabel">Assign Time for Employee</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                          <span aria-hidden="true">&times;</span>
-                                        </button>
-                                      </div>
+                                        <div id="full-name-display" style="position: absolute; background-color: #333; color: #fff; padding: 5px; border-radius: 5px; display: none; z-index: 1000;">
+                                        </div>
 
-                                      <div class="modal-body">
-                                        <form method="POST" action="scheduling.php">
-                                            <div class="form-group">
-                                                <label for="selectedStartDate">Start Date:</label>
-                                                <input type="text" id="selectedStartDate" name="start_date" class="form-control" required>
+                                        <!-- Modal for assigning time in/out -->
+                                        <div class="modal fade" id="timeModal" tabindex="-1" role="dialog" aria-labelledby="timeModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="timeModalLabel">Assign Time for Employee</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="modal-body">
+                                                        <form method="POST" action="scheduling.php">
+                                                            <div class="form-group">
+                                                                <label for="selectedStartDate">Start Date:</label>
+                                                                <input type="text" id="selectedStartDate" name="start_date" class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="selectedEndDate">End Date:</label>
+                                                                <input type="text" id="selectedEndDate" name="end_date" class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="employeeName">Employee Name:</label>
+                                                                <select id="employeeName" name="employee_name" class="form-control">
+                                                                    <option value="">Select Employee</option>
+                                                                    <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)) { ?>
+                                                                        <option value="<?php echo $row['fullname']; ?>">
+                                                                            <?php echo $row['fullname']; ?>
+                                                                        </option>
+                                                                    <?php } ?>
+                                                                </select>
+                                                            </div>
+                                                            
+                                                            <div class="form-group">
+                                                                <label for="intime">In Time:</label>
+                                                                <input type="time" id="intime" name="intime" class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="outtime">Out Time:</label>
+                                                                <input type="time" id="outtime" name="outtime" class="form-control" required>
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary">Save</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="selectedEndDate">End Date:</label>
-                                                <input type="text" id="selectedEndDate" name="end_date" class="form-control" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="employeeName">Employee Name:</label>
-                                                <select id="employeeName" name="employee_name" class="form-control">
-                                                    <option value="">Select Employee</option>
-                                                    <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)) { ?>
-                                                        <option value="<?php echo $row['fullname']; ?>">
-                                                            <?php echo $row['fullname']; ?>
-                                                        </option>
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label for="intime">In Time:</label>
-                                                <input type="time" id="intime" name="intime" class="form-control" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="outtime">Out Time:</label>
-                                                <input type="time" id="outtime" name="outtime" class="form-control" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Save</button>
-                                        </form>
+                                        </div>
                                     </div>
-
-                                    </div>
-                                  </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table View Tab -->
+                <div class="tab-pane fade" id="tableView" role="tabpanel" aria-labelledby="table-tab">
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <table id="group-f" class="table table-condensed table-custom table-hover">
+                                <thead class="text-uppercase table-bg-default text-white">
+                                    <tr>
+                                        <th>S.N.</th>
+                                        <th>Employee Name</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                try {
+                                    // Get scheduling data joined with employee names
+                                    $sql = "SELECT s.id, s.*, a.fullname 
+                                           FROM scheduling s
+                                           INNER JOIN tbl_admin a ON s.fullname = a.fullname
+                                           ORDER BY s.start_date DESC";
+                                    
+                                    $stmt = $pdo->prepare($sql);
+                                    $stmt->execute();
+                                    
+                                    $counter = 1;
+                                    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                        echo "<tr>";
+                                        echo "<td>" . $counter . "</td>";
+                                        echo "<td>" . $row['fullname'] . "</td>";
+                                        echo "<td>" . date('M d, Y', strtotime($row['start_date'])) . "</td>";
+                                        echo "<td>" . date('M d, Y', strtotime($row['end_date'])) . "</td>";
+                                        echo "<td>
+                                                <button class='btn btn-primary btn-sm edit-btn' data-id='" . $row['id'] . "'>Edit</button>
+                                                <button class='btn btn-danger btn-sm delete-btn' data-id='" . $row['id'] . "'>Delete</button>
+                                             </td>";
+                                        echo "</tr>";
+                                        $counter++;
+                                    }
+                                } catch(PDOException $e) {
+                                    echo "Error: " . $e->getMessage();
+                                }
+                                ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -276,7 +336,6 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
 </div>
 
 <?php
-
 include("../nav-and-footer/footer-area.php");
 ?>
 
@@ -389,7 +448,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-
 
 </script>
