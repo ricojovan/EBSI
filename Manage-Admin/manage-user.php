@@ -160,13 +160,19 @@ if (isset($_POST['add_new_employee'])) {
                     <!-- Employment Information -->
                     <h5 class="border-bottom pb-2">Employment Information</h5>
                     <div class="row mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Department</label>
                                 <input type="text" placeholder="Enter Department" name="em_department" class="form-control" required>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="control-label">Position</label>
+                                <input type="text" placeholder="Enter Position" name="em_position" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Employee Status</label>
                                 <select name="em_status" class="form-control" required>
@@ -177,7 +183,7 @@ if (isset($_POST['add_new_employee'])) {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Role</label>
                                 <select name="em_role" class="form-control" required>
