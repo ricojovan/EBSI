@@ -11,7 +11,7 @@ if ($user_id == NULL || $security_key == NULL) {
 
 $user_role = $_SESSION['user_role'];
 if ($user_role != 1) {
-    header('Location: ../task-info.php');
+    header('Location: ../Interface/login.php');
 }
 
 if (isset($_GET['delete_user'])) {
@@ -33,19 +33,19 @@ if (isset($_POST['add_new_employee'])) {
                             <div class="alert alert-danger"><?php echo $error; ?></div>
                         <?php endif; ?>
 
-                        <div class="btn-group">
-                            <button class="btn btn-primary-custom btn-menu" data-toggle="modal" data-target="#myModal">Add New Employee</button>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="btn-group" role="group">
+                                <a href="../Manage-Admin/manage-admin.php" class="btn btn-outline-primary">Manage Admin</a>
+                                <a href="../Manage-Admin/manage-user.php" class="btn btn-primary disabled-link" disabled>Manage Employee</a>
+                            </div>
+                            <button class="btn btn-success" data-toggle="modal" data-target="#myModal">
+                                <i class="fa fa-plus"></i> Add New Employee
+                            </button>
                         </div>
-                        <div class="gap"></div>
-                        <div class="gap"></div>
-                        <ul class="nav nav-tabs nav-justified nav-tabs-custom">
-                            <li><a href="../Manage-Admin/manage-admin.php" class="btn btn-default mb-3 mr-4 mt-3">Manage Admin</a></li>
-                            <li class="active"><a href="../Manage-Admin/manage-user.php" class="btn btn-outline-secondary mb-3 mt-3 disabled-link">Manage Employee</a></li>
-                        </ul>
 
                         <div class="table-responsive">
-                            <table id="group-b" class="table table-custom table-hover">
-                                <thead class="text-uppercase table-bg-default text-white">
+                            <table id="group-b" class="table table-striped table-hover">
+                                <thead class="bg-primary text-white">
                                     <tr>
                                         <th>Serial No.</th>
                                         <th>Fullname</th>
@@ -74,8 +74,8 @@ if (isset($_POST['add_new_employee'])) {
                                             <td><?php echo $row['temp_password']; ?></td>
 
                                             <td>
-                                                <a title="Update Employee" href="../Manage-Employee/emp-update.php?admin_id=<?php echo $row['user_id']; ?>"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
-                                                <a title="Delete" href="?delete_user=delete_user&admin_id=<?php echo $row['user_id']; ?>" onclick=" return check_delete();"><i class="fa fa-trash-o"></i></a>
+                                                <a title="Update Employee" href="../Manage-Employee/emp-update.php?admin_id=<?php echo $row['user_id']; ?>" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
+                                                <a title="Delete" href="?delete_user=delete_user&admin_id=<?php echo $row['user_id']; ?>" onclick=" return check_delete();" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
                                             </td>
                                         </tr>
                                     <?php endwhile; ?>
@@ -91,44 +91,109 @@ if (isset($_POST['add_new_employee'])) {
 
 <!-- Modal for employee add -->
 <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <!-- Modal content -->
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Add Employee Info</h2>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="modal-header bg-primary text-white">
+                <h4 class="modal-title">Add New Employee</h4>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <form role="form" action="" method="post" autocomplete="off">
+                <form role="form" action="" method="post" autocomplete="off" enctype="multipart/form-data">
+                    
+                    <!-- Basic Information -->
+                    <h5 class="border-bottom pb-2">Basic Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Fullname</label>
-                                <input type="text" placeholder="Enter Employee Name" name="em_fullname" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid name (letters only)" class="form-control input-custom" id="fullname" required oninput="validateFullname()">
+                                <label class="control-label">Employee ID</label>
+                                <input type="text" placeholder="Enter Employee ID" name="em_id" class="form-control" required>
                             </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Profile Picture</label>
+                                <input type="file" name="em_profile_pic" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Name Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Surname</label>
+                                <input type="text" placeholder="Enter Surname" name="em_surname" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid surname (letters only)" class="form-control" id="surname" required oninput="validateFullname()">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">First Name</label>
+                                <input type="text" placeholder="Enter First Name" name="em_firstname" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid first name (letters only)" class="form-control" id="firstname" required oninput="validateFullname()">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Middle Name (Optional)</label>
+                                <input type="text" placeholder="Enter Middle Name" name="em_middlename" pattern="[a-zA-Z]+(?:\s+[a-zA-Z]+)*(?:[\s.,]*[a-zA-Z]+)*$" title="Please enter a valid middle name (letters only)" class="form-control" id="middlename" oninput="validateFullname()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Information -->
+                    <h5 class="border-bottom pb-2">Account Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Username</label>
-                                <input type="text" placeholder="Enter Employee Username" name="em_username" class="form-control input-custom" required>
+                                <input type="text" placeholder="Enter Employee Username" name="em_username" class="form-control" required>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Email</label>
-                                <input type="email" placeholder="Enter Employee Email" name="em_email" class="form-control input-custom" required>
+                                <input type="email" placeholder="Enter Employee Email" name="em_email" class="form-control" required>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Employment Information -->
+                    <h5 class="border-bottom pb-2">Employment Information</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Department</label>
+                                <input type="text" placeholder="Enter Department" name="em_department" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Employee Status</label>
+                                <select name="em_status" class="form-control" required>
+                                    <option value="">Select Status</option>
+                                    <option value="regular">Regular</option>
+                                    <option value="probationary">Probationary</option>
+                                    <option value="contractual">Contractual</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Role</label>
-                                <select name="em_role" class="form-control input-custom" required>
+                                <select name="em_role" class="form-control" required>
                                     <option value="">Select Role</option>
                                     <option value="manager">Manager</option>
                                     <option value="employee">Employee</option>
                                 </select>
                             </div>
-                            <div class="form-group text-center">
-                                <button type="submit" name="add_new_employee" class="btn btn-primary rounded-0 mr-4">Add Employee</button>
-                                <button type="button" class="btn btn-default rounded-0" data-dismiss="modal">Cancel</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="form-group text-right mt-4">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" name="add_new_employee" class="btn btn-primary ml-2">Add Employee</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -29,14 +29,16 @@ if ($user_role != 1) {
                     <div class="row">
                         <div class="col-md-12">
                             <div class="well well-custom">
-                                <ul class="nav nav-pills">
-                                    <li class="active"><a href="manage-admin.php" class="btn btn-outline-secondary mb-3 mr-4 disabled-link" disabled>Manage Admin</a></li>
-                                    <li><a href="../Manage-Admin/manage-user.php" class="btn btn-default mb-3">Manage Employee</a></li>
-                                </ul>
-                                <div class="gap"></div>
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="btn-group" role="group">
+                                        <a href="manage-admin.php" class="btn btn-primary disabled-link" disabled>Manage Admin</a>
+                                        <a href="../Manage-Admin/manage-user.php" class="btn btn-outline-primary">Manage Employee</a>
+                                    </div>
+                                </div>
+
                                 <div class="table-responsive">
-                                    <table id="group-a" class="table table-codensed table-custom table-hover">
-                                        <thead class="text-uppercase table-bg-default text-white">
+                                    <table id="group-a" class="table table-striped table-hover">
+                                        <thead class="bg-primary text-white">
                                             <tr>
                                                 <th>Serial No.</th>
                                                 <th>Name</th>
