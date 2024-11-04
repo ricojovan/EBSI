@@ -36,63 +36,17 @@ if(isset($_GET['id'])) {
             FROM payslip p
             JOIN tbl_admin a ON p.employee_id = a.user_id
             WHERE p.payroll_id = :payroll_id";
+
     $stmt = $admin_class->db->prepare($sql);
     $stmt->bindParam(':payroll_id', $payroll_id);
     $stmt->execute();
     $payslips = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 }
 
 
 
-// Check if the form is submitted
-if (isset($_POST['saveButton'])) {
-    // Retrieve form data
-    $employee_id = $_POST['employee_id'];
-    $commission_percent = $_POST['CommisionPercent'];
-    $project_based_pay = $_POST['projectBasedPay'];
-    $income_tax_percent = $_POST['incomeTax'];
-
-    // Calculate gross pay and total pay based on inputs (example calculations)
-    $gross_pay = $project_based_pay;
-    $total_pay = $project_based_pay * (1 - $income_tax_percent);
-
-    // Retrieve payroll ID from URL
-    if (isset($_GET['id'])) {
-        $payroll_id = $_GET['id'];
-
-        // Insert into payslip table
-        $sql = "INSERT INTO payslip (payroll_id, employee_id, commission_percent, project_based_pay, gross_pay, income_tax_percent, total_pay) 
-        VALUES (:payroll_id, :employee_id, :commission_percent, :project_based_pay, :gross_pay, :income_tax_percent, :total_pay)";
-        $stmt = $admin_class->db->prepare($sql);
-        $stmt->bindParam(':payroll_id', $payroll_id);
-        $stmt->bindParam(':employee_id', $employee_id);
-        $stmt->bindParam(':commission_percent', $commission_percent);
-        $stmt->bindParam(':project_based_pay', $project_based_pay);
-        $stmt->bindParam(':gross_pay', $gross_pay);
-        $stmt->bindParam(':income_tax_percent', $income_tax_percent);
-        $stmt->bindParam(':total_pay', $total_pay);
-
-        // Execute the query
-        if ($stmt->execute()) {
-            // Data inserted successfully
-            echo '<script>alert("Payslip added successfully.");</script>';
-
-            // Re-fetch payslips for the current payroll ID after insertion
-            $sql = "SELECT p.*, a.fullname AS employee_id 
-                    FROM payslip p
-                    JOIN tbl_admin a ON p.employee_id = a.user_id
-                    WHERE p.payroll_id = :payroll_id";
-            $stmt = $admin_class->db->prepare($sql);
-            $stmt->bindParam(':payroll_id', $payroll_id);
-            $stmt->execute();
-            $payslips = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } else {
-            // Error inserting data
-            echo '<script>alert("Failed to add payslip.");</script>';
-        }
-    }
-}
-// Check if the delete request is received
+//Checks if the payslip record is deleted before the website refreshes
 if (isset($_POST['delete_id'])) {
   // Retrieve the payslip ID to be deleted
   $payslip_id = $_POST['delete_id'];
@@ -110,6 +64,43 @@ if (isset($_POST['delete_id'])) {
       // Deletion failed
       echo json_encode(['status' => 'error', 'message' => 'Failed to delete payslip']);
       exit;
+  }
+}
+
+
+if (isset($_POST['add_payslip_button'])) {
+  $payroll_id = $_GET['id'];
+  $userRole = 2;
+
+  // Check if payslips already exist for the payroll ID
+  $check_sql = "SELECT COUNT(*) FROM payslip WHERE payroll_id = :payroll_id";
+  $check_stmt = $admin_class->db->prepare($check_sql);
+  $check_stmt->bindParam(':payroll_id', $payroll_id);
+  $check_stmt->execute();
+
+  if ($check_stmt->fetchColumn() == 0) {
+      // Only insert if no payslips exist for this payroll ID
+      $insert_sql = "
+          INSERT INTO payslip (payroll_id, employee_id)
+          SELECT :payroll_id, a.user_id
+          FROM tbl_admin a
+          JOIN attendance_info ai ON a.user_id = ai.atn_user_id
+          JOIN payroll_list pl ON pl.id = :payroll_id
+          WHERE a.user_role = :userRole
+            AND DATE(ai.in_time) >= pl.start_date
+            AND DATE(ai.out_time) <= pl.end_date
+            AND ai.total_duration >= 8
+            AND a.user_id NOT IN (
+              SELECT employee_id 
+              FROM payslip 
+              WHERE payroll_id = :payroll_id
+            )
+          GROUP BY a.user_id";
+
+      $insert_stmt = $admin_class->db->prepare($insert_sql);
+      $insert_stmt->bindParam(':payroll_id', $payroll_id);
+      $insert_stmt->bindParam(':userRole', $userRole, PDO::PARAM_INT);
+      $insert_stmt->execute();
   }
 }
 
@@ -192,6 +183,7 @@ if (isset($_POST['delete_id'])) {
     </div>
 </div>
 
+
 <div class="col-lg-12 mt-4">
     <div class="card">
     <div class="card-body d-flex justify-content-between align-items-center">
@@ -199,9 +191,21 @@ if (isset($_POST['delete_id'])) {
         <h5 class="card-title mb-0">Payslip List</h5>
     </div>
     <div class="text-right">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPayslipModal">Add New Payslip</button>
+    <div class="d-flex align-items-center">
+        <button type="button" class="btn btn-primary ml-2 print-link">Print Payslip List</button>
+
+        <form method="post" style="display:inline;">
+          <button type="submit" class="btn btn-primary ml-3" name="add_payslip_button">Add New Payslip</button>
+        </form>
+        <!-- This line below is the old button -->
+        <!-- <button type="button" class="btn btn-primary ml-3" data-toggle="modal" data-target="#addPayslipModal">Add New Payslip</button> -->
     </div>
+  </div>
 </div>
+
+
+<!-- We will take out some parts in the modal because of Add new Payslip we dont need its stuff anymore or maybe 
+ we will edit it to do something new -->
 <!-- Modal -->
 <div class="modal fade" id="addPayslipModal" tabindex="-1" role="dialog" aria-labelledby="addPayslipModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -303,7 +307,6 @@ if (isset($_POST['delete_id'])) {
                             <th>Project Based Pay</th>
                             <th>Gross Pay</th>
                             <th>Total Pay</th>
-                            <th>Print</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -320,7 +323,7 @@ if (isset($payslips) && !empty($payslips)) {
       echo '<td>' . $payslip['project_based_pay'] . '</td>';
       echo '<td>' . $payslip['gross_pay'] . '</td>';
       echo '<td>' . $payslip['total_pay'] . '</td>';
-      echo '<td><a href="#" class="btn btn-primary print-link">Print</a></td>';
+      // echo '<td><a href="#" class="btn btn-primary print-link">Print</a></td>';
       echo '<td><a href="#" class="btn btn-danger delete-link" data-id="' . $payslip['id'] . '">Delete</a></td>'; // Attach payslip ID to the delete button
       echo '</tr>';
       $counter++;
@@ -378,11 +381,12 @@ $(document).ready(function() {
     // Print function when "Print" link is clicked
     $("body").on("click", ".print-link", function() {
         // Get the parent table of the clicked link
-        var $table = $(this).closest("table").clone();
+        // var $table = $(this).closest("table").clone();
+        var $table = $("#printableTable").clone();
 
         // Remove the "Print" column and "Action" column from the cloned table
         $table.find("th:last-child, td:last-child").remove();
-        $table.find("th:nth-child(7), td:nth-child(7)").remove();
+        // $table.find("th:nth-child(7), td:nth-child(7)").remove();
 
         // Create a new window for printing
         var printWindow = window.open('', '_blank');
@@ -425,10 +429,11 @@ $(document).ready(function() {
                 method: "POST",
                 data: { delete_id: payslipId }, // Data to send (payslip ID)
                 success: function(response) {
-                    // Reload the page or update the table after successful deletion
+                  
+                    // // Reload the page or update the table after successful deletion
                     location.reload(); // Reload the page
-                    // You can also remove the row from the table without reloading
-                    // $(this).closest('tr').remove();
+                    // // You can also remove the row from the table without reloading
+                    // // $(this).closest('tr').remove();
                 },
                 error: function(xhr, status, error) {
                     // Handle error if any
