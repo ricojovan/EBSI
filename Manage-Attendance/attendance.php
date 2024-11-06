@@ -3,7 +3,6 @@
 $page_name = "Attendance";
 include('../nav-and-footer/header-nav.php');
 
-
 // User session and authentication check
 $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
@@ -28,10 +27,10 @@ if (isset($_GET['delete_attendance'])) {
 
 
 if (isset($_POST['add_punch_in'])) {
-    // Get today's date
+    
     $today = date('Y-m-d');
 
-    // Query the user's schedule from the scheduling table
+    
     $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
     $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
     $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
@@ -55,10 +54,8 @@ if (isset($_POST['add_punch_in'])) {
     $early_in_limit->modify('-1 hour');
 
     if ($current_time >= $early_in_limit && $current_time <= $schedule_out_time) {
-        // Use the scheduled time if the punch-in is earlier than the scheduled in-time
-        $punch_in_time = ($current_time <= $schedule_in_time) 
-            ? $schedule_in_time->format('Y-m-d H:i:s')  // Set punch-in to scheduled in-time
-            : $current_time->format('Y-m-d H:i:s'); // Otherwise, use the current time
+        
+        $punch_in_time = $current_time->format('Y-m-d H:i:s');
 
         // Check if the user has already punched in today
         $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
@@ -66,14 +63,14 @@ if (isset($_POST['add_punch_in'])) {
         $stmt->execute(['user_id' => $user_id, 'today' => $today]);
 
         if ($stmt->rowCount() > 0) {
-            // Already timed in today
+            
             echo "<script>
                     $(document).ready(function() {
                         $('#timed-in-modal').modal('show');
                     });
                   </script>";
         } else {
-            // Insert the time-in record
+            
             try {
                 $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
                 $add_attendance->execute(['user_id' => $user_id, 'punch_in_time' => $punch_in_time]);
@@ -84,7 +81,7 @@ if (isset($_POST['add_punch_in'])) {
             }
         }
     } else {
-        // Not within allowable punch-in window
+        
         echo "<script>
                 alert('You can only time in during your scheduled hours.');
               </script>";
@@ -109,14 +106,36 @@ if (isset($_POST['add_punch_out'])) {
 
         // Convert punch-in time to DateTime object
         $punch_in_time = new DateTime($punch_in_time_raw, new DateTimeZone('Asia/Manila'));
+
+        // Fetch the user's schedule if available
+        $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+        $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
+        $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
+
+        // Default schedule: 5:00 PM
+        $default_out_time = new DateTime('17:00:00', new DateTimeZone('Asia/Manila'));
+
+        if ($stmt_schedule->rowCount() > 0) {
+            // Use the schedule's out-time
+            $schedule = $stmt_schedule->fetch(PDO::FETCH_ASSOC);
+            $schedule_out_time = new DateTime($schedule['outtime'], new DateTimeZone('Asia/Manila'));
+        } else {
+            // Use the default out-time if no schedule is found
+            $schedule_out_time = $default_out_time;
+        }
+
         
-        // Calculate the total duration between punch-in and punch-out
+        if ($punch_out_time >= $schedule_out_time) {
+            $out_time = $schedule_out_time->format('Y-m-d H:i:s');
+        }
+
+        
         $total_duration = $punch_in_time->diff($punch_out_time);
 
-        // Format the total duration for storing in the database
+        
         $formatted_duration = $total_duration->format('%H:%I:%S');
 
-        // Update the punch-out time and total duration in the database
+        
         $sql_update = "UPDATE attendance_info SET out_time = :out_time, total_duration = :total_duration WHERE aten_id = :aten_id";
         $stmt_update = $obj_admin->db->prepare($sql_update);
         $stmt_update->execute([
