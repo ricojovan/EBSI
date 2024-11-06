@@ -3,13 +3,11 @@
 $page_name = "Attendance";
 include('../nav-and-footer/header-nav.php');
 
-// User session and authentication check
 $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 $user_role = $_SESSION['user_role'];
 
-// Define today's date at the top
 $today = date('Y-m-d');
 
 if ($user_id == NULL || $security_key == NULL) {
@@ -17,84 +15,55 @@ if ($user_id == NULL || $security_key == NULL) {
 }
 
 if (isset($_GET['delete_attendance'])) {
-    $aten_id = $_GET['aten_id'];  // Get the specific aten_id to delete
+    $aten_id = $_GET['aten_id'];
     $sql = "DELETE FROM attendance_info WHERE aten_id = :id";
     $sent_po = "../Manage-Attendance/attendance.php";
-
-    // Pass the specific aten_id to the delete method
     $obj_admin->delete_data_by_this_method($sql, $aten_id, $sent_po);
 }
 
-
 if (isset($_POST['add_punch_in'])) {
-    
     $today = date('Y-m-d');
-
-    
     $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
     $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
     $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
 
     $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
 
-    // If the user doesn't have a schedule, assign default schedule
     if ($stmt_schedule->rowCount() == 0) {
-        // Default in-time is 8:00 AM, out-time is 5:00 PM
         $schedule_in_time = new DateTime('08:00:00', new DateTimeZone('Asia/Manila'));
         $schedule_out_time = new DateTime('17:00:00', new DateTimeZone('Asia/Manila'));
     } else {
-        // Use the schedule from the database
         $schedule = $stmt_schedule->fetch(PDO::FETCH_ASSOC);
         $schedule_in_time = new DateTime($schedule['intime'], new DateTimeZone('Asia/Manila'));
         $schedule_out_time = new DateTime($schedule['outtime'], new DateTimeZone('Asia/Manila'));
     }
 
-    // Allow punch in up to 1 hour before the scheduled in-time
-    $early_in_limit = clone $schedule_in_time;
-    $early_in_limit->modify('-1 hour');
+    $punch_in_time = $current_time->format('Y-m-d H:i:s');
 
-    if ($current_time >= $early_in_limit && $current_time <= $schedule_out_time) {
-        
-        $punch_in_time = $current_time->format('Y-m-d H:i:s');
+    $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
+    $stmt = $obj_admin->db->prepare($sql);
+    $stmt->execute(['user_id' => $user_id, 'today' => $today]);
 
-        // Check if the user has already punched in today
-        $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
-        $stmt = $obj_admin->db->prepare($sql); 
-        $stmt->execute(['user_id' => $user_id, 'today' => $today]);
-
-        if ($stmt->rowCount() > 0) {
-            
-            echo "<script>
-                    $(document).ready(function() {
-                        $('#timed-in-modal').modal('show');
-                    });
-                  </script>";
-        } else {
-            
-            try {
-                $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
-                $add_attendance->execute(['user_id' => $user_id, 'punch_in_time' => $punch_in_time]);
-
-                header('Location: ../Manage-Attendance/attendance.php');
-            } catch (PDOException $e) {
-                echo $e->getMessage();
-            }
+    if ($stmt->rowCount() == 0) {
+        try {
+            $add_attendance = $obj_admin->db->prepare("INSERT INTO attendance_info (atn_user_id, in_time, pause_duration) VALUES (:user_id, :punch_in_time, '00:00:00')");
+            $add_attendance->execute([
+                'user_id' => $user_id,
+                'punch_in_time' => $punch_in_time
+            ]);
+            header('Location: ../Manage-Attendance/attendance.php');
+        } catch (PDOException $e) {
+            echo $e->getMessage();
         }
     } else {
-        
-        echo "<script>
-                alert('You can only time in during your scheduled hours.');
-              </script>";
+        echo "<script>$('#timed-in-modal').modal('show');</script>";
     }
 }
 
-
 if (isset($_POST['add_punch_out'])) {
-    // Get the current punch-out time
     $punch_out_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
     $out_time = $punch_out_time->format('Y-m-d H:i:s');
 
-    // Fetch the punch-in time from the database based on the specific aten_id
     $aten_id = $_POST['aten_id'];
     $sql = "SELECT in_time FROM attendance_info WHERE aten_id = :aten_id";
     $stmt = $obj_admin->db->prepare($sql);
@@ -103,39 +72,24 @@ if (isset($_POST['add_punch_out'])) {
 
     if ($row) {
         $punch_in_time_raw = $row['in_time'];
-
-        // Convert punch-in time to DateTime object
         $punch_in_time = new DateTime($punch_in_time_raw, new DateTimeZone('Asia/Manila'));
 
-        // Fetch the user's schedule if available
         $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
         $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
         $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
 
-        // Default schedule: 5:00 PM
-        $default_out_time = new DateTime('17:00:00', new DateTimeZone('Asia/Manila'));
-
         if ($stmt_schedule->rowCount() > 0) {
-            // Use the schedule's out-time
             $schedule = $stmt_schedule->fetch(PDO::FETCH_ASSOC);
-            $schedule_out_time = new DateTime($schedule['outtime'], new DateTimeZone('Asia/Manila'));
+            $schedule_in_time = new DateTime($schedule['intime'], new DateTimeZone('Asia/Manila'));
         } else {
-            // Use the default out-time if no schedule is found
-            $schedule_out_time = $default_out_time;
+            $schedule_in_time = new DateTime('08:00:00', new DateTimeZone('Asia/Manila'));
         }
 
-        
-        if ($punch_out_time >= $schedule_out_time) {
-            $out_time = $schedule_out_time->format('Y-m-d H:i:s');
-        }
+        $start_time_for_duration = max($punch_in_time, $schedule_in_time);
 
-        
-        $total_duration = $punch_in_time->diff($punch_out_time);
-
-        
+        $total_duration = $start_time_for_duration->diff($punch_out_time);
         $formatted_duration = $total_duration->format('%H:%I:%S');
 
-        
         $sql_update = "UPDATE attendance_info SET out_time = :out_time, total_duration = :total_duration WHERE aten_id = :aten_id";
         $stmt_update = $obj_admin->db->prepare($sql_update);
         $stmt_update->execute([
@@ -147,18 +101,7 @@ if (isset($_POST['add_punch_out'])) {
         header('Location: ../Manage-Attendance/attendance.php');
     }
 }
-
-
-if (isset($_POST['pause_time'])) {
-    $obj_admin->pause_time($_POST);
-}
-
-if (isset($_POST['resume_time'])) {
-    $obj_admin->resume_time($_POST);
-}
-
 ?>
-
 
 
 <div class="modal fade" id="timed-in-modal" tabindex="-1" role="dialog" aria-labelledby="timedInModalLabel" aria-hidden="true">
@@ -454,4 +397,7 @@ include("../nav-and-footer/footer-area.php");
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+
 
