@@ -179,7 +179,7 @@ $(document).ready(function() {
     // Suppress DataTables warnings
     $.fn.dataTable.ext.errMode = 'none';
 
-    var groups = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    var groups = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
     groups.forEach(function(group) {
         $('#group-' + group).DataTable({
             // Your DataTables options here,

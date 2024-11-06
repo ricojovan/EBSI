@@ -13,29 +13,52 @@ $query = "SELECT fullname FROM tbl_admin";
 $result = $pdo->query($query); 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = $_POST['employee_name'];
-    $start_date = $_POST['start_date'];
-    $end_date = $_POST['end_date'];
-    $intime = $_POST['intime'];
-    $outtime = $_POST['outtime'];
+    // Check if we are updating an existing schedule
+    if (isset($_POST['schedule_id'])) {
+        // Update existing schedule
+        $schedule_id = $_POST['schedule_id'];
+        $name = $_POST['employee_name'];
+        $start_date = $_POST['start_date'];
+        $end_date = $_POST['end_date'];
+        $intime = $_POST['intime'];
+        $outtime = $_POST['outtime'];
 
-    $query = "INSERT INTO scheduling (fullname, start_date, end_date, intime, outtime) 
-              VALUES (:fullname, :start_date, :end_date, :intime, :outtime)";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':fullname' => $name,
-        ':start_date' => $start_date,
-        ':end_date' => $end_date,
-        ':intime' => $intime,
-        ':outtime' => $outtime
-    ]);
+        $query = "UPDATE scheduling SET fullname = :fullname, start_date = :start_date, end_date = :end_date, intime = :intime, outtime = :outtime WHERE id = :id";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([
+            ':fullname' => $name,
+            ':start_date' => $start_date,
+            ':end_date' => $end_date,
+            ':intime' => $intime,
+            ':outtime' => $outtime,
+            ':id' => $schedule_id
+        ]);
+    } else {
+        // Insert new schedule
+        $name = $_POST['employee_name'];
+        $start_date = $_POST['start_date'];
+        $end_date = $_POST['end_date'];
+        $intime = $_POST['intime'];
+        $outtime = $_POST['outtime'];
+
+        $query = "INSERT INTO scheduling (fullname, start_date, end_date, intime, outtime) 
+                  VALUES (:fullname, :start_date, :end_date, :intime, :outtime)";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([
+            ':fullname' => $name,
+            ':start_date' => $start_date,
+            ':end_date' => $end_date,
+            ':intime' => $intime,
+            ':outtime' => $outtime
+        ]);
+    }
 
     header('Location: ../Manage-Attendance/scheduling.php');
     exit();
 }
 
 // Fetch existing scheduling data to display in the calendar
-$schedulingQuery = "SELECT fullname, start_date, end_date FROM scheduling";
+$schedulingQuery = "SELECT fullname, start_date, end_date FROM scheduling WHERE start_date >= CURDATE()";
 $schedulingResult = $pdo->query($schedulingQuery);
 $scheduleEvents = [];
 
@@ -46,8 +69,12 @@ $employeeColors = [
 
 // Function to get initials
 function getInitials($name) {
-  $nameParts = explode(' ', $name);
-  return strtoupper($nameParts[0][0]); // Only get the first letter of the first name
+    if (empty($name)) {
+        return ''; // Return an empty string if the name is empty
+    }
+    
+    $nameParts = explode(' ', $name);
+    return strtoupper($nameParts[0][0]); // Only get the first letter of the first name
 }
 
 // Function to assign a color based on employee name
@@ -89,13 +116,21 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
     $dailyEvents = createDailyEvents($row['fullname'], $row['start_date'], $row['end_date'], $employeeColors);
     $scheduleEvents = array_merge($scheduleEvents, $dailyEvents);
 }
-?>
 
+// Fetch past scheduling data to display in the logs
+$pastSchedulingQuery = "SELECT id, fullname, start_date, end_date FROM scheduling WHERE end_date < CURDATE() ORDER BY end_date DESC";
+$pastSchedulingResult = $pdo->query($pastSchedulingQuery);
+$pastScheduleLogs = [];
+
+// Fetch past scheduling data
+while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
+    $pastScheduleLogs[] = $row;
+}
+?>
 
 <!-- FullCalendar CSS and JS -->
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js'></script>
-
 
 <style>
     #calendar {
@@ -108,53 +143,55 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
     }
 
     /* Design for event initials in a row */
-      .fc-event {
-          display: inline-flex;
-          justify-content: center;
-          align-items: center;
-          background-color: #007bff; 
-          color: white;
-          height: 30px;
-          width: 30px;
-          font-weight: bold;
-          text-transform: uppercase; 
-          border-radius: 50%; 
-          margin: 0 5px;
-      }
+    .fc-event {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #007bff; 
+        color: white;
+        height: 30px;
+        width: 30px;
+        font-weight: bold;
+        text-transform: uppercase; 
+        border-radius: 50%; 
+        margin: 0 5px;
+    }
 
-      .event-initials-container {
-          display: flex; 
-          flex-wrap: nowrap;
-          gap: 5px; /* Space between initials */
-      }
+    .event-initials-container {
+        display: flex; 
+        flex-wrap: nowrap;
+        gap: 5px; /* Space between initials */
+    }
 
-      .fc-event div {
-          display: inline-block;
-          width: 30px;
-          height: 30px;
-          background-color: inherit; /* Match event color */
-          color: white;
-          font-size: 14px;
-          line-height: 30px;
-          text-align: center;
-          border-radius: 50%; /* Circular initials */
-      }
-
-      
-      
-
-      #full-name-display {
+    .fc-event div {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        background-color: inherit; /* Match event color */
+        color: white;
         font-size: 14px;
-        padding: 30px;
-        background-color: #333;
+        line-height: 30px;
+        text-align: center;
+        border-radius: 50%; /* Circular initials */
+    }
+
+    #full-name-display {
+        font-size: 14px;
+        padding: 5px; /* Adjust padding for better alignment */
+        background-color: rgba(0, 0, 0, 0.8); /* Dark background for contrast */
         color: white;
         border-radius: 5px;
         position: absolute;
         display: none;
         z-index: 1000;
         white-space: nowrap;
-        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+        transition: opacity 0.2s ease;
+        /* Set a minimum width for better alignment */
+        min-width: 100px; 
+        text-align: center; /* Center text */
     }
+
     /* Responsive styles */
     @media (max-width: 768px) {
         #calendar {
@@ -165,10 +202,10 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
             width: 30px;
         }
         .fc-event div {
-        width: 25px;
-        height: 25px;
-        font-size: 12px; 
-        line-height: 25px;
+            width: 25px;
+            height: 25px;
+            font-size: 12px; 
+            line-height: 25px;
         }
     }
     @media (max-width: 576px) {
@@ -196,6 +233,7 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
         }
     }
 </style>
+
 <div class="col-12 mt-3 mb-3">
     <div class="card">
         <div class="card-body">
@@ -206,6 +244,9 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="table-tab" data-toggle="tab" href="#tableView" role="tab" aria-controls="tableView" aria-selected="false">Schedule List</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="past-schedule-tab" data-toggle="tab" href="#pastScheduleView" role="tab" aria-controls="pastScheduleView" aria-selected="false">Past Schedule</a>
                 </li>
             </ul>
 
@@ -221,56 +262,75 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="well well-custom">
-                                        <div id="calendar"></div>
-
-                                        <div id="full-name-display" style="position: absolute; background-color: #333; color: #fff; padding: 5px; border-radius: 5px; display: none; z-index: 1000;">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="card-title">Employee Schedule Calendar</h5>
                                         </div>
+                                        <div class="card-body">
+                                            <div id="calendar"></div>
+                                            <div id="full-name-display"></div>
+                                        </div>
+                                    </div>
 
-                                        <!-- Modal for assigning time in/out -->
-                                        <div class="modal fade" id="timeModal" tabindex="-1" role="dialog" aria-labelledby="timeModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="timeModalLabel">Assign Time for Employee</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-
-                                                    <div class="modal-body">
-                                                        <form method="POST" action="scheduling.php">
-                                                            <div class="form-group">
+                                    <!-- Modal for assigning time in/out -->
+                                    <div class="modal fade" id="timeModal" tabindex="-1" role="dialog" aria-labelledby="timeModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="timeModalLabel">Assign Time for Employee</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST" action="scheduling.php">
+                                                        <div class="form-row">
+                                                            <div class="form-group col-md-6">
                                                                 <label for="selectedStartDate">Start Date:</label>
                                                                 <input type="text" id="selectedStartDate" name="start_date" class="form-control" required>
                                                             </div>
-                                                            <div class="form-group">
+                                                            <div class="form-group col-md-6">
                                                                 <label for="selectedEndDate">End Date:</label>
                                                                 <input type="text" id="selectedEndDate" name="end_date" class="form-control" required>
                                                             </div>
-                                                            <div class="form-group">
-                                                                <label for="employeeName">Employee Name:</label>
-                                                                <select id="employeeName" name="employee_name" class="form-control">
-                                                                    <option value="">Select Employee</option>
-                                                                    <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)) { ?>
-                                                                        <option value="<?php echo $row['fullname']; ?>">
-                                                                            <?php echo $row['fullname']; ?>
-                                                                        </option>
-                                                                    <?php } ?>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="employeeName">Employee Name:</label>
+                                                            <select id="employeeName" name="employee_name" class="form-control" required>
+                                                                <option value="">Select Employee</option>
+                                                                <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)) { ?>
+                                                                    <option value="<?php echo $row['fullname']; ?>">
+                                                                        <?php echo $row['fullname']; ?>
+                                                                    </option>
+                                                                <?php } ?>
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="intime">In Time:</label>
+                                                            <div class="input-group">
+                                                                <select id="intime" name="intime" class="form-control" required>
+                                                                    <option value="">Select In Time</option>
+                                                                    <option value="06:00">6:00 AM</option>
+                                                                    <option value="07:00">7:00 AM</option>
+                                                                    <option value="08:00">8:00 AM</option>
+                                                                    <option value="custom">Custom Time</option>
                                                                 </select>
+                                                                <input type="time" id="customIntime" name="custom_intime" class="form-control mt-2" style="display:none;" placeholder="Custom In Time">
                                                             </div>
-                                                            
-                                                            <div class="form-group">
-                                                                <label for="intime">In Time:</label>
-                                                                <input type="time" id="intime" name="intime" class="form-control" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="outtime">Out Time:</label>
+                                                            <div class="input-group">
+                                                                <select id="outtime" name="outtime" class="form-control" required>
+                                                                    <option value="">Select Out Time</option>
+                                                                    <option value="17:00">5:00 PM</option>
+                                                                    <option value="custom">Custom Time</option>
+                                                                </select>
+                                                                <input type="time" id="customOuttime" name="custom_outtime" class="form-control mt-2" style="display:none;" placeholder="Custom Out Time">
                                                             </div>
-                                                            <div class="form-group">
-                                                                <label for="outtime">Out Time:</label>
-                                                                <input type="time" id="outtime" name="outtime" class="form-control" required>
-                                                            </div>
-                                                            <button type="submit" class="btn btn-primary">Save</button>
-                                                        </form>
-                                                    </div>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary btn-block">Save</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -285,7 +345,10 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
                 <div class="tab-pane fade" id="tableView" role="tabpanel" aria-labelledby="table-tab">
                     <div class="row mt-3">
                         <div class="col-12">
-                            <table id="group-f" class="table table-condensed table-custom table-hover">
+                            <div class="card-header">
+                                <h5 class="card-title">Upcoming Employee Schedules</h5>
+                            </div>
+                            <table class="table table-striped table-custom table-hover">
                                 <thead class="text-uppercase table-bg-default text-white">
                                     <tr>
                                         <th>S.N.</th>
@@ -298,11 +361,12 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                 <tbody>
                                 <?php
                                 try {
-                                    // Get scheduling data joined with employee names
+                                    // Get scheduling data for upcoming schedules only
                                     $sql = "SELECT s.id, s.*, a.fullname 
                                            FROM scheduling s
                                            INNER JOIN tbl_admin a ON s.fullname = a.fullname
-                                           ORDER BY s.start_date DESC";
+                                           WHERE s.start_date >= CURDATE()  /* Only upcoming schedules */
+                                           ORDER BY s.start_date ASC"; // Order by start date ascending
                                     
                                     $stmt = $pdo->prepare($sql);
                                     $stmt->execute();
@@ -315,14 +379,69 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                         echo "<td>" . date('M d, Y', strtotime($row['start_date'])) . "</td>";
                                         echo "<td>" . date('M d, Y', strtotime($row['end_date'])) . "</td>";
                                         echo "<td>
-                                                <button class='btn btn-primary btn-sm edit-btn'>Edit</button>
-                                                <button class='btn btn-danger btn-sm delete-btn'>Delete</button>
+                                                <button class='btn btn-primary btn-sm' 
+                                                        data-toggle='modal' 
+                                                        data-target='#editModal' 
+                                                        data-id='" . $row['id'] . "' 
+                                                        data-fullname='" . htmlspecialchars($row['fullname'], ENT_QUOTES) . "' 
+                                                        data-startdate='" . $row['start_date'] . "' 
+                                                        data-enddate='" . $row['end_date'] . "' 
+                                                        data-intime='" . $row['intime'] . "' 
+                                                        data-outtime='" . $row['outtime'] . "'>Edit</button>
+                                                <button class='btn btn-danger btn-sm' 
+                                                        data-toggle='modal' 
+                                                        data-target='#deleteModal' 
+                                                        data-id='" . $row['id'] . "' 
+                                                        data-fullname='" . htmlspecialchars($row['fullname'], ENT_QUOTES) . "'>Delete</button>
                                              </td>";
                                         echo "</tr>";
                                         $counter++;
                                     }
                                 } catch(PDOException $e) {
                                     echo "Error: " . $e->getMessage();
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Past Schedule Tab -->
+                <div class="tab-pane fade" id="pastScheduleView" role="tabpanel" aria-labelledby="past-schedule-tab">
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card-header">
+                                <h5 class="card-title">Past Employee Schedules</h5>
+                            </div>
+                            <table class="table table-condensed table-custom table-hover">
+                                <thead class="text-uppercase table-bg-default text-white">
+                                    <tr>
+                                        <th>S.N.</th>
+                                        <th>Employee Name</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                $counter = 1;
+                                foreach ($pastScheduleLogs as $log) {
+                                    echo "<tr>";
+                                    echo "<td>" . $counter . "</td>";
+                                    echo "<td>" . htmlspecialchars($log['fullname'], ENT_QUOTES) . "</td>";
+                                    echo "<td>" . date('M d, Y', strtotime($log['start_date'])) . "</td>";
+                                    echo "<td>" . date('M d, Y', strtotime($log['end_date'])) . "</td>";
+                                    echo "<td>
+                                            <button class='btn btn-danger btn-sm' 
+                                                    data-toggle='modal' 
+                                                    data-target='#deleteModal' 
+                                                    data-id='" . $log['id'] . "' 
+                                                    data-fullname='" . htmlspecialchars($log['fullname'], ENT_QUOTES) . "'>Delete</button>
+                                         </td>";
+                                    echo "</tr>";
+                                    $counter++;
                                 }
                                 ?>
                                 </tbody>
@@ -351,9 +470,7 @@ include("../nav-and-footer/footer-area.php");
 <!-- Bootstrap JS (make sure this comes after jQuery and Popper.js) -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/js/bootstrap.min.js"></script>
 
-
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var fullNameDisplay = document.getElementById('full-name-display');
@@ -364,82 +481,94 @@ document.addEventListener('DOMContentLoaded', function() {
     var scheduleEvents = <?php echo json_encode($scheduleEvents); ?>;
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    selectable: true,
-    selectMirror: true,
-    height: 'auto',
-    contentHeight: 'auto',
-    aspectRatio: 1.35,
-    headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    initialDate: new Date(),
-    nowIndicator: true,
+        initialView: 'dayGridMonth',
+        selectable: true,
+        selectMirror: true,
+        height: 'auto',
+        contentHeight: 'auto',
+        aspectRatio: 1.35,
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        initialDate: new Date(),
+        nowIndicator: true,
 
-    select: function(info) {
-        selectedRange.start = info.startStr;  // Store the start date
-        selectedRange.end = info.endStr;      // Store the end date
-        openModalButton.disabled = false;     // Enable the "Assign Employee" button
-    },
+        select: function(info) {
+            selectedRange.start = info.startStr;  // Store the start date
+            selectedRange.end = info.endStr;      // Store the end date
+            openModalButton.disabled = false;     // Enable the "Assign Employee" button
 
-    // Custom event content for initials
-    eventContent: function(info) {
-        var attendees = [info.event.title];
-        var initialsToShow = attendees.slice(0, 4);
-        var moreCount = attendees.length > 4 ? `...${attendees.length - 4}` : '';
+            // Adjust the end date to be the day before the selected end date
+            selectedRange.end = new Date(info.endStr);
+            selectedRange.end.setDate(selectedRange.end.getDate() - 1); // Subtract one day
+            selectedRange.end = selectedRange.end.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+        },
 
-        var container = document.createElement('div');
-        container.classList.add('event-initials-container');
+        // Custom event content for initials
+        eventContent: function(info) {
+            var attendees = [info.event.title];
+            var initialsToShow = attendees.slice(0, 4);
+            var moreCount = attendees.length > 4 ? `...${attendees.length - 4}` : '';
 
-        // Add initials to the container
-        initialsToShow.forEach(function(initial) {
-            var initialDiv = document.createElement('div');
-            initialDiv.innerText = initial;
-            initialDiv.style.backgroundColor = info.event.backgroundColor; // Set color
-            container.appendChild(initialDiv);
-        });
+            var container = document.createElement('div');
+            container.classList.add('event-initials-container');
 
-        // Add "more" count if applicable
-        if (moreCount) {
-            var moreDiv = document.createElement('div');
-            moreDiv.innerText = moreCount;
-            container.appendChild(moreDiv);
+            // Add initials to the container
+            initialsToShow.forEach(function(initial) {
+                var initialDiv = document.createElement('div');
+                initialDiv.innerText = initial;
+                initialDiv.style.backgroundColor = info.event.backgroundColor; // Set color
+                container.appendChild(initialDiv);
+            });
+
+            // Add "more" count if applicable
+            if (moreCount) {
+                var moreDiv = document.createElement('div');
+                moreDiv.innerText = moreCount;
+                container.appendChild(moreDiv);
+            }
+
+            return { domNodes: [container] };
+        },
+
+        events: scheduleEvents,
+
+        eventMouseEnter: function(info) {
+            // Show full name display
+            fullNameDisplay.style.display = 'block';
+            fullNameDisplay.innerText = info.event.extendedProps.fullName;
+
+            // Get the position of the event element (the initials div)
+            var eventRect = info.el.getBoundingClientRect();
+            
+            // Adjust positioning to be centered above the initials
+            fullNameDisplay.style.left = (eventRect.left + window.scrollX - 225) + 'px'; 
+            fullNameDisplay.style.top = (eventRect.top + window.scrollY - fullNameDisplay.offsetHeight - 280) + 'px';  // Adjusted to 5px above the initials
+        },
+
+        eventMouseLeave: function(info) {
+            // Hide the full name display when the mouse leaves
+            fullNameDisplay.style.display = 'none';
         }
-
-        return { domNodes: [container] };
-    },
-
-    events: scheduleEvents,
-
-    eventMouseEnter: function(info) {
-        // Show full name display
-        fullNameDisplay.style.display = 'block';
-        fullNameDisplay.innerText = info.event.extendedProps.fullName;
-
-        // Get the position of the event element (the initials div)
-        var eventRect = info.el.getBoundingClientRect();
-        
-        // Adjust positioning to be next to the initials
-        fullNameDisplay.style.left = (eventRect.right + window.scrollX + -235) + 'px'; 
-        fullNameDisplay.style.top = (eventRect.top + window.scrollY + -233) + 'px';  
-
-        // Adjust positioning based on screen width
-        var screenWidth = window.innerWidth;
-        var leftOffset = screenWidth < 576 ? -100 : 5; // Smaller offset for mobile screens
-    },
-
-    eventMouseLeave: function(info) {
-        // Hide the full name display when the mouse leaves
-        fullNameDisplay.style.display = 'none';
-    }
-});
+    });
 
     calendar.render();
 
     openModalButton.addEventListener('click', function() {
         if (selectedRange.start && selectedRange.end) {
+            // Check if the selected dates are in the past
+            var startDate = new Date(selectedRange.start);
+            var endDate = new Date(selectedRange.end);
+            var today = new Date();
+            today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
+
+            if (startDate < today || endDate < today) {
+                alert("The selected dates cannot be in the past. Please select valid dates.");
+                return; // Exit the function if dates are in the past
+            }
+
             document.getElementById('selectedStartDate').value = selectedRange.start;
             document.getElementById('selectedEndDate').value = selectedRange.end;
             var modalElement = document.getElementById('timeModal');
@@ -448,5 +577,139 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+</script>
 
+<!-- Modal for editing schedule -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Schedule</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="scheduling.php">
+                    <input type="hidden" id="editScheduleId" name="schedule_id">
+                    <div class="form-group">
+                        <label for="editStartDate">Start Date:</label>
+                        <input type="text" id="editStartDate" name="start_date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEndDate">End Date:</label>
+                        <input type="text" id="editEndDate" name="end_date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmployeeName">Employee Name:</label>
+                        <input type="text" id="editEmployeeName" name="employee_name" class="form-control" value="<?php echo htmlspecialchars($fullName, ENT_QUOTES); ?>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editIntime">In Time:</label>
+                        <input type="time" id="editIntime" name="intime" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editOuttime">Out Time:</label>
+                        <input type="time" id="editOuttime" name="outtime" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to handle the edit button click -->
+<script>
+    $(document).on('click', '.btn.btn-primary.btn-sm', function() {
+        var scheduleId = $(this).data('id');
+        var fullName = $(this).data('fullname');
+        var startDate = $(this).data('startdate');
+        var endDate = $(this).data('enddate');
+        var intime = $(this).data('intime');
+        var outtime = $(this).data('outtime');
+
+        // Set the values in the modal
+        $('#editScheduleId').val(scheduleId);
+        $('#editStartDate').val(startDate); // Set existing start date
+        $('#editEndDate').val(endDate); // Set existing end date
+        $('#editIntime').val(intime); // Set existing in time
+        $('#editOuttime').val(outtime); // Set existing out time
+
+        // Set the employee name in the dropdown
+        $('#editEmployeeName').val(fullName); // Set existing employee name
+    });
+</script>
+
+<!-- Modal for confirming deletion -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="deleteEmployeeName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <form method="POST" action="scheduling.php">
+                    <input type="hidden" id="deleteScheduleId" name="schedule_id">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to handle the delete button click -->
+<script>
+    $(document).on('click', '.btn.btn-danger.btn-sm', function() {
+        var scheduleId = $(this).data('id');
+        var fullName = $(this).data('fullname');
+
+        // Set the values in the modal
+        $('#deleteScheduleId').val(scheduleId);
+        $('#deleteEmployeeName').text(fullName); // Display the employee name in the modal
+    });
+</script>
+
+<?php
+// Handle deletion
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['schedule_id'])) {
+    $schedule_id = $_POST['schedule_id'];
+
+    // Check if schedule_id is not empty or null before proceeding
+    if (!empty($schedule_id)) {
+        $query = "DELETE FROM scheduling WHERE id = :id";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([':id' => $schedule_id]);
+    } else {
+        // Optionally log an error or handle the case where schedule_id is invalid
+        error_log("Attempted to delete with an invalid schedule_id: " . var_export($schedule_id, true));
+    }
+
+    header('Location: ../Manage-Attendance/scheduling.php');
+    exit();
+}
+?>
+
+<script>
+    // Show custom time input when "Custom Time" is selected
+    document.querySelectorAll('select[name="intime"], select[name="outtime"]').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const customInput = this.id === 'intime' ? document.getElementById('customIntime') : document.getElementById('customOuttime');
+            if (this.value === 'custom') {
+                customInput.style.display = 'block';
+                customInput.required = true; // Make custom input required
+                customInput.classList.add('mt-1'); // Add margin-top for spacing
+            } else {
+                customInput.style.display = 'none';
+                customInput.required = false; // Remove required if not using custom
+            }
+        });
+    });
 </script>

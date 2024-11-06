@@ -14,7 +14,7 @@ include('../nav-and-footer/header-nav.php');
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="table-responsive">
-                                            <table id="group-e" class="table table-condensed table-custom table-hover">
+                                            <table id="group-h" class="table table-condensed table-custom table-hover">
                                                 <thead class="text-uppercase table-bg-default text-white">
                                                     <tr>
                                                         <th>S.N.</th>

@@ -47,8 +47,8 @@ if (isset($_POST['add_new_employee'])) {
                         </div>
 
                         <div class="table-responsive">
-                            <table id="group-b" class="table table-striped table-hover">
-                                <thead class="bg-primary text-white">
+                            <table id="group-b" class="table table-striped table-custom table-hover">
+                                <thead class="table-bg-default text-white">
                                     <tr>
                                         <th>Serial No.</th>
                                         <th>Fullname</th>
