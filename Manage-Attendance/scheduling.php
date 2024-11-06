@@ -315,8 +315,8 @@ while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                         echo "<td>" . date('M d, Y', strtotime($row['start_date'])) . "</td>";
                                         echo "<td>" . date('M d, Y', strtotime($row['end_date'])) . "</td>";
                                         echo "<td>
-                                                <button class='btn btn-primary btn-sm edit-btn' data-id='" . $row['id'] . "'>Edit</button>
-                                                <button class='btn btn-danger btn-sm delete-btn' data-id='" . $row['id'] . "'>Delete</button>
+                                                <button class='btn btn-primary btn-sm edit-btn'>Edit</button>
+                                                <button class='btn btn-danger btn-sm delete-btn'>Delete</button>
                                              </td>";
                                         echo "</tr>";
                                         $counter++;

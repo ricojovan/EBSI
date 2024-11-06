@@ -430,87 +430,9 @@ if (isset($_POST['resume_time'])) {
     </div>
 </div>
 
-
-<!-- Bootstrap Grid End -->
-<div id="alert-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"></div>
 <?php
 include("../nav-and-footer/footer-area.php");
 ?>
-
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const pauseButtons = document.querySelectorAll('button[name="pause_time"]');
-        const resumeButtons = document.querySelectorAll('button[name="resume_time"]');
-        const timeOutButtons = document.querySelectorAll('button[name="add_punch_out"]');
-
-        pauseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const timestamp = Date.now(); // Get the current timestamp
-                localStorage.setItem('pauseTimestamp', timestamp); // Store the timestamp in localStorage
-
-                // Hide Time Out button when Pause is clicked
-                const form = button.closest('form');
-                const timeOutButton = form.querySelector('button[name="add_punch_out"]');
-                if (timeOutButton) {
-                    timeOutButton.style.display = 'none'; // Hide the Time Out button
-                }
-            });
-        });
-
-        resumeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Show Time Out button when Resume is clicked
-                const form = button.closest('form');
-                const timeOutButton = form.querySelector('button[name="add_punch_out"]');
-                if (timeOutButton) {
-                    timeOutButton.style.display = 'inline'; // Show the Time Out button
-                }
-            });
-        });
-
-        // Check for the stored timestamp and calculate elapsed time
-        const pauseTimestamp = localStorage.getItem('pauseTimestamp');
-if (pauseTimestamp) {
-    const elapsedTime = (Date.now() - parseInt(pauseTimestamp)) / 1000; // Calculate elapsed time in seconds
-
-    // Function to create and show the alert
-    function showAlert() {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-        alertDiv.setAttribute('role', 'alert');
-        alertDiv.innerHTML = `
-            <strong>Hello!</strong> Don't forget to resume before you continue to work!
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span class="fa fa-times"></span>
-            </button>
-        `;
-
-        // Append the alert to the container
-        document.getElementById('alert-container').appendChild(alertDiv);
-
-        // Automatically fade out the alert after 5 seconds
-        setTimeout(() => {
-            $(alertDiv).alert('close');
-        },10000);
-    }
-
-    // If more than 10 seconds have passed since the pause time
-    if (elapsedTime >= 10) {
-        showAlert();
-        localStorage.removeItem('pauseTimestamp'); // Clear the timestamp after showing the alert
-    } else {
-        // Set a timeout for the remaining time until the alert should show
-        setTimeout(function() {
-            showAlert();
-            localStorage.removeItem('pauseTimestamp'); // Clear the timestamp after showing the alert
-        }, (10 - elapsedTime) * 1000); // Remaining time in milliseconds
-    }
-}
-
-    });
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
