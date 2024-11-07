@@ -168,12 +168,20 @@ if(isset($_POST['add_task_post'])){
 
                 <!-- Upload Tab -->
                 <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
-                    <!-- PDF and CSV buttons -->
+                    <!-- UPLOAD and INSERT buttons -->
                     <div class="row">
+
                         <div class="col-md-3">
-                            <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF </button>
-                            <button class="btn btn-primary btn-sm btn-menu" type="button" id="csv"><i class="glyphicon glyphicon-download"></i> CSV </button>
+                            <button class="btn btn-success btn-sm btn-menu" type="button" id="upload-excel"><i class="glyphicon glyphicon-upload"></i> Upload Excel </button>
+                                <input type="file" id="excel-file" accept=".xlsx, .xls" style="display: none;">
                         </div>
+                        
+                        <div class="col-md-3">
+                            <button class="btn btn-primary btn-sm btn-menu" type="button" id="insert-database" style="display: none;">
+                                <i class="glyphicon glyphicon-save"></i> Insert in Database
+                            </button>
+                        </div>
+
                     </div><br>
 
                     <!-- Table for Attendance Data -->
@@ -182,84 +190,22 @@ if(isset($_POST['add_task_post'])){
                             <thead class="text-uppercase table-bg-default text-white">
                                 <tr>
                                     <th>S.N.</th>
+                                    <th>Employee No.</th>
                                     <th>Name</th>
-                                    <th>In Time</th>
-                                    <th>Out Time</th>
-                                    <th>Total Duration</th>
+                                    <th>Date</th>
+                                    <th>IN</th>
+                                    <th>OUT</th>
+                                    <th>IN</th>
+                                    <th>OUT</th>
+                                    <th>IN</th>
+                                    <th>OUT</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
-                                $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
-                                $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
-                                $search_name = isset($_GET['name']) ? $_GET['name'] : '';
-
-                                // Adjust SQL to filter by date and name
-                                $sql = "SELECT a.*, b.fullname 
-                                        FROM attendance_info a
-                                        LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id) 
-                                        WHERE date(a.in_time) BETWEEN '{$start_date}' AND '{$end_date}'";
-
-                                if (!empty($search_name)) {
-                                    $sql .= " AND b.fullname LIKE '%{$search_name}%'"; // Add name filter
-                                }
-
-                                $sql .= " ORDER BY date(a.in_time) ASC";
-
-                                $info = $obj_admin->manage_all_info($sql);
-                                $serial  = 1;
-                                $num_row = $info->rowCount();
-                                
-                                $total_seconds = 0; // Initialize total seconds
-                                
+                                <?php
                                 if($num_row==0){
-                                    echo '<tr><td colspan="5">No Data found</td></tr>';
-                                }
-                                while( $row = $info->fetch(PDO::FETCH_ASSOC) ){
-                                    // Convert In Time to DateTime object for comparison
-                                    $in_time = new DateTime($row['in_time']);
-                                    $threshold_time = new DateTime($in_time->format('Y-m-d') . ' 08:10:00');
-                                    
-                                    // Set the color based on whether in_time is past 8:10 AM
-                                    $font_color = ($in_time > $threshold_time) ? 'red' : 'black';
-                                ?>
-                                <tr>
-                                    <td><?php echo $serial; ?></td>
-                                    <td><?php echo $row['fullname']; ?></td>
-                                    <td style="color: <?php echo $font_color; ?>;">
-                                        <?php echo $in_time->format('m-d-Y H:i:s'); ?>
-                                    </td>
-                                    <td><?php echo $row['out_time']; ?></td>
-                                    <td><?php
-                                        if($row['total_duration'] == null){
-                                            $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
-                                            $current_time = $date->format('d-m-Y H:i:s');
-                                
-                                            $dteStart = new DateTime($row['in_time']);
-                                            $dteEnd   = new DateTime($current_time);
-                                            $dteDiff  = $dteStart->diff($dteEnd);
-                                            echo $dteDiff->format("%H:%I:%S"); 
-                                        } else {
-                                            echo $row['total_duration'];
-                                            
-                                            // Calculate total seconds from total_duration
-                                            list($hours, $minutes, $seconds) = explode(':', $row['total_duration']);
-                                            $total_seconds += ($hours * 3600) + ($minutes * 60) + $seconds;
-                                        }
-                                        ?>
-                                    </td>
-                                </tr>
-                                <?php 
-                                $serial++;
-                                } 
-                                
-                                // Convert total seconds to hours, minutes, and seconds
-                                $total_hours = floor($total_seconds / 3600);
-                                $total_minutes = floor(($total_seconds % 3600) / 60);
-                                $total_secs = $total_seconds % 60;
-                                
-                                // Format the total time as HH:MM:SS
-                                $total_hours_formatted = sprintf('%02d:%02d:%02d', $total_hours, $total_minutes, $total_secs);
+                                        echo '<tr><td colspan="5">No Data found</td></tr>';
+                                    }
                                 ?>
                             </tbody>
                         </table>
@@ -275,9 +221,51 @@ if(isset($_POST['add_task_post'])){
 
 <?php include("../nav-and-footer/footer-area.php"); ?>
 
-<!-- JavaScript for PDF and CSV generation and search filters -->
 
 <script>
+
+// Handle UPLOAD EXCEL FILE
+
+document.getElementById('upload-excel').addEventListener('click', function () {
+    document.getElementById('excel-file').click();
+});
+
+document.getElementById('excel-file').addEventListener('change', function (event) {
+    const formData = new FormData();
+    formData.append('file', event.target.files[0]);
+
+    // Show the Insert button after uploading the file
+    document.getElementById('insert-database').style.display = 'inline-block';
+
+    fetch('upload_excel.php', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        const tableBody = document.querySelector("#attendance-report-upload tbody");
+        tableBody.innerHTML = ""; // Clear existing data
+
+        data.forEach((row, index) => {
+            const tableRow = document.createElement("tr");
+            tableRow.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${row.employee_no || ''}</td>
+                <td>${row.name || ''}</td>
+                <td>${row.date || ''}</td>
+                <td>${row.in1 || ''}</td>
+                <td>${row.out1 || ''}</td>
+                <td>${row.in2 || ''}</td>
+                <td>${row.out2 || ''}</td>
+                <td>${row.in3 || ''}</td>
+                <td>${row.out3 || ''}</td>
+            `;
+            tableBody.appendChild(tableRow);
+        });
+    })
+    .catch(error => console.error('Error:', error));
+});
+
 
 // Handle PDF generation
 document.getElementById('pdf').addEventListener('click', function () {
