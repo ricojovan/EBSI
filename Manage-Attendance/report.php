@@ -37,12 +37,19 @@ if(isset($_POST['add_task_post'])){
 <div class="col-12 mt-5">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-12">
-                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+            <!-- Tab Navigation -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="attendance-tab" data-toggle="tab" href="#attendance" role="tab" aria-controls="attendance" aria-selected="true">Attendance Report</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="upload-tab" data-toggle="tab" href="#upload" role="tab" aria-controls="upload" aria-selected="false">Upload</a>
+                </li>
+            </ul>
 
+            <div class="tab-content" id="myTabContent">
+                <!-- Attendance Report Tab -->
+                <div class="tab-pane fade show active" id="attendance" role="tabpanel" aria-labelledby="attendance-tab">
                     <div class="row">
                         <!-- Start Date -->
                         <div class="col-md-2">
@@ -72,6 +79,106 @@ if(isset($_POST['add_task_post'])){
                     <!-- Table for Attendance Data -->
                     <div class="table-responsive" id="printout">
                         <table id="attendance-report" class="table table-condensed table-custom table-hover">
+                            <thead class="text-uppercase table-bg-default text-white">
+                                <tr>
+                                    <th>S.N.</th>
+                                    <th>Name</th>
+                                    <th>In Time</th>
+                                    <th>Out Time</th>
+                                    <th>Total Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
+                                $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
+                                $search_name = isset($_GET['name']) ? $_GET['name'] : '';
+
+                                // Adjust SQL to filter by date and name
+                                $sql = "SELECT a.*, b.fullname 
+                                        FROM attendance_info a
+                                        LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id) 
+                                        WHERE date(a.in_time) BETWEEN '{$start_date}' AND '{$end_date}'";
+
+                                if (!empty($search_name)) {
+                                    $sql .= " AND b.fullname LIKE '%{$search_name}%'"; // Add name filter
+                                }
+
+                                $sql .= " ORDER BY date(a.in_time) ASC";
+
+                                $info = $obj_admin->manage_all_info($sql);
+                                $serial  = 1;
+                                $num_row = $info->rowCount();
+                                
+                                $total_seconds = 0; // Initialize total seconds
+                                
+                                if($num_row==0){
+                                    echo '<tr><td colspan="5">No Data found</td></tr>';
+                                }
+                                while( $row = $info->fetch(PDO::FETCH_ASSOC) ){
+                                    // Convert In Time to DateTime object for comparison
+                                    $in_time = new DateTime($row['in_time']);
+                                    $threshold_time = new DateTime($in_time->format('Y-m-d') . ' 08:10:00');
+                                    
+                                    // Set the color based on whether in_time is past 8:10 AM
+                                    $font_color = ($in_time > $threshold_time) ? 'red' : 'black';
+                                ?>
+                                <tr>
+                                    <td><?php echo $serial; ?></td>
+                                    <td><?php echo $row['fullname']; ?></td>
+                                    <td style="color: <?php echo $font_color; ?>;">
+                                        <?php echo $in_time->format('m-d-Y H:i:s'); ?>
+                                    </td>
+                                    <td><?php echo $row['out_time']; ?></td>
+                                    <td><?php
+                                        if($row['total_duration'] == null){
+                                            $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+                                            $current_time = $date->format('d-m-Y H:i:s');
+                                
+                                            $dteStart = new DateTime($row['in_time']);
+                                            $dteEnd   = new DateTime($current_time);
+                                            $dteDiff  = $dteStart->diff($dteEnd);
+                                            echo $dteDiff->format("%H:%I:%S"); 
+                                        } else {
+                                            echo $row['total_duration'];
+                                            
+                                            // Calculate total seconds from total_duration
+                                            list($hours, $minutes, $seconds) = explode(':', $row['total_duration']);
+                                            $total_seconds += ($hours * 3600) + ($minutes * 60) + $seconds;
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+                                <?php 
+                                $serial++;
+                                } 
+                                
+                                // Convert total seconds to hours, minutes, and seconds
+                                $total_hours = floor($total_seconds / 3600);
+                                $total_minutes = floor(($total_seconds % 3600) / 60);
+                                $total_secs = $total_seconds % 60;
+                                
+                                // Format the total time as HH:MM:SS
+                                $total_hours_formatted = sprintf('%02d:%02d:%02d', $total_hours, $total_minutes, $total_secs);
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Upload Tab -->
+                <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                    <!-- PDF and CSV buttons -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <button class="btn btn-danger btn-sm btn-menu" type="button" id="pdf"><i class="glyphicon glyphicon-file"></i> PDF </button>
+                            <button class="btn btn-primary btn-sm btn-menu" type="button" id="csv"><i class="glyphicon glyphicon-download"></i> CSV </button>
+                        </div>
+                    </div><br>
+
+                    <!-- Table for Attendance Data -->
+                    <div class="table-responsive" id="printout">
+                        <table id="attendance-report-upload" class="table table-condensed table-custom table-hover">
                             <thead class="text-uppercase table-bg-default text-white">
                                 <tr>
                                     <th>S.N.</th>

@@ -283,15 +283,17 @@ while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form method="POST" action="scheduling.php">
+                                                    <form method="POST" action="scheduling.php" id="scheduleForm" novalidate>
                                                         <div class="form-row">
                                                             <div class="form-group col-md-6">
                                                                 <label for="selectedStartDate">Start Date:</label>
-                                                                <input type="text" id="selectedStartDate" name="start_date" class="form-control" required>
+                                                                <input type="date" id="selectedStartDate" name="start_date" class="form-control" required>
+                                                                <div class="invalid-feedback">Start date is required.</div>
                                                             </div>
                                                             <div class="form-group col-md-6">
                                                                 <label for="selectedEndDate">End Date:</label>
-                                                                <input type="text" id="selectedEndDate" name="end_date" class="form-control" required>
+                                                                <input type="date" id="selectedEndDate" name="end_date" class="form-control" required>
+                                                                <div class="invalid-feedback">End date is required.</div>
                                                             </div>
                                                         </div>
                                                         <div class="form-group">
@@ -304,6 +306,7 @@ while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                                                     </option>
                                                                 <?php } ?>
                                                             </select>
+                                                            <div class="invalid-feedback">Employee name is required.</div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="intime">In Time:</label>
@@ -317,6 +320,7 @@ while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                                                 </select>
                                                                 <input type="time" id="customIntime" name="custom_intime" class="form-control mt-2" style="display:none;" placeholder="Custom In Time">
                                                             </div>
+                                                            <div class="invalid-feedback">In time is required.</div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="outtime">Out Time:</label>
@@ -328,6 +332,7 @@ while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                                                 </select>
                                                                 <input type="time" id="customOuttime" name="custom_outtime" class="form-control mt-2" style="display:none;" placeholder="Custom Out Time">
                                                             </div>
+                                                            <div class="invalid-feedback">Out time is required.</div>
                                                         </div>
                                                         <button type="submit" class="btn btn-primary btn-block">Save</button>
                                                     </form>
@@ -576,6 +581,32 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.show();
         }
     });
+
+    var form = document.getElementById('scheduleForm');
+
+    form.addEventListener('submit', function(event) {
+        // Prevent form submission if there are validation errors
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // Show custom time input when "Custom Time" is selected
+    document.querySelectorAll('select[name="intime"], select[name="outtime"]').forEach(function(select) {
+        select.addEventListener('change', function() {
+            const customInput = this.id === 'intime' ? document.getElementById('customIntime') : document.getElementById('customOuttime');
+            if (this.value === 'custom') {
+                customInput.style.display = 'block';
+                customInput.required = true; // Make custom input required
+                customInput.classList.add('mt-1'); // Add margin-top for spacing
+            } else {
+                customInput.style.display = 'none';
+                customInput.required = false; // Remove required if not using custom
+            }
+        });
+    });
 });
 </script>
 
@@ -696,20 +727,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['schedule_id'])) {
     exit();
 }
 ?>
-
-<script>
-    // Show custom time input when "Custom Time" is selected
-    document.querySelectorAll('select[name="intime"], select[name="outtime"]').forEach(function(select) {
-        select.addEventListener('change', function() {
-            const customInput = this.id === 'intime' ? document.getElementById('customIntime') : document.getElementById('customOuttime');
-            if (this.value === 'custom') {
-                customInput.style.display = 'block';
-                customInput.required = true; // Make custom input required
-                customInput.classList.add('mt-1'); // Add margin-top for spacing
-            } else {
-                customInput.style.display = 'none';
-                customInput.required = false; // Remove required if not using custom
-            }
-        });
-    });
-</script>
