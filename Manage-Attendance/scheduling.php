@@ -126,6 +126,27 @@ $pastScheduleLogs = [];
 while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
     $pastScheduleLogs[] = $row;
 }
+
+// Fetch all employee names from the database
+$employeeNames = [];
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+    $employeeNames[] = $row['fullname'];
+}
+
+// Initialize a variable to check if there are any matches
+$noResults = true; // Assume no results initially
+
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $selectedEmployee = $_POST['employee_name'];
+    // Validate if the selected employee exists in the database
+    if (!in_array($selectedEmployee, $employeeNames)) {
+        $errorMessage = "Invalid employee name. Please select a valid employee.";
+    } else {
+        // Proceed with form processing (e.g., save to database)
+        // ...
+    }
+}
 ?>
 
 <!-- FullCalendar CSS and JS -->
@@ -232,6 +253,78 @@ while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
             max-width: 150px;
         }
     }
+
+    .input-group {
+        width: 100%; /* Full width */
+    }
+    .input-group input {
+        border-radius: 0.25rem 0 0 0.25rem; /* Rounded corners */
+    }
+    .input-group-append .input-group-text {
+        border-radius: 0 0.25rem 0.25rem 0; /* Rounded corners */
+    }
+    .form-control {
+        border: 1px solid #ced4da; /* Custom border color */
+    }
+    .form-control:focus {
+        border-color: #80bdff; /* Focus border color */
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus shadow */
+    }
+
+    #searchResults {
+        position: absolute;
+        z-index: 1000;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        background-color: white;
+    }
+    .list-group-item {
+        cursor: pointer;
+    }
+    .list-group-item:hover {
+        background-color: #f8f9fa; /* Highlight on hover */
+    }
+
+    /* Custom styles for the search input and dropdown */
+    .input-group {
+        position: relative;
+    }
+    #employeeSearch {
+        border-radius: 0.25rem 0 0 0.25rem; /* Rounded corners */
+    }
+    .input-group-append .input-group-text {
+        border-radius: 0 0.25rem 0.25rem 0; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor for dropdown */
+    }
+    #searchResults {
+        position: absolute;
+        z-index: 1000;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for dropdown */
+    }
+    .list-group-item {
+        cursor: pointer;
+    }
+    .list-group-item:hover {
+        background-color: #f8f9fa; /* Highlight on hover */
+    }
+    .list-group-item:focus {
+        outline: none; /* Remove outline on focus */
+        background-color: #e9ecef; /* Light background on focus */
+    }
+    .no-results {
+        padding: 10px;
+        text-align: center;
+        color: #6c757d; /* Bootstrap muted color */
+    }
 </style>
 
 <div class="col-12 mt-3 mb-3">
@@ -298,15 +391,17 @@ while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="employeeName">Employee Name:</label>
-                                                            <select id="employeeName" name="employee_name" class="form-control" required>
-                                                                <option value="">Select Employee</option>
-                                                                <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)) { ?>
-                                                                    <option value="<?php echo $row['fullname']; ?>">
-                                                                        <?php echo $row['fullname']; ?>
-                                                                    </option>
-                                                                <?php } ?>
-                                                            </select>
-                                                            <div class="invalid-feedback">Employee name is required.</div>
+                                                            <div class="input-group">
+                                                                <input type="text" id="employeeSearch" class="form-control" placeholder="Search Employee" onkeyup="filterEmployees()" onfocus="showSuggestions()" aria-label="Search Employee" autocomplete="off">
+                                                                <div class="input-group-append">
+                                                                    <span class="input-group-text" id="dropdownMenuButton" onclick="toggleDropdown()">
+                                                                        <i class="fas fa-chevron-down"></i>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div id="searchResults" class="list-group mt-2" style="display: none;"></div>
+                                                            <input type="hidden" id="employeeName" name="employee_name" required>
+                                                            <div class="invalid-feedback" id="employeeError" style="display: none;">Please input a valid employee name.</div>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="intime">In Time:</label>
@@ -334,6 +429,10 @@ while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
                                                             </div>
                                                             <div class="invalid-feedback">Out time is required.</div>
                                                         </div>
+                                                        <div class="invalid-feedback" id="startDateError" style="display: none;">Start date is required.</div>
+                                                        <div class="invalid-feedback" id="endDateError" style="display: none;">End date is required.</div>
+                                                        <div class="invalid-feedback" id="intimeError" style="display: none;">In time is required.</div>
+                                                        <div class="invalid-feedback" id="outtimeError" style="display: none;">Out time is required.</div>
                                                         <button type="submit" class="btn btn-primary btn-block">Save</button>
                                                     </form>
                                                 </div>
@@ -585,12 +684,67 @@ document.addEventListener('DOMContentLoaded', function() {
     var form = document.getElementById('scheduleForm');
 
     form.addEventListener('submit', function(event) {
-        // Prevent form submission if there are validation errors
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
+        var selectedEmployee = document.getElementById('employeeName').value;
+        var employeeNames = <?php echo json_encode($employeeNames); ?>; // Fetch employee names from PHP
+        var startDate = document.getElementById('selectedStartDate').value;
+        var endDate = document.getElementById('selectedEndDate').value;
+        var intime = document.getElementById('intime').value;
+        var outtime = document.getElementById('outtime').value;
+        var isValid = true; // Flag to track overall validity
+
+        // Reset error messages
+        document.getElementById('employeeError').style.display = 'none';
+        document.getElementById('startDateError').style.display = 'none';
+        document.getElementById('endDateError').style.display = 'none';
+        document.getElementById('intimeError').style.display = 'none';
+        document.getElementById('outtimeError').style.display = 'none';
+
+        // Validate employee name
+        if (!employeeNames.includes(selectedEmployee)) {
+            event.preventDefault(); // Prevent form submission
+            document.getElementById('employeeError').style.display = 'block'; // Show error message
+            isValid = false;
         }
-        form.classList.add('was-validated');
+
+        // Validate start date
+        if (!startDate) {
+            event.preventDefault();
+            document.getElementById('startDateError').style.display = 'block'; // Show error message
+            isValid = false;
+        }
+
+        // Validate end date
+        if (!endDate) {
+            event.preventDefault();
+            document.getElementById('endDateError').style.display = 'block'; // Show error message
+            isValid = false;
+        }
+
+        // Validate in time
+        if (!intime) {
+            event.preventDefault();
+            document.getElementById('intimeError').style.display = 'block'; // Show error message
+            isValid = false;
+        }
+
+        // Validate out time
+        if (!outtime) {
+            event.preventDefault();
+            document.getElementById('outtimeError').style.display = 'block'; // Show error message
+            isValid = false;
+        }
+
+        // Additional validation for date range
+        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+            event.preventDefault();
+            alert("Start date must be before or equal to end date.");
+            isValid = false;
+        }
+
+        // If all validations pass, proceed with form submission
+        if (isValid) {
+            document.getElementById('employeeError').style.display = 'none'; // Hide error message
+        }
     });
 
     // Show custom time input when "Custom Time" is selected
@@ -714,16 +868,91 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['schedule_id'])) {
     $schedule_id = $_POST['schedule_id'];
 
     // Check if schedule_id is not empty or null before proceeding
-    if (!empty($schedule_id)) {
-        $query = "DELETE FROM scheduling WHERE id = :id";
+    if (!empty($schedule_id) && is_numeric($schedule_id)) {
+        // Change the query to delete all rows in the scheduling table
+        $query = "DELETE FROM scheduling"; // Delete all rows
         $stmt = $pdo->prepare($query);
-        $stmt->execute([':id' => $schedule_id]);
+        $stmt->execute();
+
+        // Log the action
+        error_log("Deleted all schedules from the table.");
     } else {
-        // Optionally log an error or handle the case where schedule_id is invalid
         error_log("Attempted to delete with an invalid schedule_id: " . var_export($schedule_id, true));
     }
 
+    // Redirect to the same page to refresh the schedule list
     header('Location: ../Manage-Attendance/scheduling.php');
     exit();
 }
 ?>
+
+<script>
+function filterEmployees() {
+    var input, filter, searchResults, options, i, txtValue;
+    input = document.getElementById('employeeSearch');
+    filter = input.value.toLowerCase();
+    searchResults = document.getElementById('searchResults');
+    searchResults.innerHTML = ''; // Clear previous results
+
+    // Show results based on input
+    var hasResults = false; // Flag to check if there are results
+    <?php foreach ($employeeNames as $name): ?>
+        if ('<?php echo htmlspecialchars($name, ENT_QUOTES); ?>'.toLowerCase().indexOf(filter) > -1) {
+            hasResults = true; // Set flag to true if a match is found
+            var resultItem = document.createElement('a');
+            resultItem.className = 'list-group-item list-group-item-action employee-option';
+            resultItem.textContent = '<?php echo htmlspecialchars($name, ENT_QUOTES); ?>';
+            resultItem.onclick = function() {
+                selectEmployee(this.textContent); // Set input value to clicked item
+            };
+            searchResults.appendChild(resultItem);
+        }
+    <?php endforeach; ?>
+
+    // If no results found, show a message
+    if (!hasResults && filter) {
+        var noResultItem = document.createElement('div');
+        noResultItem.className = 'no-results';
+        noResultItem.textContent = 'No matching employee names found.';
+        searchResults.appendChild(noResultItem);
+        input.placeholder = 'Invalid name'; // Set placeholder to indicate invalid name
+    } else {
+        input.placeholder = 'Search Employee'; // Reset placeholder if there are results
+    }
+
+    searchResults.style.display = searchResults.innerHTML ? 'block' : 'none'; // Show or hide results based on input
+}
+
+function showSuggestions() {
+    var searchResults = document.getElementById('searchResults');
+    searchResults.innerHTML = ''; // Clear previous results
+    var hasResults = false; // Flag to check if there are results
+    <?php foreach ($employeeNames as $name): ?>
+        hasResults = true; // Set flag to true if there are names
+        var resultItem = document.createElement('a');
+        resultItem.className = 'list-group-item list-group-item-action employee-option';
+        resultItem.textContent = '<?php echo htmlspecialchars($name, ENT_QUOTES); ?>';
+        resultItem.onclick = function() {
+            selectEmployee(this.textContent); // Set input value to clicked item
+        };
+        searchResults.appendChild(resultItem);
+    <?php endforeach; ?>
+
+    searchResults.style.display = hasResults ? 'block' : 'none'; // Show all names if available
+}
+
+function selectEmployee(name) {
+    document.getElementById('employeeSearch').value = name; // Set input value to selected name
+    document.getElementById('employeeName').value = name; // Set hidden input value
+    document.getElementById('searchResults').style.display = 'none'; // Hide results
+    document.getElementById('employeeError').style.display = 'none'; // Hide error message
+}
+
+// Hide dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    var searchResults = document.getElementById('searchResults');
+    if (!event.target.closest('.input-group') && !event.target.closest('#searchResults')) {
+        searchResults.style.display = 'none';
+    }
+});
+</script>
