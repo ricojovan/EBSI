@@ -244,20 +244,46 @@ if (isset($_POST['add_punch_out'])) {
                                                 <?php
                                                     // Get the current time
                                                     $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
-                                                    $current_time_formatted = $current_time->format('H:i');
-
                                                     
-                                                    if ($current_time_formatted > '17:00' && empty($row['out_time'])) {
-                                                        $out_time = new DateTime($row['in_time']);
-                                                        $out_time->setTime(17, 0); 
-
+                                                    // Check if user has a schedule for this day
+                                                    $sql_schedule = "SELECT outtime FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+                                                    $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
+                                                    $stmt_schedule->execute(['user_name' => $row['fullname'], 'today' => $today]);
+                                                    
+                                                    if ($stmt_schedule->rowCount() > 0) {
+                                                        $schedule = $stmt_schedule->fetch(PDO::FETCH_ASSOC);
+                                                        $schedule_out_time = new DateTime($schedule['outtime'], new DateTimeZone('Asia/Manila'));
+                                                    } else {
+                                                        // Default timeout at 5 PM if no schedule
+                                                        $schedule_out_time = new DateTime('17:00:00', new DateTimeZone('Asia/Manila'));
+                                                    }
+                                                    
+                                                    // If current time is past schedule out time and user hasn't timed out
+                                                    if ($current_time > $schedule_out_time && empty($row['out_time'])) {
+                                                        // Set out_time to scheduled out time
+                                                        $auto_out_time = $schedule_out_time->format('Y-m-d H:i:s');
+                                                        
                                                         // Update out_time in the database
-                                                        $sql_auto_timeout = "UPDATE attendance_info SET out_time = :out_time WHERE aten_id = :aten_id";
+                                                        $sql_auto_timeout = "UPDATE attendance_info SET 
+                                                            out_time = :out_time,
+                                                            total_duration = :total_duration 
+                                                            WHERE aten_id = :aten_id";
+                                                        
+                                                        // Calculate total duration
+                                                        $in_time = new DateTime($row['in_time'], new DateTimeZone('Asia/Manila'));
+                                                        $duration = $in_time->diff($schedule_out_time);
+                                                        $total_duration = $duration->format('%H:%I:%S');
+                                                        
                                                         $stmt_auto_timeout = $obj_admin->db->prepare($sql_auto_timeout);
                                                         $stmt_auto_timeout->execute([
-                                                            'out_time' => $out_time->format('Y-m-d H:i:s'),
+                                                            'out_time' => $auto_out_time,
+                                                            'total_duration' => $total_duration,
                                                             'aten_id' => $row['aten_id']
                                                         ]);
+                                                        
+                                                        // Update the displayed out_time
+                                                        $row['out_time'] = $auto_out_time;
+                                                        $row['total_duration'] = $total_duration;
                                                     }
 
                                                     if ($row['total_duration'] == null) {

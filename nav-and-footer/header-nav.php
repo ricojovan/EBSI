@@ -1,5 +1,6 @@
 <?php
 require '../etms/authentication.php'; // admin authentication check 
+
 // auth check
 $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
@@ -236,7 +237,22 @@ $user_role = $_SESSION['user_role'];
                     </div>
                     <div class="col-sm-6 clearfix">
                         <div class="user-profile pull-right">
-                            <img class="avatar user-thumb" src="../assets/images/author/avatar.png" alt="avatar">
+                            <?php
+                                $user_profile = 'avatar.png'; // Default image
+                                if (isset($obj_admin)) {
+                                    $profile_query = $obj_admin->db->query("SELECT em_profile FROM tbl_admin WHERE fullname = '$user_name'");
+                                    if ($profile_query && $profile_result = $profile_query->fetch(PDO::FETCH_ASSOC)) {
+                                        $user_profile = $profile_result['em_profile'] ?: 'avatar.png';
+                                    }
+                                }
+                                // Add this line temporarily to debug the path
+                                $image_path = "../author/" . htmlspecialchars($user_profile);
+                                echo "<!-- Debug: Image path = $image_path -->"; // This will show in page source
+                            ?>
+                            <img class="avatar user-thumb" 
+                                 src="../author/<?php echo htmlspecialchars($user_profile); ?>" 
+                                 alt="avatar"
+                                 onerror="console.log('Failed to load image:', this.src); this.src='../assets/images/author/avatar.png';">
                             <h4 class="user-name dropdown-toggle" data-toggle="dropdown"><?php echo $user_name; ?><i class="fa fa-angle-down"></i></h4>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="?logout=logout">Log Out</a>

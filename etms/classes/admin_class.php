@@ -153,7 +153,7 @@ class Admin_Class
 
 		// Handle file upload if provided
 		$profile_pic = $_FILES['em_profile_pic']['name'];
-		$target_dir = "../assets/images/team/"; // 
+		$target_dir = "../assets/images/author/"; // 
 		$target_file = $target_dir . basename($profile_pic);
 	
 		

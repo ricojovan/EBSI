@@ -9,6 +9,18 @@ if ($pdo === null) {
     die("Database connection not established.");
 }
 
+// Check if delete request is received
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_schedule_id'])) {
+    $schedule_id = $_POST['delete_schedule_id'];
+    $query = "DELETE FROM scheduling WHERE id = :id";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([':id' => $schedule_id]);
+    
+    // Redirect to avoid form resubmission issues
+    header('Location: scheduling.php');
+    exit();
+}
+
 $query = "SELECT fullname FROM tbl_admin";
 $result = $pdo->query($query); 
 
@@ -445,7 +457,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- Table View Tab -->
+                <!-- Schedule List Tab -->
                 <div class="tab-pane fade" id="tableView" role="tabpanel" aria-labelledby="table-tab">
                     <div class="row mt-3">
                         <div class="col-12">
@@ -463,49 +475,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <?php
-                                try {
-                                    // Get scheduling data for upcoming schedules only
-                                    $sql = "SELECT s.id, s.*, a.fullname 
-                                           FROM scheduling s
-                                           INNER JOIN tbl_admin a ON s.fullname = a.fullname
-                                           WHERE s.start_date >= CURDATE()  /* Only upcoming schedules */
-                                           ORDER BY s.start_date ASC"; // Order by start date ascending
-                                    
-                                    $stmt = $pdo->prepare($sql);
-                                    $stmt->execute();
-                                    
-                                    $counter = 1;
-                                    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                        echo "<tr>";
-                                        echo "<td>" . $counter . "</td>";
-                                        echo "<td>" . $row['fullname'] . "</td>";
-                                        echo "<td>" . date('M d, Y', strtotime($row['start_date'])) . "</td>";
-                                        echo "<td>" . date('M d, Y', strtotime($row['end_date'])) . "</td>";
-                                        echo "<td>
-                                                <button class='btn btn-primary btn-sm' 
-                                                        data-toggle='modal' 
-                                                        data-target='#editModal' 
-                                                        data-id='" . $row['id'] . "' 
-                                                        data-fullname='" . htmlspecialchars($row['fullname'], ENT_QUOTES) . "' 
-                                                        data-startdate='" . $row['start_date'] . "' 
-                                                        data-enddate='" . $row['end_date'] . "' 
-                                                        data-intime='" . $row['intime'] . "' 
-                                                        data-outtime='" . $row['outtime'] . "'>Edit</button>
-                                                <button class='btn btn-danger btn-sm' 
-                                                        data-toggle='modal' 
-                                                        data-target='#deleteModal' 
-                                                        data-id='" . $row['id'] . "' 
-                                                        data-fullname='" . htmlspecialchars($row['fullname'], ENT_QUOTES) . "'>Delete</button>
-                                             </td>";
-                                        echo "</tr>";
-                                        $counter++;
+                                    <?php
+                                    try {
+                                        // Get scheduling data for upcoming schedules only
+                                        $sql = "SELECT s.id, s.*, a.fullname 
+                                                FROM scheduling s
+                                                INNER JOIN tbl_admin a ON s.fullname = a.fullname
+                                                WHERE s.start_date >= CURDATE()  /* Only upcoming schedules */
+                                                ORDER BY s.start_date ASC"; // Order by start date ascending
+
+                                        $stmt = $pdo->prepare($sql);
+                                        $stmt->execute();
+
+                                        $counter = 1;
+                                        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                            echo "<tr>";
+                                            echo "<td>" . $counter . "</td>";
+                                            echo "<td>" . htmlspecialchars($row['fullname'], ENT_QUOTES) . "</td>";
+                                            echo "<td>" . date('M d, Y', strtotime($row['start_date'])) . "</td>";
+                                            echo "<td>" . date('M d, Y', strtotime($row['end_date'])) . "</td>";
+                                            echo "<td>
+                                                    <button class='btn btn-primary btn-sm' 
+                                                            data-toggle='modal' 
+                                                            data-target='#editModal' 
+                                                            data-id='" . $row['id'] . "' 
+                                                            data-fullname='" . htmlspecialchars($row['fullname'], ENT_QUOTES) . "' 
+                                                            data-startdate='" . $row['start_date'] . "' 
+                                                            data-enddate='" . $row['end_date'] . "' 
+                                                            data-intime='" . $row['intime'] . "' 
+                                                            data-outtime='" . $row['outtime'] . "'>Edit</button>
+                                                    <form method='POST' action='scheduling.php' style='display:inline;'>
+                                                        <input type='hidden' name='delete_schedule_id' value='" . $row['id'] . "'>
+                                                        <button type='submit' class='btn btn-danger btn-sm' onclick=\"return confirm('Are you sure you want to delete this schedule?');\">Delete</button>
+                                                    </form>
+                                                </td>";
+                                            echo "</tr>";
+                                            $counter++;
+                                        }
+                                    } catch(PDOException $e) {
+                                        echo "Error: " . $e->getMessage();
                                     }
-                                } catch(PDOException $e) {
-                                    echo "Error: " . $e->getMessage();
-                                }
-                                ?>
+                                    ?>
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -538,12 +550,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     echo "<td>" . date('M d, Y', strtotime($log['start_date'])) . "</td>";
                                     echo "<td>" . date('M d, Y', strtotime($log['end_date'])) . "</td>";
                                     echo "<td>
-                                            <button class='btn btn-danger btn-sm' 
-                                                    data-toggle='modal' 
-                                                    data-target='#deleteModal' 
-                                                    data-id='" . $log['id'] . "' 
-                                                    data-fullname='" . htmlspecialchars($log['fullname'], ENT_QUOTES) . "'>Delete</button>
-                                         </td>";
+                                            <form method='POST' action='scheduling.php' style='display:inline;'>
+                                                <input type='hidden' name='delete_schedule_id' value='" . $log['id'] . "'>
+                                                <button type='submit' class='btn btn-danger btn-sm' onclick=\"return confirm('Are you sure you want to delete this schedule?');\">Delete</button>
+                                            </form>
+                                        </td>";
                                     echo "</tr>";
                                     $counter++;
                                 }
@@ -869,13 +880,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['schedule_id'])) {
 
     // Check if schedule_id is not empty or null before proceeding
     if (!empty($schedule_id) && is_numeric($schedule_id)) {
-        // Change the query to delete all rows in the scheduling table
-        $query = "DELETE FROM scheduling"; // Delete all rows
+        // Delete the specific row based on the schedule ID
+        $query = "DELETE FROM scheduling WHERE id = :schedule_id";
         $stmt = $pdo->prepare($query);
-        $stmt->execute();
+        $stmt->execute([':schedule_id' => $schedule_id]);
 
         // Log the action
-        error_log("Deleted all schedules from the table.");
+        error_log("Deleted schedule with ID: " . $schedule_id);
     } else {
         error_log("Attempted to delete with an invalid schedule_id: " . var_export($schedule_id, true));
     }
