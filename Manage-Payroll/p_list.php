@@ -89,7 +89,7 @@ if (isset($_POST['add_payslip_button'])) {
           WHERE a.user_role = :userRole
             AND DATE(ai.in_time) >= pl.start_date
             AND DATE(ai.out_time) <= pl.end_date
-            AND ai.total_duration >= 8
+            -- AND ai.total_duration >= 8
             AND a.user_id NOT IN (
               SELECT employee_id 
               FROM payslip 
@@ -101,6 +101,10 @@ if (isset($_POST['add_payslip_button'])) {
       $insert_stmt->bindParam(':payroll_id', $payroll_id);
       $insert_stmt->bindParam(':userRole', $userRole, PDO::PARAM_INT);
       $insert_stmt->execute();
+      
+      // Redirect after insertion to refresh the page with updated data
+      header("Location: " . $_SERVER['REQUEST_URI']);
+      exit();
   }
 }
 
