@@ -290,21 +290,24 @@ if (isset($_POST['add_payslip_button'])) {
             <div id="printableTable">
                 <table class="table table-bordered table-stripped">
                     <colgroup>
-                        <col width="5%">
-                        <col width="15%">
-                        <col width="20%">
-                        <col width="15%">
-                        <col width="15%">
-                        <col width="10%">
-                        <col width="10%">
-                        <col width="%">
+                    <col width="5%"> <!-- Small width for # -->
+                    <col width="15%">
+                    <col width="15%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="12%"> 
+                    <col width="12%"> 
+                    <col width="3%"> 
                     </colgroup>
                     <thead>
                         <tr>
                             <th>#</th>
                             <th>Created At</th>
                             <th>Employee</th>
-                            <th>Project Based Pay</th>
+                            <th>SSS Tax</th>
+                            <th>PhilHealth Tax</th>
+                            <th>Pag-IBIG Tax</th>
                             <th>Gross Pay</th>
                             <th>Total Pay</th>
                             <th>Action</th>
@@ -313,6 +316,8 @@ if (isset($_POST['add_payslip_button'])) {
                     <tbody>
                     <?php
                         // Loop through each payslip and display it in the table
+
+
 if (isset($payslips) && !empty($payslips)) {
   $counter = 1;
   foreach ($payslips as $payslip) {
@@ -320,8 +325,10 @@ if (isset($payslips) && !empty($payslips)) {
       echo '<td>' . $counter . '</td>';
       echo '<td>' . $payslip['created_at'] . '</td>';
       echo '<td>' . $payslip['employee_id'] . '</td>';
-      echo '<td>' . $payslip['project_based_pay'] . '</td>';
-      echo '<td>' . $payslip['gross_pay'] . '</td>';
+      echo '<td> </td>'; //This will be for the SSS Tax later on
+      echo '<td>  </td>'; //This will be for the PhilHealth Tax later on
+      echo '<td> </td>';  //This will be for the Pag-IBIG Tax later on
+      echo '<td> </td>'; //This whill be for the gross pay later on
       echo '<td>' . $payslip['total_pay'] . '</td>';
       // echo '<td><a href="#" class="btn btn-primary print-link">Print</a></td>';
       echo '<td><a href="#" class="btn btn-danger delete-link" data-id="' . $payslip['id'] . '">Delete</a></td>'; // Attach payslip ID to the delete button
@@ -354,9 +361,7 @@ include("../nav-and-footer/footer-area.php");
 <script type="text/javascript">
     // Function to calculate and update Gross Pay and Total Pay
   function calculatePayslip() {
-    let projectBasedPay = parseFloat($('#projectBasedPay').val());
-    let commissionPercent = parseFloat($('#CommisionPercent').val()) / 100;
-    let incomeTaxPercent = parseFloat($('#incomeTax').val());
+    let basePay = parseFloat($('#projectBasedPay').val()); // fix this to get the correct selector soon
 
     // Calculate Gross Pay
     let grossPay = projectBasedPay - (projectBasedPay * commissionPercent);
@@ -375,6 +380,8 @@ include("../nav-and-footer/footer-area.php");
     });
   });
 </script>
+
+
 
 <script>
 $(document).ready(function() {

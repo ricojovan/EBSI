@@ -78,9 +78,10 @@ if (isset($_GET['delete_task']) && isset($_GET['id'])) {
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body rounded-0">
+
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <form role="form" action="" method="post" autocomplete="off">
+                                            <form role="form" action="" method="post" autocomplete="off" onsubmit="return validateDates()">
                                                 <div class="form-group">
                                                     <label class="control-label text-p-reset">Payroll Code</label>
                                                     <input type="text" placeholder="Payroll Code" id="payroll_code" name="payroll_code" list="expense" class="form-control rounded-0" required>
@@ -243,3 +244,34 @@ include("../nav-and-footer/footer-area.php");
     }
 
 </script>
+
+<script>
+    function validateDates() {
+        let start_time = document.getElementById("start_time").value;
+        let end_time = document.getElementById("end_time").value;
+        let type = document.getElementById('type').value;
+
+        
+        const start = new Date(start_time);
+        const end = new Date(end_time);
+        
+
+        if (start > end && type == "3") {
+            alert("Invalid Inputted Dates");
+            return false; 
+        } 
+
+        return true; 
+    }
+
+    flatpickr('.t_start_time', {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i"
+    });
+
+    flatpickr('.t_end_time', {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i"
+    });
+</script>
+
