@@ -403,5 +403,39 @@ document.getElementById('csv').addEventListener('click', function () {
     hiddenElement.click();
 });
 
+// Handle INSERT IN DATABASE button
+document.getElementById('insert-database').addEventListener('click', function () {
+    const tableBody = document.querySelector("#attendance-report-upload tbody");
+    const rows = tableBody.querySelectorAll("tr");
+    const data = [];
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        data.push({
+            emp_no: cells[1].innerText,
+            emp_name: cells[2].innerText,
+            date_rec: cells[3].innerText,
+            in_one: cells[4].innerText,
+            out_one: cells[5].innerText,
+            in_two: cells[6].innerText,
+            out_two: cells[7].innerText,
+            in_three: cells[8].innerText,
+            out_three: cells[9].innerText
+        });
+    });
+
+    fetch('insert_database.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        alert(result.message);
+    })
+    .catch(error => console.error('Error:', error));
+});
 
 </script>
