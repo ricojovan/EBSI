@@ -87,8 +87,9 @@ try {
     exit(); // Stop further execution
 }
 ?>
-    
         <!-- page title area end -->
+         
+         <!-- THIS IS ADMIN SIDE -->
         <?php
                         $user_role = $_SESSION['user_role'];
                         if($user_role == 1){
@@ -205,10 +206,56 @@ try {
         </div>
     </div>
 </div>
+
+<!--THIS IS EMPLOYEE SIDE-->
 <?php 
     }else if($user_role == 2){
 ?>
-Hello
+
+<div class="main-content-inner">
+    <div class="container-fluid">
+        <div class="row justify-content-start"> 
+            <!-- seo fact area start -->
+            <div class="col-lg-4 col-md-6 mt-3 mb-3">
+                <div class="card">
+                    <div class="seo-fact sbg1">
+                        <div class="p-4 d-flex justify-content-between align-items-center">
+                            <div class="seofct-icon"><i class="fa fa-user"></i> Employees</div>
+                            <h2><?php echo $employeeCount; ?></h2>
+                        </div>
+                        <canvas id="seolinechart1" height="50"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mt-3 mb-3">
+                <div class="card">
+                    <div class="seo-fact sbg2">
+                        <div class="p-4 d-flex justify-content-between align-items-center">
+                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> Time in</div>
+                            <h2><?php echo $inProgressCount; ?></h2>
+                        </div>
+                        <canvas id="seolinechart2" height="50"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mt-3 mb-3">
+                <div class="card">
+                    <div class="seo-fact sbg3">
+                        <div class="p-4 d-flex justify-content-between align-items-center">
+                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> **********</div>
+                            <h2><?php echo $incompleteCount; ?></h2>
+                        </div>
+                        <canvas id="seolinechart2" height="50"></canvas>
+                    </div>
+                </div>
+            </div>    
+            <!-- seo fact area end -->
+        </div>
+    </div>
+</div>
+
 <?php
     }
 ?>

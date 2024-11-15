@@ -31,14 +31,14 @@ if ($user_role != 1) {
                             <div class="well well-custom">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
                                     <div class="btn-group" role="group">
-                                        <a href="manage-admin.php" class="btn btn-primary disabled-link" disabled>Manage Admin</a>
+                                        <a href="manage-admin.php" class="btn btn-default disabled-link" disabled>Manage Admin</a>
                                         <a href="../Manage-Admin/manage-user.php" class="btn btn-outline-primary">Manage Employee</a>
                                     </div>
                                 </div>
 
                                 <div class="table-responsive">
                                     <table id="group-a" class="table table-striped table-hover">
-                                        <thead class="bg-primary text-white">
+                                        <thead class="table-bg-default text-white">
                                             <tr>
                                                 <th>Serial No.</th>
                                                 <th>Name</th>
