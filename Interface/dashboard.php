@@ -209,49 +209,63 @@ try {
 
 <!--THIS IS EMPLOYEE SIDE-->
 <?php 
-    }else if($user_role == 2){
+    } else if($user_role == 2) {
 ?>
 
 <div class="main-content-inner">
     <div class="container-fluid">
         <div class="row justify-content-start"> 
-            <!-- seo fact area start -->
-            <div class="col-lg-4 col-md-6 mt-3 mb-3">
-                <div class="card">
-                    <div class="seo-fact sbg1">
-                        <div class="p-4 d-flex justify-content-between align-items-center">
-                            <div class="seofct-icon"><i class="fa fa-user"></i> Employees</div>
-                            <h2><?php echo $employeeCount; ?></h2>
-                        </div>
-                        <canvas id="seolinechart1" height="50"></canvas>
+            <!-- SEO fact area start -->
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                <div class="card shadow-sm border-light rounded">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fa fa-calendar"></i> Schedule Assign</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="text-center text-success">10</h2>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>Start Time:</strong> <span class="text-muted">09:00 AM</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>End Time:</strong> <span class="text-muted">05:00 PM</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>Start Date:</strong> <span class="text-muted">2023-10-01</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>End Date:</strong> <span class="text-muted">2023-10-31</span>
+                            </li>
+                        </ul>
+                        <canvas id="seolinechart1" height="50" class="mt-auto"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-6 mt-3 mb-3">
-                <div class="card">
-                    <div class="seo-fact sbg2">
-                        <div class="p-4 d-flex justify-content-between align-items-center">
-                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> Time in</div>
-                            <h2><?php echo $inProgressCount; ?></h2>
-                        </div>
-                        <canvas id="seolinechart2" height="50"></canvas>
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                <div class="card shadow-sm border-light rounded">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fa fa-check-circle"></i> Attendance Count</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="text-center text-success">25</h2>
+                        <canvas id="seolinechart2" height="50" class="mt-auto"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-6 mt-3 mb-3">
-                <div class="card">
-                    <div class="seo-fact sbg3">
-                        <div class="p-4 d-flex justify-content-between align-items-center">
-                            <div class="seofct-icon"><i class='fa fa-check-circle'></i> **********</div>
-                            <h2><?php echo $incompleteCount; ?></h2>
-                        </div>
-                        <canvas id="seolinechart2" height="50"></canvas>
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                <div class="card shadow-sm border-light rounded">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fa fa-times-circle"></i> Leave Count</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="text-center text-danger">5</h2>
+                        <canvas id="seolinechart3" height="50" class="mt-auto"></canvas>
                     </div>
                 </div>
             </div>    
-            <!-- seo fact area end -->
+            <!-- SEO fact area end -->
         </div>
     </div>
 </div>
