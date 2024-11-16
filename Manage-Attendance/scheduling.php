@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Fetch existing scheduling data to display in the calendar
-$schedulingQuery = "SELECT fullname, start_date, end_date FROM scheduling WHERE start_date >= CURDATE()";
+$schedulingQuery = "SELECT fullname, start_date, end_date FROM scheduling WHERE start_date <= CURDATE() AND end_date >= CURDATE()";
 $schedulingResult = $pdo->query($schedulingQuery);
 $scheduleEvents = [];
 
@@ -111,7 +111,7 @@ function createDailyEvents($fullname, $startDate, $endDate, $employeeColors) {
         $events[] = [
             'title' => $initials,
             'start' => $currentDate->format('Y-m-d'),
-            'end' => $currentDate->format('Y-m-d'),
+            'end' => $currentDate->format('Y-m-d'), // Ensure end date is the same as start date for daily events
             'backgroundColor' => $color,  // Assign unique color for each employee
             'fullName' => $fullname // Add full name for tooltip
         ];
@@ -123,20 +123,20 @@ function createDailyEvents($fullname, $startDate, $endDate, $employeeColors) {
     return $events;
 }
 
+// Create daily events for each entry
 while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
-    // Create daily events for each entry
     $dailyEvents = createDailyEvents($row['fullname'], $row['start_date'], $row['end_date'], $employeeColors);
     $scheduleEvents = array_merge($scheduleEvents, $dailyEvents);
 }
 
-// Fetch past scheduling data to display in the logs
-$pastSchedulingQuery = "SELECT id, fullname, start_date, end_date FROM scheduling WHERE end_date < CURDATE() ORDER BY end_date DESC";
-$pastSchedulingResult = $pdo->query($pastSchedulingQuery);
-$pastScheduleLogs = [];
+// Fetch all scheduling data (upcoming and past) to display in a single table
+$schedulingQuery = "SELECT id, fullname, start_date, end_date, intime, outtime FROM scheduling ORDER BY start_date ASC";
+$schedulingResult = $pdo->query($schedulingQuery);
+$scheduleLogs = [];
 
-// Fetch past scheduling data
-while ($row = $pastSchedulingResult->fetch(PDO::FETCH_ASSOC)) {
-    $pastScheduleLogs[] = $row;
+// Fetch scheduling data
+while ($row = $schedulingResult->fetch(PDO::FETCH_ASSOC)) {
+    $scheduleLogs[] = $row;
 }
 
 // Fetch all employee names from the database
@@ -337,6 +337,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         text-align: center;
         color: #6c757d; /* Bootstrap muted color */
     }
+    .text-danger {
+        color: red; /* Customize the color for past schedules */
+    }
+    .text-success {
+        color: green; /* Customize the color for upcoming schedules */
+    }
 </style>
 
 <div class="col-12 mt-3 mb-3">
@@ -348,10 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a class="nav-link active" id="calendar-tab" data-toggle="tab" href="#calendarView" role="tab" aria-controls="calendarView" aria-selected="true">Calendar View</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="table-tab" data-toggle="tab" href="#tableView" role="tab" aria-controls="tableView" aria-selected="false">Schedule List</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="past-schedule-tab" data-toggle="tab" href="#pastScheduleView" role="tab" aria-controls="pastScheduleView" aria-selected="false">Past Schedule</a>
+                    <a class="nav-link" id="schedule-list-tab" data-toggle="tab" href="#scheduleListView" role="tab" aria-controls="scheduleListView" aria-selected="false">Schedule List</a>
                 </li>
             </ul>
 
@@ -458,109 +461,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Schedule List Tab -->
-                <div class="tab-pane fade" id="tableView" role="tabpanel" aria-labelledby="table-tab">
+                <div class="tab-pane fade" id="scheduleListView" role="tabpanel" aria-labelledby="schedule-list-tab">
                     <div class="row mt-3">
                         <div class="col-12">
-                            <div class="card-header">
-                                <h5 class="card-title">Upcoming Employee Schedules</h5>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">Employee Schedules</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-striped table-bordered table-hover">
+                                        <thead class="text-uppercase table-bg-default text-white">
+                                            <tr>
+                                                <th>S.N.</th>
+                                                <th>Employee Name</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $counter = 1;
+                                            foreach ($scheduleLogs as $log) {
+                                                $status = (strtotime($log['end_date']) < time()) ? 'Past' : 'Upcoming'; // Determine status
+                                                $statusClass = ($status === 'Past') ? 'text-danger' : 'text-success'; // Set class based on status
+                                                echo "<tr>";
+                                                echo "<td>" . $counter . "</td>";
+                                                echo "<td>" . htmlspecialchars($log['fullname'], ENT_QUOTES) . "</td>";
+                                                echo "<td>" . date('M d, Y', strtotime($log['start_date'])) . "</td>";
+                                                echo "<td>" . date('M d, Y', strtotime($log['end_date'])) . "</td>";
+                                                echo "<td class='$statusClass'>" . $status . "</td>"; // Display status with color coding
+                                                echo "<td>
+                                                        <button class='btn btn-primary btn-sm' 
+                                                                data-toggle='modal' 
+                                                                data-target='#editModal' 
+                                                                data-id='" . $log['id'] . "' 
+                                                                data-fullname='" . htmlspecialchars($log['fullname'], ENT_QUOTES) . "' 
+                                                                data-startdate='" . $log['start_date'] . "' 
+                                                                data-enddate='" . $log['end_date'] . "' 
+                                                                data-intime='" . (isset($log['intime']) ? $log['intime'] : '') . "' 
+                                                                data-outtime='" . (isset($log['outtime']) ? $log['outtime'] : '') . "'>Edit</button>
+                                                        <form method='POST' action='scheduling.php' style='display:inline;'>
+                                                            <input type='hidden' name='delete_schedule_id' value='" . $log['id'] . "'>
+                                                            <button type='submit' class='btn btn-danger btn-sm' onclick=\"return confirm('Are you sure you want to delete this schedule?');\">Delete</button>
+                                                        </form>
+                                                    </td>";
+                                                echo "</tr>";
+                                                $counter++;
+                                            }
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <table class="table table-striped table-custom table-hover">
-                                <thead class="text-uppercase table-bg-default text-white">
-                                    <tr>
-                                        <th>S.N.</th>
-                                        <th>Employee Name</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    try {
-                                        // Get scheduling data for upcoming schedules only
-                                        $sql = "SELECT s.id, s.*, a.fullname 
-                                                FROM scheduling s
-                                                INNER JOIN tbl_admin a ON s.fullname = a.fullname
-                                                WHERE s.start_date >= CURDATE()  /* Only upcoming schedules */
-                                                ORDER BY s.start_date ASC"; // Order by start date ascending
-
-                                        $stmt = $pdo->prepare($sql);
-                                        $stmt->execute();
-
-                                        $counter = 1;
-                                        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                            echo "<tr>";
-                                            echo "<td>" . $counter . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['fullname'], ENT_QUOTES) . "</td>";
-                                            echo "<td>" . date('M d, Y', strtotime($row['start_date'])) . "</td>";
-                                            echo "<td>" . date('M d, Y', strtotime($row['end_date'])) . "</td>";
-                                            echo "<td>
-                                                    <button class='btn btn-primary btn-sm' 
-                                                            data-toggle='modal' 
-                                                            data-target='#editModal' 
-                                                            data-id='" . $row['id'] . "' 
-                                                            data-fullname='" . htmlspecialchars($row['fullname'], ENT_QUOTES) . "' 
-                                                            data-startdate='" . $row['start_date'] . "' 
-                                                            data-enddate='" . $row['end_date'] . "' 
-                                                            data-intime='" . $row['intime'] . "' 
-                                                            data-outtime='" . $row['outtime'] . "'>Edit</button>
-                                                    <form method='POST' action='scheduling.php' style='display:inline;'>
-                                                        <input type='hidden' name='delete_schedule_id' value='" . $row['id'] . "'>
-                                                        <button type='submit' class='btn btn-danger btn-sm' onclick=\"return confirm('Are you sure you want to delete this schedule?');\">Delete</button>
-                                                    </form>
-                                                </td>";
-                                            echo "</tr>";
-                                            $counter++;
-                                        }
-                                    } catch(PDOException $e) {
-                                        echo "Error: " . $e->getMessage();
-                                    }
-                                    ?>
-                                </tbody>
-
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Past Schedule Tab -->
-                <div class="tab-pane fade" id="pastScheduleView" role="tabpanel" aria-labelledby="past-schedule-tab">
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <div class="card-header">
-                                <h5 class="card-title">Past Employee Schedules</h5>
-                            </div>
-                            <table class="table table-condensed table-custom table-hover">
-                                <thead class="text-uppercase table-bg-default text-white">
-                                    <tr>
-                                        <th>S.N.</th>
-                                        <th>Employee Name</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php
-                                $counter = 1;
-                                foreach ($pastScheduleLogs as $log) {
-                                    echo "<tr>";
-                                    echo "<td>" . $counter . "</td>";
-                                    echo "<td>" . htmlspecialchars($log['fullname'], ENT_QUOTES) . "</td>";
-                                    echo "<td>" . date('M d, Y', strtotime($log['start_date'])) . "</td>";
-                                    echo "<td>" . date('M d, Y', strtotime($log['end_date'])) . "</td>";
-                                    echo "<td>
-                                            <form method='POST' action='scheduling.php' style='display:inline;'>
-                                                <input type='hidden' name='delete_schedule_id' value='" . $log['id'] . "'>
-                                                <button type='submit' class='btn btn-danger btn-sm' onclick=\"return confirm('Are you sure you want to delete this schedule?');\">Delete</button>
-                                            </form>
-                                        </td>";
-                                    echo "</tr>";
-                                    $counter++;
-                                }
-                                ?>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>

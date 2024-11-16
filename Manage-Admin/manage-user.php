@@ -37,7 +37,7 @@ if (isset($_POST['add_new_employee'])) {
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="btn-group" role="group">
                                 <a href="../Manage-Admin/manage-admin.php" class="btn btn-outline-primary">Manage Admin</a>
-                                <a href="../Manage-Admin/manage-user.php" class="btn btn-primary disabled-link" disabled>Manage Employee</a>
+                                <a href="../Manage-Admin/manage-user.php" class="btn btn-default disabled-link" disabled>Manage Employee</a>
                             </div>
                             <button class="btn btn-success" data-toggle="modal" data-target="#myModal">
                                 <i class="fa fa-plus"></i> Add New Employee

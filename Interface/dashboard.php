@@ -87,27 +87,28 @@ try {
     exit(); // Stop further execution
 }
 ?>
-
-<!-- page title area end -->
-<?php
-$user_role = $_SESSION['user_role'];
-if ($user_role == 1) {
-?>
-    <div class="main-content-inner">
-        <div class="container-fluid">
-            <div class="row justify-content-start">
-                <!-- seo fact area start -->
-                <div class="col-lg-4 col-md-6 mt-3 mb-3">
-                    <div class="card">
-                        <div class="seo-fact sbg1">
-                            <div class="p-4 d-flex justify-content-between align-items-center">
-                                <div class="seofct-icon"><i class="fa fa-user"></i> Employees </div>
-                                <h2><?php echo $employeeCount; ?></h2>
-                            </div>
-                            <canvas id="seolinechart1" height="50"></canvas>
+        <!-- page title area end -->
+         
+         <!-- THIS IS ADMIN SIDE -->
+        <?php
+                        $user_role = $_SESSION['user_role'];
+                        if($user_role == 1){
+                        ?>
+<div class="main-content-inner">
+    <div class="container-fluid">
+        <div class="row justify-content-start"> 
+            <!-- seo fact area start -->
+            <div class="col-lg-4 col-md-6 mt-3 mb-3">
+                <div class="card">
+                    <div class="seo-fact sbg1">
+                        <div class="p-4 d-flex justify-content-between align-items-center">
+                            <div class="seofct-icon"><i class="fa fa-user"></i> Employees</div>
+                            <h2><?php echo $employeeCount; ?></h2>
                         </div>
+                        <canvas id="seolinechart1" height="50"></canvas>
                     </div>
                 </div>
+            </div>
 
                 <div class="col-lg-4 col-md-6 mt-3 mb-3">
                     <div class="card">
@@ -161,44 +162,42 @@ if ($user_role == 1) {
                                                     LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id)
                                                     WHERE atn_user_id = $user_id
                                                     ORDER BY a.aten_id DESC";
-                                            }
-
-                                            $info = $obj_admin->manage_all_info($sql);
-                                            $serial = 1;
-                                            $num_row = $info->rowCount();
-
-                                            if ($num_row == 0) {
-                                                echo '<tr><td colspan="7">No Data found</td></tr>';
-                                            }
-
-                                            while ($row = $info->fetch(PDO::FETCH_ASSOC)) {
-                                            ?>
-                                                <tr>
-                                                    <td><?php echo $serial;
-                                                        $serial++; ?></td>
-                                                    <td><?php echo $row['fullname']; ?></td>
-                                                    <td><?php echo $row['in_time']; ?></td>
-                                                    <td><?php echo $row['out_time']; ?></td>
-                                                    <td>
-                                                        <?php
-                                                        if ($row['total_duration'] == null) {
-                                                            $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
-                                                            $current_time = $date->format('d-m-Y H:i:s');
-
-                                                            $dteStart = new DateTime($row['in_time']);
-                                                            $dteEnd = new DateTime($current_time);
-                                                            $dteDiff = $dteStart->diff($dteEnd);
-                                                            echo $dteDiff->format("%H:%I:%S");
-                                                        } else {
-                                                            echo $row['total_duration'];
-                                                        }
-                                                        ?>
-                                                    </td>
-                                                </tr>
-                                            <?php } ?>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        }
+                                    
+                                        $info = $obj_admin->manage_all_info($sql);
+                                        $serial = 1;
+                                        $num_row = $info->rowCount();
+                                    
+                                        if ($num_row == 0) {
+                                            echo '<tr><td colspan="7">No Data found</td></tr>';
+                                        }
+                                    
+                                        while ($row = $info->fetch(PDO::FETCH_ASSOC)) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $serial; $serial++; ?></td>
+                                            <td><?php echo $row['fullname']; ?></td>
+                                            <td><?php echo $row['in_time']; ?></td>
+                                            <td><?php echo $row['out_time']; ?></td>
+                                            <td>
+                                                <?php
+                                                if ($row['total_duration'] == null) {
+                                                    $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+                                                    $current_time = $date->format('d-m-Y H:i:s');
+                                                
+                                                    $dteStart = new DateTime($row['in_time']);
+                                                    $dteEnd = new DateTime($current_time);
+                                                    $dteDiff = $dteStart->diff($dteEnd);
+                                                    echo $dteDiff->format("%H:%I:%S");
+                                                } else {
+                                                    echo $row['total_duration'];
+                                                }
+                                                ?>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -206,10 +205,71 @@ if ($user_role == 1) {
             </div>
         </div>
     </div>
-<?php
-} else if ($user_role == 2) {
+</div>
+
+<!--THIS IS EMPLOYEE SIDE-->
+<?php 
+    } else if($user_role == 2) {
 ?>
-    Hello
+
+<div class="main-content-inner">
+    <div class="container-fluid">
+        <div class="row justify-content-start"> 
+            <!-- SEO fact area start -->
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                <div class="card shadow-sm border-light rounded">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fa fa-calendar"></i> Schedule Assign</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="text-center text-success">10</h2>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>Start Time:</strong> <span class="text-muted">09:00 AM</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>End Time:</strong> <span class="text-muted">05:00 PM</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>Start Date:</strong> <span class="text-muted">2023-10-01</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>End Date:</strong> <span class="text-muted">2023-10-31</span>
+                            </li>
+                        </ul>
+                        <canvas id="seolinechart1" height="50" class="mt-auto"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                <div class="card shadow-sm border-light rounded">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fa fa-check-circle"></i> Attendance Count</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="text-center text-success">25</h2>
+                        <canvas id="seolinechart2" height="50" class="mt-auto"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                <div class="card shadow-sm border-light rounded">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fa fa-times-circle"></i> Leave Count</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="text-center text-danger">5</h2>
+                        <canvas id="seolinechart3" height="50" class="mt-auto"></canvas>
+                    </div>
+                </div>
+            </div>    
+            <!-- SEO fact area end -->
+        </div>
+    </div>
+</div>
+
 <?php
 }
 ?>

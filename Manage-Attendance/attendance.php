@@ -53,13 +53,13 @@ if (isset($_POST['add_punch_in'])) {
             ]);
             header('Location: ../Manage-Attendance/attendance.php');
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            error_log($e->getMessage());
+            echo "An error occurred while adding attendance.";
         }
     } else {
         echo "<script>$('#timed-in-modal').modal('show');</script>";
     }
 }
-
 if (isset($_POST['add_punch_out'])) {
     $punch_out_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
     $out_time = $punch_out_time->format('Y-m-d H:i:s');
@@ -101,6 +101,17 @@ if (isset($_POST['add_punch_out'])) {
         header('Location: ../Manage-Attendance/attendance.php');
     }
 }
+
+// Function to get schedule
+function getSchedule($obj_admin, $user_name, $today) {
+    $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+    $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
+    $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
+    return $stmt_schedule;
+}
+
+// Usage of the function
+$stmt_schedule = getSchedule($obj_admin, $user_name, $today);
 ?>
 
 

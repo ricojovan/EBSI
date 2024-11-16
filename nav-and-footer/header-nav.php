@@ -20,7 +20,7 @@ $user_role = $_SESSION['user_role'];
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="../assets/images/icon/palinis-po-icon.png" type="image/png">
+    <link rel="icon" href="#" type="image/png">
     <link rel="shortcut icon" type="image/png" href="../assets/images/icon/favicon.ico">
     
     <!-- Bootstrap and core CSS -->
@@ -109,30 +109,31 @@ $user_role = $_SESSION['user_role'];
                         if($user_role == 1){
                         ?>
                         <ul class="metismenu" id="menu">
-                                    <li <?php if($page_name == "Dashboard" ){echo "class=\"active\"";} ?>>
-                                        <a href="../Interface/dashboard.php"><i class='fa fa-bar-chart-o'></i><span>Dashboard</span></a>
-                                    </li>
-                                    <li class="<?php if(in_array($page_name, ['Attendance', 'Leave Report', 'Overtime Report', 'Scheduling'])) { echo 'active'; } ?>">
-                                        <a href="javascript:void(0)" aria-expanded="<?php echo in_array($page_name, ['Attendance', 'Leave Report', 'Overtime Report', 'Scheduling']) ? 'true' : 'false'; ?>">
-                                            <i class="fa fa-clock-o"></i><span>Time Keeping</span>
-                                        </a>
-                                        <ul class="collapse metismenu <?php if(in_array($page_name, ['Attendance', 'Leave Report', 'Overtime Report', 'Scheduling'])) { echo 'in'; } ?>" id="menu">
-                                            <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><span>Attendance</span></a></li>
-                                            <li <?php if($page_name == "Leave Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/leave-report.php"><span>Leave Report</span></a></li>
-                                            <li <?php if($page_name == "Overtime Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/ot-report.php"><span>OT Report</span></a></li>
-                                            <li <?php if($page_name == "Scheduling" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/scheduling.php"><span>Scheduling</span></a></li>
-                                        </ul>
-                                    </li>
-                                    <li <?php if($page_name == "Payroll" ){echo "class=\"active\"";} ?>>
-                                        <a href="../Manage-Payroll/payroll.php"><i class='fa fa-history'></i><span>Payroll</span></a>
-                                    </li>
-                                    <li <?php if($page_name == "Attendance Report" ){echo "class=\"active\"";} ?>>
-                                        <a href="../Manage-Attendance/report.php"><i class="fa fa-envelope-o"></i>&nbsp;Attendance Report</a>
-                                    </li>
-                                    <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>>
-                                        <a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i><span>Administration</span></a>
-                                    </li>
+                            <li <?php if($page_name == "Dashboard" ){echo "class=\"active\"";} ?>>
+                                <a href="../Interface/dashboard.php"><i class='fa fa-bar-chart-o'></i><span>Dashboard</span></a>
+                            </li>
+                            <li class="<?php if(in_array($page_name, ['Attendance', 'Leave Report', 'Overtime Report', 'Scheduling'])) { echo 'active'; } ?>">
+                                <a href="javascript:void(0)" aria-expanded="<?php echo in_array($page_name, ['Attendance', 'Leave Report', 'Overtime Report', 'Scheduling']) ? 'true' : 'false'; ?>">
+                                    <i class="fa fa-clock-o"></i><span>Time Keeping</span>
+                                </a>
+                                <ul class="collapse metismenu <?php if(in_array($page_name, ['Attendance', 'Leave Report', 'Overtime Report', 'Scheduling'])) { echo 'in'; } ?>" id="menu">
+                                    <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><span>Attendance</span></a></li>
+                                    <li <?php if($page_name == "Leave Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/leave-report.php"><span>Leave Report</span></a></li>
+                                    <li <?php if($page_name == "Overtime Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/ot-report.php"><span>OT Report</span></a></li>
+                                    <li <?php if($page_name == "Scheduling" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/scheduling.php"><span>Scheduling</span></a></li>
+                                </ul>
+                            </li>
+                            <li <?php if($page_name == "Payroll" ){echo "class=\"active\"";} ?>>
+                                <a href="../Manage-Payroll/payroll.php"><i class='fa fa-history'></i><span>Payroll</span></a>
+                            </li>
+                            <li <?php if($page_name == "Attendance Report" ){echo "class=\"active\"";} ?>>
+                                <a href="../Manage-Attendance/report.php"><i class="fa fa-envelope-o"></i>&nbsp;Attendance Report</a>
+                            </li>
+                            <li <?php if($page_name == "Admin" ){echo "class=\"active\"";} ?>>
+                                <a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i><span>Administration</span></a>
+                            </li>
                         </ul>
+<<<<<<< HEAD
                         <?php 
     }else if($user_role == 2){
 ?>
@@ -145,6 +146,19 @@ $user_role = $_SESSION['user_role'];
         header('Location: ../Interface/login.php');
     }
 ?>
+=======
+                    <?php }else if($user_role == 2){?>
+                        <ul class="metismenu" id="menu">
+                            <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
+                            <li <?php if($page_name == "Leave Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/leave-form.php"><span>Leave Form</span></a></li>
+                            <li <?php if($page_name == "Overtime Form" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/ot-form.php"><span>OT Form</span></a></li>
+                        </ul>
+                    <?php
+                        }else{
+                        header('Location: ../Interface/login.php');
+                        }
+                    ?>
+>>>>>>> a9311664579799512eb45b6ac00a843fb7fde540
                     </nav>
                 </div>
             </div>
