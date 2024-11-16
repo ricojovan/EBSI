@@ -1,0 +1,56 @@
+const date = new Date();
+                                const formatDate = date.toISOString().split('T')[0];
+                                const dateFrom = document.getElementById('date-from');
+                                const dateTo = document.getElementById('date-to');
+                                dateFrom.min=formatDate;
+                                dateFrom.addEventListener('change', function() {
+                                    const selectedDate = dateFrom.value;
+                                    if (selectedDate) {
+                                        dateTo.min = selectedDate;
+                                    } else {
+                                        dateTo.removeAttribute('min');
+                                    }
+                                });
+
+                                // Check if 'From' and 'To' dates are filled and valid
+                                const dateFrom = document.getElementById('date-from');
+                                const dateTo = document.getElementById('date-to');
+                                const dateFromValue = dateFrom.value.trim();
+                                const dateToValue = dateTo.value.trim();
+
+                                if (!dateFromValue || !dateToValue) {
+                                    isValid = false;
+                                    if (!dateFromValue) {
+                                        dateFrom.style.borderColor = '#D91656';
+                                        addErrorMessage(dateFrom, 'Please select a "From" date');
+                                    }
+                                    if (!dateToValue) {
+                                        dateTo.style.borderColor = '#D91656';
+                                        addErrorMessage(dateTo, 'Please select a "To" date');
+                                    }
+                                } else if (dateFromValue > dateToValue) {
+                                    isValid = false;
+
+                                    // Highlight both fields with an error border
+                                    dateFrom.style.borderColor = '#D91656';
+                                    dateTo.style.borderColor = '#D91656';
+
+                                    // Find the parent container (e.g., the `.form-section.row`)
+                                    const parentContainer = document.querySelector('.form-section.row');
+
+                                    // Add the error message to the parent container
+                                    const existingError = parentContainer.querySelector('.error-message');
+                                    if (existingError) {
+                                        existingError.remove(); // Remove any existing error messages
+                                    }
+
+                                    const errorDiv = document.createElement('div');
+                                    errorDiv.className = 'error-message col-md-12';
+                                    errorDiv.style.color = '#D91656';
+                                    errorDiv.style.fontSize = '12px';
+                                    errorDiv.style.marginTop = '10px';
+                                    errorDiv.style.textAlign = 'center';
+                                    errorDiv.textContent = 'The "From" date cannot be later than the "To" date';
+
+                                    parentContainer.appendChild(errorDiv); // Append error message after both fields
+                                }

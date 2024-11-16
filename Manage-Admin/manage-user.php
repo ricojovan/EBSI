@@ -22,8 +22,6 @@ if (isset($_POST['add_new_employee'])) {
     $error = $obj_admin->add_new_user($_POST);
 }
 
-
-
 ?>
 
 <div class="col-12 mt-5">

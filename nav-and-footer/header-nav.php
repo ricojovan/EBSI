@@ -36,6 +36,7 @@ $user_role = $_SESSION['user_role'];
     <link rel="stylesheet" href="../assets/css/default-css.css">
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/responsive.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 
     <!-- Datepicker and FullCalendar -->
     <link rel="stylesheet" href="../etms/assets/bootstrap-datepicker/css/datepicker.css">
@@ -137,7 +138,7 @@ $user_role = $_SESSION['user_role'];
 ?>
     <ul class="metismenu" id="menu">
         <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
-        <li <?php if($page_name == "Leave Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/leave-form.php"><span>Leave Form</span></a></li>
+        <li <?php if($page_name == "Leave Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/leave-form-emp.php"><span>Leave Form</span></a></li>
     </ul>
 <?php
     }else{

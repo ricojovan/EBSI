@@ -121,6 +121,13 @@
 .form-section input, .form-section textarea {
     border-radius: 4px;
 }
+::-webkit-scrollbar{
+    width: 12px;
+    height: 12px;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+    overflow: hidden;
+}
 
 .leave-type-checkbox {
     margin-bottom: 10px;
