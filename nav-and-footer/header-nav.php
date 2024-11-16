@@ -36,6 +36,7 @@ $user_role = $_SESSION['user_role'];
     <link rel="stylesheet" href="../assets/css/default-css.css">
     <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/responsive.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 
     <!-- Datepicker and FullCalendar -->
     <link rel="stylesheet" href="../etms/assets/bootstrap-datepicker/css/datepicker.css">
@@ -132,6 +133,20 @@ $user_role = $_SESSION['user_role'];
                                 <a href="../Manage-Admin/manage-admin.php"><i class="fa fa-user"></i><span>Administration</span></a>
                             </li>
                         </ul>
+<<<<<<< HEAD
+                        <?php 
+    }else if($user_role == 2){
+?>
+    <ul class="metismenu" id="menu">
+        <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
+        <li <?php if($page_name == "Leave Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/leave-form-emp.php"><span>Leave Form</span></a></li>
+    </ul>
+<?php
+    }else{
+        header('Location: ../Interface/login.php');
+    }
+?>
+=======
                     <?php }else if($user_role == 2){?>
                         <ul class="metismenu" id="menu">
                             <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
@@ -143,6 +158,7 @@ $user_role = $_SESSION['user_role'];
                         header('Location: ../Interface/login.php');
                         }
                     ?>
+>>>>>>> a9311664579799512eb45b6ac00a843fb7fde540
                     </nav>
                 </div>
             </div>

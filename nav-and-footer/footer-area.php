@@ -5,7 +5,7 @@
 <footer>
             <div class="footer-area">
                 <p>
-                Copyright © 2023 AeternitaS</p>
+                Copyright © 2023 Aeternitas</p>
             </div>
         </footer>
         <!-- footer area end-->
