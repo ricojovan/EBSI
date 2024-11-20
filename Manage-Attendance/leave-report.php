@@ -2,7 +2,7 @@
 $page_name = "Leave Report";
 include('../nav-and-footer/header-nav.php');
 $admin = new Admin_Class();
-$leaveData = $admin->fetch_leave_data();
+$leaveData = $admin->pending_leave_data();
 ?>
 
 <div class="col-12 mt-3 mb-3">

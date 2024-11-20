@@ -33,10 +33,10 @@ class Admin_Class
 
 
 	/*----------------------- Fetch Leave Data ------------------------------------------ */
-	public function fetch_leave_data()
+	public function pending_leave_data()
 	{
 		try {
-			$stmt = $this->db->prepare("SELECT * FROM tbl_leave");
+			$stmt = $this->db->prepare("SELECT * FROM tbl_pending_leave");
 			$stmt->execute();
 			$leaveData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			if ($stmt->rowCount() > 0) {
@@ -47,6 +47,37 @@ class Admin_Class
 		} catch (PDOException $e) {
 			echo $e->getMessage();
 			return [];
+		}
+	}
+
+	// Example SQL query in Admin_Class methods
+	public function pending_leave_data_by_id($userId)
+	{
+		try{
+			$stmt = $this->db->prepare("SELECT * FROM tbl_pending_leave where user_id = :userId");
+			$stmt->bindParam(':userId', $userId);
+			$stmt->execute();
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+		}catch(PDOException $e){
+			echo $e->getMessage();
+		}
+	}
+	
+	public function cancel_pending_request($pendingId) {
+		$stmt = $this->db->prepare("DELETE FROM tbl_pending_leave WHERE pending_id = :pendingId");
+		$stmt->bindParam(":pendingId", $pendingId);
+		return $stmt->execute();
+	}
+
+	public function fetch_leave_data_by_id($userId)
+	{
+		try{
+			$stmt = $this->db->prepare("SELECT * FROM tbl_leave where user_id = :userId");
+			$stmt->bindParam(':userId', $userId);
+			$stmt->execute();
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+		}catch(PDOException $e){
+			echo $e->getMessage();
 		}
 	}
 
@@ -85,6 +116,7 @@ class Admin_Class
 			echo $e->getMessage();
 		}
 	}
+	
 
 	public function change_password_for_employee($data)
 	{
@@ -242,7 +274,7 @@ class Admin_Class
 				return "The employee ID does not exist in the admin table.";
 			}
 
-			$sqlemp_Id_in_leave = "SELECT user_id FROM tbl_leave WHERE user_id = :emp_id AND status = 'Pending'";
+			$sqlemp_Id_in_leave = "SELECT user_id FROM tbl_pending_leave WHERE user_id = :emp_id";
 			$query_result_for_leave = $this->db->prepare($sqlemp_Id_in_leave);
 			$query_result_for_leave->execute([':emp_id' => $emp_id]);
 
@@ -250,7 +282,7 @@ class Admin_Class
 				return "You have a pending request. Please resolve it before submitting another one.";
 			} else {
 				$add_leave = $this->db->prepare("
-                INSERT INTO tbl_leave (
+                INSERT INTO tbl_pending_leave (
                     user_id, fullname, position, department, status, leave_type, w_pay, from_date, to_date, filed_date, days, reason
                 ) VALUES (
                     :emp_id, :emp_name, :emp_pos, :emp_dept, :emp_status, :leave_type, :w_pay, :from_date, :to_date, :filed_date, :days, :reason
