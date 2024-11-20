@@ -31,7 +31,7 @@ if (isset($_POST['add_leave_data'])) {
                                 <div class="row">
                                     <!-- Left column -->
                                     <input type="hidden" value=<?php echo $empId ?> id="employee-id" class="form-control" placeholder="Enter employee ID">
-                                    <input type="hidden" value=<?php echo $user_name ?> id="employee-name" class="form-control" placeholder="Enter employee name">
+                                    <input type="hidden" value="<?php echo $user_name ?>" id="employee-name" class="form-control" placeholder="Enter employee name">
                                     <input type="hidden" value=<?php echo $empDptmt ?> id="department" class="form-control" placeholder="Enter department">
                                     <input type="hidden" value=<?php echo $empstatus ?> id="employee-status" class="form-control" placeholder="Enter employee status">
                                     <input type="hidden" value=<?php echo $empPosition ?> id="position" class="form-control" placeholder="Enter position">
@@ -213,8 +213,6 @@ if (isset($_POST['add_leave_data'])) {
                                     </div>
                                 </div>
                             </div>
-
-
                             <script>
                                 const checkboxes = document.querySelectorAll('.single-checkbox');
 
