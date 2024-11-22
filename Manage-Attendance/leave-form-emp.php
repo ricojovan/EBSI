@@ -7,8 +7,8 @@ $empDptmt = $_SESSION['empDepartment'];
 $empstatus = $_SESSION['empStatus'];
 $empPosition = $_SESSION['empPosition'];
 
-if (isset($_POST['add_leave_data'])) {
-    $error = $obj_admin->add_leave_data($_POST);
+if (isset($_POST['add_pending_data'])) {
+    $error = $obj_admin->add_pending_data($_POST);
 }
 ?>
 
@@ -150,7 +150,7 @@ if (isset($_POST['add_leave_data'])) {
                                     <div class="modal-content">
                                         <div class="modal-header bg-primary text-white">
                                             <h5 class="modal-title" id="leaveModalLabel">Leave Application Summary</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <form role="form" action="" method="post" autocomplete="off" enctype="multipart/form-data">
@@ -206,7 +206,7 @@ if (isset($_POST['add_leave_data'])) {
                                                 <input type="hidden" class="form-control" id = "modal-employee-id" name="emp_id" value="">
                                                 <div class="form-group text-right mt-4">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                    <button type="submit" name="add_leave_data" class="btn btn-primary">Confirm Submission</button>
+                                                    <button type="submit" name="add_pending_data" class="btn btn-primary">Confirm Submission</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -262,20 +262,17 @@ if (isset($_POST['add_leave_data'])) {
                                 dateFrom.addEventListener('change', calculateDays);
                                 dateTo.addEventListener('change', calculateDays);
 
-                                // Function to validate form fields
                                 function validateForm() {
                                     let isValid = true;
                                     const requiredFields = document.querySelectorAll('#leaveForm [required]');
                                     const errorMessages = document.querySelectorAll('.error-message');
                                     errorMessages.forEach(message => message.remove());
 
-                                    // Check each required field
                                     requiredFields.forEach(field => {
                                         if (!field.value.trim()) {
                                             isValid = false;
                                             field.style.borderColor = '#D91656';
 
-                                            // Add error message below the field
                                             const errorDiv = document.createElement('div');
                                             errorDiv.className = 'error-message';
                                             errorDiv.style.color = '#D91656';
@@ -286,7 +283,6 @@ if (isset($_POST['add_leave_data'])) {
                                         }
                                     });
 
-                                    // Check if 'From' and 'To' dates are filled and valid
                                     const dateFrom = document.getElementById('date-from');
                                     const dateTo = document.getElementById('date-to');
                                     const dateFromValue = dateFrom.value.trim();
@@ -309,7 +305,6 @@ if (isset($_POST['add_leave_data'])) {
                                         addErrorMessage(dateFrom, 'The "From" date cannot be later than the "To" date');
                                     }
 
-                                    // Check radio buttons and checkboxes for leave type
                                     const leaveType = document.querySelector('input[type="checkbox"]:checked');
                                     if (!leaveType) {
                                         isValid = false;
@@ -323,7 +318,6 @@ if (isset($_POST['add_leave_data'])) {
                                         leaveTypeSection.appendChild(errorDiv);
                                     }
 
-                                    // Validate reason field
                                     const reasonField = document.getElementById('reason');
                                     if (!reasonField.value.trim()) {
                                         isValid = false;
@@ -341,7 +335,6 @@ if (isset($_POST['add_leave_data'])) {
                                     return isValid;
                                 }
 
-                                // Helper function to add error messages
                                 function addErrorMessage(element, message) {
                                     const existingError = element.parentElement.querySelector('.error-message');
                                     if (existingError) {
@@ -357,7 +350,6 @@ if (isset($_POST['add_leave_data'])) {
                                     element.parentElement.appendChild(errorDiv);
                                 }
 
-                                // Add input event listeners to remove error styling when user starts typing
                                 document.querySelectorAll('#leaveForm [required]').forEach(field => {
                                     field.addEventListener('input', function() {
                                         if (this.value.trim()) {
@@ -371,12 +363,10 @@ if (isset($_POST['add_leave_data'])) {
                                 });
 
                                 document.getElementById("showModalBtn").addEventListener("click", function() {
-                                    // Validate form before showing modal
                                     if (!validateForm()) {
                                         return;
                                     }
 
-                                    // Getting form data
                                     const employeeId = document.getElementById("employee-id").value.trim();
                                     const employeeName = document.getElementById("employee-name").value.trim();
                                     const department = document.getElementById("department").value.trim();
@@ -390,7 +380,6 @@ if (isset($_POST['add_leave_data'])) {
                                     const dateTo = document.getElementById("date-to").value.trim();
                                     const reason = document.getElementById("reason").value.trim();
 
-                                    // Set modal content
                                     document.getElementById("modal-employee-id").value = employeeId;
                                     document.getElementById("modal-employee-status").value = empStatus;
                                     document.getElementById("modal-employee-name").value = employeeName;
@@ -404,7 +393,6 @@ if (isset($_POST['add_leave_data'])) {
                                     document.getElementById("modal-absences-days").value = absencesDays;
                                     document.getElementById("modal-reason").value = reason;
 
-                                    // Show the modal
                                     var leaveModal = new bootstrap.Modal(document.getElementById('leaveModal'));
                                     leaveModal.show();
                                 });

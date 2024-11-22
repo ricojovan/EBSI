@@ -50,20 +50,38 @@ class Admin_Class
 		}
 	}
 
+	public function fetch_leave_data()
+	{
+		try {
+			$stmt = $this->db->prepare("SELECT * FROM tbl_leave");
+			$stmt->execute();
+			$leaveData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			if ($stmt->rowCount() > 0) {
+				return $leaveData;
+			} else {
+				return 1;
+			}
+		} catch (PDOException $e) {
+			echo $e->getMessage();
+			return [];
+		}
+	}
+
 	// Example SQL query in Admin_Class methods
 	public function pending_leave_data_by_id($userId)
 	{
-		try{
+		try {
 			$stmt = $this->db->prepare("SELECT * FROM tbl_pending_leave where user_id = :userId");
 			$stmt->bindParam(':userId', $userId);
 			$stmt->execute();
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
-		}catch(PDOException $e){
+		} catch (PDOException $e) {
 			echo $e->getMessage();
 		}
 	}
-	
-	public function cancel_pending_request($pendingId) {
+
+	public function cancel_pending_request($pendingId)
+	{
 		$stmt = $this->db->prepare("DELETE FROM tbl_pending_leave WHERE pending_id = :pendingId");
 		$stmt->bindParam(":pendingId", $pendingId);
 		return $stmt->execute();
@@ -71,15 +89,28 @@ class Admin_Class
 
 	public function fetch_leave_data_by_id($userId)
 	{
-		try{
+		try {
 			$stmt = $this->db->prepare("SELECT * FROM tbl_leave where user_id = :userId");
 			$stmt->bindParam(':userId', $userId);
 			$stmt->execute();
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
-		}catch(PDOException $e){
+		} catch (PDOException $e) {
 			echo $e->getMessage();
 		}
 	}
+	public function fetch_leave_data_by_ids($userId)
+	{
+		try {
+			$stmt = $this->db->prepare("SELECT * FROM tbl_pending_leave where user_id = :userId");
+			$stmt->bindParam(':userId', $userId);
+			$stmt->execute();
+			return $stmt->fetch(PDO::FETCH_ASSOC);
+		} catch (PDOException $e) {
+			echo $e->getMessage();
+		}
+	}
+
+	public function update_leave_data($userId) {}
 
 	/* ---------------------- Admin Login Check ----------------------------------- */
 
@@ -116,7 +147,7 @@ class Admin_Class
 			echo $e->getMessage();
 		}
 	}
-	
+
 
 	public function change_password_for_employee($data)
 	{
@@ -250,7 +281,7 @@ class Admin_Class
 
 	/* ---------add_leave_data----------*/
 
-	public function add_leave_data($data)
+	public function add_pending_data($data)
 	{
 		$emp_id = is_numeric($data['emp_id']) ? intval($data['emp_id']) : 0;
 		$emp_name = $this->test_form_input_data($data['emp_name']);
@@ -288,8 +319,6 @@ class Admin_Class
                     :emp_id, :emp_name, :emp_pos, :emp_dept, :emp_status, :leave_type, :w_pay, :from_date, :to_date, :filed_date, :days, :reason
                 )
             ");
-
-				// Bind parameters for the query
 				$add_leave->bindParam(':emp_id', $emp_id);
 				$add_leave->bindParam(':emp_name', $emp_name);
 				$add_leave->bindParam(':emp_pos', $emp_pos);
@@ -305,17 +334,93 @@ class Admin_Class
 
 				// Execute the query
 				$add_leave->execute();
-				return "Leave data added successfully!";
+				$_SESSION['message'] = "Leave data added successfully!";
+				header('Location: ../Manage-Attendance/leave-data.php');
+				exit();
 			}
 		} catch (PDOException $e) {
 			return "Error: " . $e->getMessage();
 		}
 	}
 
+	public function add_leave_data($data)
+	{
+		$emp_id = is_numeric($data['emp_id']) ? intval($data['emp_id']) : 0;
+		$emp_name = $this->test_form_input_data($data['emp_name']);
+		$emp_dept = $this->test_form_input_data($data['emp_dept']);
+		$emp_w_pay = ($data['pay'] == 'With Pay') ? 1 : 0;
+		$emp_status = $this->test_form_input_data($data['emp_status']);
+		$emp_pos = $this->test_form_input_data($data['emp_pos']);
+		$emp_lType = $this->test_form_input_data($data['emp_leaveType']);
+		$emp_filed = $this->test_form_input_data($data['emp_DateFiled']);
+		$emp_FromDate = $this->test_form_input_data($data['emp_DateFrom']);
+		$emp_ToDate = $this->test_form_input_data($data['emp_DateTo']);
+		$emp_Absences = is_numeric($data['emp_Abs']) ? intval($data['emp_Abs']) : 0;
+		$emp_Reason = $this->test_form_input_data($data['emp_Reason']);
+		$ver_by = $this->test_form_input_data($data['ver_by']);
+		$req_by = $this->test_form_input_data($data['req_by']);
+		$leave_bal = $this->test_form_input_data($data['leave_bal']);
+		$leave_req = $this->test_form_input_data($data['leave_req']);
+		$new_bal = $this->test_form_input_data($data['new_bal']);
+		$isApproved = $this->test_form_input_data($data['approval'] == 'Approved' ? 1 : 0);
+		$hr_name = $this->test_form_input_data($data['rec_by']);
 
+		try {
+			$sqlemp_Id = "SELECT user_id FROM tbl_admin WHERE user_id = :emp_id";
+			$query_result_for_emp_id = $this->db->prepare($sqlemp_Id);
+			$query_result_for_emp_id->execute([':emp_id' => $emp_id]);
 
+			if ($query_result_for_emp_id->rowCount() == 0) {
+				return "The employee ID does not exist in the admin table.";
+			}
 
+			// Prepare the insert statement
+			$add_leave = $this->db->prepare("
+            INSERT INTO tbl_leave (
+                user_id, fullname, position, department, status, leave_type, w_pay, from_date, to_date, filed_date, days, reason, leave_bal, leave_req, new_bal, ver_by, req_by, isApproved, hr_name
+            ) VALUES (
+                :emp_id, :emp_name, :emp_pos, :emp_dept, :emp_status, :leave_type, :w_pay, :from_date, :to_date, :filed_date, :days, :reason, :leave_bal, :leave_req, :new_bal, :ver_by, :req_by, :isApproved, :hr_name
+            )
+        ");
 
+			// Bind parameters
+			$add_leave->bindParam(':emp_id', $emp_id);
+			$add_leave->bindParam(':emp_name', $emp_name);
+			$add_leave->bindParam(':emp_pos', $emp_pos);
+			$add_leave->bindParam(':emp_dept', $emp_dept);
+			$add_leave->bindParam(':emp_status', $emp_status);
+			$add_leave->bindParam(':leave_type', $emp_lType);
+			$add_leave->bindParam(':w_pay', $emp_w_pay);
+			$add_leave->bindParam(':from_date', $emp_FromDate);
+			$add_leave->bindParam(':to_date', $emp_ToDate);
+			$add_leave->bindParam(':filed_date', $emp_filed);
+			$add_leave->bindParam(':days', $emp_Absences);
+			$add_leave->bindParam(':reason', $emp_Reason);
+			$add_leave->bindParam(':leave_bal', $leave_bal);
+			$add_leave->bindParam(':leave_req', $leave_req);
+			$add_leave->bindParam(':new_bal', $new_bal);
+			$add_leave->bindParam(':ver_by', $ver_by);
+			$add_leave->bindParam(':req_by', $req_by);
+			$add_leave->bindParam(':isApproved', $isApproved);
+			$add_leave->bindParam(':hr_name', $hr_name);
+
+			// Execute the query
+			$add_leave->execute();
+
+			// Perform the delete operation after insertion
+			$delete_old_request = $this->db->prepare("
+			 DELETE FROM tbl_pending_leave WHERE user_id = :emp_id
+		 ");
+			$delete_old_request->bindParam(':emp_id', $emp_id);
+			$delete_old_request->execute();
+
+			$_SESSION['message'] = "Leave Data Reviewed!";
+				header('Location: ../Manage-Attendance/leave-report.php');
+				exit();
+		} catch (PDOException $e) {
+			return "Error: " . $e->getMessage();
+		}
+	}
 	/* ---------update_user_data----------*/
 
 	public function update_user_data($data, $id)
