@@ -1,8 +1,5 @@
 <?php
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 $page_name = "Leave Report";
 include('../nav-and-footer/header-nav.php');
 
@@ -10,8 +7,6 @@ $userId = $user_id;
 
 $pendingData = $obj_admin->pending_leave_data_by_id($userId);
 $leaveData = $obj_admin->fetch_leave_data_by_id($userId);
-
-var_dump($pendingData, $leaveData);
 
 if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pending' && isset($_GET['pending_id'])) {
     $pendingId = intval($_GET['pending_id']);
@@ -51,7 +46,13 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-12 d-flex justify-content-end">
+                <div class="col-6">
+                    <!-- <?php if (isset($_SESSION['message'])) {
+                        echo "<div class='alert alert-info'>" . $_SESSION['message'] . "</div>";
+                        unset($_SESSION['message']);
+                    } ?> -->
+                </div>
+                <div class="col-6 d-flex justify-content-end">
                     <a href="leave-form-emp.php" class="btn btn-success">
                         <i class="fa fa-plus"></i> Add Leave
                     </a>
@@ -94,6 +95,8 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                                                                             data-w-pay="<?php echo htmlspecialchars($data['w_pay']); ?>"
                                                                             data-from-date="<?php echo htmlspecialchars($data['from_date']); ?>"
                                                                             data-to-date="<?php echo htmlspecialchars($data['to_date']); ?>"
+                                                                            data-filed-date="<?php echo htmlspecialchars($data['filed_date']); ?>"
+                                                                            data-days="<?php echo htmlspecialchars($data['days']); ?>"
                                                                             data-reason="<?php echo htmlspecialchars($data['reason']); ?>"
                                                                             data-pending-id="<?php echo $data['pending_id']; ?>"
                                                                             data-toggle="modal" data-target="#viewLeaveModal">
@@ -107,7 +110,15 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                                                                             data-w-pay="<?php echo htmlspecialchars($data['w_pay']); ?>"
                                                                             data-from-date="<?php echo htmlspecialchars($data['from_date']); ?>"
                                                                             data-to-date="<?php echo htmlspecialchars($data['to_date']); ?>"
+                                                                            data-days="<?php echo htmlspecialchars($data['days']); ?>"
                                                                             data-reason="<?php echo htmlspecialchars($data['reason']); ?>"
+                                                                            data-leave-bal="<?php echo htmlspecialchars($data['leave_bal']); ?>"
+                                                                            data-leave-req="<?php echo htmlspecialchars($data['leave_req']); ?>"
+                                                                            data-new-bal="<?php echo htmlspecialchars($data['new_bal']); ?>"
+                                                                            data-ver-by="<?php echo htmlspecialchars($data['ver_by']); ?>"
+                                                                            data-req-by="<?php echo htmlspecialchars($data['req_by']); ?>"
+                                                                            data-approved="<?php echo htmlspecialchars($data['isApproved']); ?>"
+                                                                            data-hr-name="<?php echo htmlspecialchars($data['hr_name']); ?>"
                                                                             data-toggle="modal" data-target="#viewLeaveModal">
                                                                             <i class="fa fa-eye"></i> View Details
                                                                         </button></td>
@@ -118,7 +129,15 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                                                                             data-w-pay="<?php echo htmlspecialchars($data['w_pay']); ?>"
                                                                             data-from-date="<?php echo htmlspecialchars($data['from_date']); ?>"
                                                                             data-to-date="<?php echo htmlspecialchars($data['to_date']); ?>"
+                                                                            data-days="<?php echo htmlspecialchars($data['days']); ?>"
                                                                             data-reason="<?php echo htmlspecialchars($data['reason']); ?>"
+                                                                            data-leave-bal="<?php echo htmlspecialchars($data['leave_bal']); ?>"
+                                                                            data-leave-req="<?php echo htmlspecialchars($data['leave_req']); ?>"
+                                                                            data-new-bal="<?php echo htmlspecialchars($data['new_bal']); ?>"
+                                                                            data-ver-by="<?php echo htmlspecialchars($data['ver_by']); ?>"
+                                                                            data-req-by="<?php echo htmlspecialchars($data['req_by']); ?>"
+                                                                            data-approved="<?php echo htmlspecialchars($data['isApproved']); ?>"
+                                                                            data-hr-name="<?php echo htmlspecialchars($data['hr_name']); ?>"
                                                                             data-toggle="modal" data-target="#viewLeaveModal">
                                                                             <i class="fa fa-eye"></i> View Details
                                                                         </button></td>
@@ -154,15 +173,10 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                 <h5 class="modal-title" id="viewLeaveModalLabel">Leave Request Details</h5>
                 <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <p><strong>Leave Type:</strong> <span id="viewLeaveType"></span></p>
-                <p><strong>Pay:</strong> <span id="viewPay"></span></p>
-                <p><strong>From Date:</strong> <span id="viewFromDate"></span></p>
-                <p><strong>To Date:</strong> <span id="viewToDate"></span></p>
-                <p><strong>Reason:</strong> <span id="viewReason"></span></p>
+            <div class="modal-body" id="details">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-danger cancel-request-btn"
+                <button type="button" id="cancel" class="btn btn-sm btn-danger cancel-request-btn"
                     data-dismiss="modal" data-pending-id="">
                     <i class="fa fa-trash-o"></i> Cancel Request
                 </button>
@@ -196,21 +210,80 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
         button.addEventListener('click', function() {
             console.log('View button clicked');
 
+            const detailsContainer = document.getElementById('details');
+
+            var Data = [];
+
+            var approved = this.getAttribute('data-approved');
             var lType = this.getAttribute('data-leave-type');
             var wPay = this.getAttribute('data-w-pay') == 1 ? "With Pay" : "Without Pay";
             var fromDate = this.getAttribute('data-from-date');
             var toDate = this.getAttribute('data-to-date');
+            var days = this.getAttribute('data-days');
             var reason = this.getAttribute('data-reason');
+            var leaveBal = this.getAttribute('data-leave-bal');
+            var leaveReq = this.getAttribute('data-leave-req');
+            var newBal = this.getAttribute('data-new-bal');
+            var verBy = this.getAttribute('data-ver-by');
+            var reqBy = this.getAttribute('data-req-by');
+            var hrName = this.getAttribute('data-hr-name');
             var pendingId = this.getAttribute('data-pending-id');
+            var stat = "";
+            if (approved == 1 || approved == 0) {
+                if (approved == 1) {
+                    stat = "Approved";
+                } else {
+                    stat = "Rejected";
+                }
+                Data = {
+                    "Leave Type": lType,
+                    "Pay": wPay,
+                    "From Date": fromDate,
+                    "To Date": toDate,
+                    "Days": days,
+                    "Reason": reason,
+                    "Leave Balance": leaveBal,
+                    "Leave Requested": leaveReq,
+                    "New Balance": newBal,
+                    "Verified By": verBy,
+                    "Requested By": reqBy,
+                    "Status": stat,
+                    "HR Name": hrName,
+                }
 
-            document.getElementById('viewLeaveType').textContent = lType;
-            document.getElementById('viewPay').textContent = wPay;
-            document.getElementById('viewFromDate').textContent = fromDate;
-            document.getElementById('viewToDate').textContent = toDate;
-            document.getElementById('viewReason').textContent = reason;
+                detailsContainer.querySelectorAll('.dynamic-added').forEach(element => element.remove());
 
+                for (const [label, value] of Object.entries(Data)) {
+                    const dataElement = document.createElement("p");
+                    dataElement.classList.add('dynamic-added');
+                    dataElement.innerHTML = `<strong>${label}:</strong> ${value}`;
+
+                    detailsContainer.appendChild(dataElement);
+                }
+                $('#cancel').hide();
+            } else {
+                Data = {
+                    "Leave Type": lType,
+                    "Pay": wPay,
+                    "From Date": fromDate,
+                    "To Date": toDate,
+                    "Days": days,
+                    "Reason": reason
+                }
+
+                detailsContainer.querySelectorAll('.dynamic-added').forEach(element => element.remove());
+
+                for (const [label, value] of Object.entries(Data)) {
+                    const dataElement = document.createElement("p");
+                    dataElement.classList.add('dynamic-added');
+                    dataElement.innerHTML = `<strong>${label}:</strong> ${value}`;
+
+                    detailsContainer.appendChild(dataElement);
+                }
+
+                $('#cancel').show();
+            }
             document.querySelector('.cancel-request-btn').setAttribute('data-pending-id', pendingId);
-
             var viewLeaveModal = document.getElementById('viewLeaveModal');
             var viewModal = new bootstrap.Modal(viewLeaveModal);
             viewModal.show();
@@ -237,7 +310,7 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
             cancelModalInstance.show();
         });
     });
-    
+
     document.getElementById('confirmCancel').addEventListener('click', function() {
         var pendingId = this.getAttribute('data-pending-id');
         if (pendingId) {
@@ -248,7 +321,5 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
         }
     });
 </script>
-
-
 
 <?php include '../nav-and-footer/footer-area.php'; ?>

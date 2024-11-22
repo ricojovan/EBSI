@@ -66,7 +66,7 @@ CREATE TABLE `attendance_info` (
 
 LOCK TABLES `attendance_info` WRITE;
 /*!40000 ALTER TABLE `attendance_info` DISABLE KEYS */;
-INSERT INTO `attendance_info` VALUES (116,1,'2024-10-17 12:34:59','2024-10-17 12:35:02','00:00:03',NULL,'00:00:00'),(78,1,'2024-09-25 12:12:15','2024-09-25 12:12:21','00:00:06',NULL,'00:00:00'),(76,36,'2024-09-25 12:02:06','2024-09-25 12:02:13','00:00:06',NULL,'00:00:01'),(77,37,'2024-09-25 12:03:16','2024-09-25 12:03:37','00:00:21',NULL,'00:00:00'),(80,1,'2024-09-26 21:00:06','2024-09-26 21:00:39','00:00:17',NULL,'00:00:16'),(118,1,'2024-10-23 08:00:19','2024-10-23 17:00:55','09:00:36',NULL,'00:00:00'),(124,1,'2024-10-30 08:00:27','2024-10-30 16:59:12','08:58:45',NULL,'00:00:00'),(123,35,'2024-10-24 13:48:00','2024-10-24 13:52:24','00:04:24',NULL,'00:00:00'),(125,35,'2024-10-30 08:00:56','2024-10-30 16:59:10','08:58:14',NULL,'00:00:00'),(126,37,'2024-10-30 08:01:46','2024-10-30 16:59:08','08:57:22',NULL,'00:00:00'),(127,38,'2024-10-30 10:05:00','2024-10-30 16:59:05','06:54:05',NULL,'00:00:00'),(128,1,'2024-11-06 08:00:00','2024-11-06 17:00:00','09:00:20',NULL,'00:00:00'),(129,35,'2024-11-06 08:00:00','2024-11-06 16:59:35','08:59:35',NULL,'00:00:00'),(130,38,'2024-11-06 08:00:00','2024-11-06 16:59:31','08:59:31',NULL,'00:00:00'),(131,37,'2024-11-06 08:00:00','2024-11-06 16:59:29','08:59:29',NULL,'00:00:00'),(132,39,'2024-11-06 12:22:38','2024-11-06 13:17:10','00:54:32',NULL,'00:00:00'),(133,1,'2024-11-07 07:45:36','2024-11-07 16:52:19','08:52:19',NULL,'00:00:00'),(134,35,'2024-11-07 07:45:54','2024-11-07 16:52:05','08:52:05',NULL,'00:00:00'),(135,38,'2024-11-07 07:46:10','2024-11-07 16:51:59','08:51:59',NULL,'00:00:00'),(136,37,'2024-11-07 07:46:23','2024-11-07 16:51:52','08:51:52',NULL,'00:00:00'),(137,39,'2024-11-07 10:42:09','2024-11-07 16:51:47','06:09:38',NULL,'00:00:00'),(141,1,'2024-11-14 02:56:58','2024-11-14 17:00:00','14:03:02',NULL,'00:00:00'),(142,15,'2024-11-15 17:48:53','2024-11-15 17:00:00','00:48:53',NULL,'00:00:00');
+INSERT INTO `attendance_info` VALUES (116,1,'2024-10-17 12:34:59','2024-10-17 12:35:02','00:00:03',NULL,'00:00:00'),(78,1,'2024-09-25 12:12:15','2024-09-25 12:12:21','00:00:06',NULL,'00:00:00'),(76,36,'2024-09-25 12:02:06','2024-09-25 12:02:13','00:00:06',NULL,'00:00:01'),(77,37,'2024-09-25 12:03:16','2024-09-25 12:03:37','00:00:21',NULL,'00:00:00'),(80,1,'2024-09-26 21:00:06','2024-09-26 21:00:39','00:00:17',NULL,'00:00:16'),(118,1,'2024-10-23 08:00:19','2024-10-23 17:00:55','09:00:36',NULL,'00:00:00'),(124,1,'2024-10-30 08:00:27','2024-10-30 16:59:12','08:58:45',NULL,'00:00:00'),(123,35,'2024-10-24 13:48:00','2024-10-24 13:52:24','00:04:24',NULL,'00:00:00'),(125,35,'2024-10-30 08:00:56','2024-10-30 16:59:10','08:58:14',NULL,'00:00:00'),(126,37,'2024-10-30 08:01:46','2024-10-30 16:59:08','08:57:22',NULL,'00:00:00'),(127,38,'2024-10-30 10:05:00','2024-10-30 16:59:05','06:54:05',NULL,'00:00:00'),(128,1,'2024-11-06 08:00:00','2024-11-06 17:00:00','09:00:20',NULL,'00:00:00'),(129,35,'2024-11-06 08:00:00','2024-11-06 16:59:35','08:59:35',NULL,'00:00:00'),(130,38,'2024-11-06 08:00:00','2024-11-06 16:59:31','08:59:31',NULL,'00:00:00'),(131,37,'2024-11-06 08:00:00','2024-11-06 16:59:29','08:59:29',NULL,'00:00:00'),(132,39,'2024-11-06 12:22:38','2024-11-06 13:17:10','00:54:32',NULL,'00:00:00'),(133,1,'2024-11-07 07:45:36','2024-11-07 16:52:19','08:52:19',NULL,'00:00:00'),(134,35,'2024-11-07 07:45:54','2024-11-07 16:52:05','08:52:05',NULL,'00:00:00'),(135,38,'2024-11-07 07:46:10','2024-11-07 16:51:59','08:51:59',NULL,'00:00:00'),(136,37,'2024-11-07 07:46:23','2024-11-07 16:51:52','08:51:52',NULL,'00:00:00'),(137,39,'2024-11-07 10:42:09','2024-11-07 16:51:47','06:09:38',NULL,'00:00:00'),(141,1,'2024-11-14 02:56:58','2024-11-14 17:00:00','14:03:02',NULL,'00:00:00');
 /*!40000 ALTER TABLE `attendance_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,6 +232,7 @@ DROP TABLE IF EXISTS `tbl_leave`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbl_leave` (
+  `leave_id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
   `fullname` varchar(120) COLLATE utf8mb4_general_ci NOT NULL,
   `position` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
@@ -251,9 +252,10 @@ CREATE TABLE `tbl_leave` (
   `req_by` varchar(120) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `isApproved` tinyint(1) DEFAULT NULL,
   `hr_name` varchar(120) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`leave_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `tbl_leave_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tbl_admin` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -262,7 +264,44 @@ CREATE TABLE `tbl_leave` (
 
 LOCK TABLES `tbl_leave` WRITE;
 /*!40000 ALTER TABLE `tbl_leave` DISABLE KEYS */;
+INSERT INTO `tbl_leave` VALUES (3,15,'Balon Itim Na','Programmer','IT','contractual','Undertime',1,'2024-11-22 00:00:00','2024-11-23 00:00:00','2024-11-22 00:00:00',1,'lanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigirolanigiro',1231,1232,1233,'qwe','asd',1,'qweasd'),(4,15,'Balon Itim Na','Programmer','IT','contractual','Absences',0,'2024-11-23 00:00:00','2024-11-27 00:00:00','2024-11-22 00:00:00',4,'qweasdzxc',112,113,114,'qwe','asd',0,'qweads');
 /*!40000 ALTER TABLE `tbl_leave` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbl_pending_leave`
+--
+
+DROP TABLE IF EXISTS `tbl_pending_leave`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tbl_pending_leave` (
+  `pending_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `fullname` varchar(120) COLLATE utf8mb4_general_ci NOT NULL,
+  `position` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `department` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `status` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `leave_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `w_pay` tinyint(1) NOT NULL,
+  `from_date` datetime NOT NULL,
+  `to_date` datetime NOT NULL,
+  `filed_date` datetime NOT NULL,
+  `days` int NOT NULL,
+  `reason` longtext COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`pending_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `tbl_pending_leave_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tbl_admin` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_pending_leave`
+--
+
+LOCK TABLES `tbl_pending_leave` WRITE;
+/*!40000 ALTER TABLE `tbl_pending_leave` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tbl_pending_leave` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -278,4 +317,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-16 14:49:04
+-- Dump completed on 2024-11-22 17:45:29
