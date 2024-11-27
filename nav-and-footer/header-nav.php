@@ -134,6 +134,7 @@ $user_role = $_SESSION['user_role'];
                         </ul>
                     <?php }else if($user_role == 2){?>
                         <ul class="metismenu" id="menu">
+                        <li <?php if($page_name == "Dashboard" ){echo "class=\"active\"";} ?>><a href="../Interface/dashboard.php"><i class='fa fa-bar-chart-o'></i><span>Dashboard</span></a></li>
                             <li <?php if($page_name == "Attendance" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/attendance.php"><i class="fa fa-calendar-check-o"></i>Attendance</a></li>
                             <li <?php if($page_name == "Leave Report" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/leave-data.php"><span>Leave Form</span></a></li>
                             <li <?php if($page_name == "Overtime Form" ){echo "class=\"active\"";} ?>><a href="../Manage-Attendance/ot-form.php"><span>OT Form</span></a></li>
