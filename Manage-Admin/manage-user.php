@@ -2,6 +2,30 @@
 $page_name = "Admin";
 include('../nav-and-footer/header-nav.php');
 
+// Database connection
+$host_name = 'localhost';
+$user_name = 'root';
+$password = '';
+$db_name = 'ebsi_db';
+
+try {
+    $db = new PDO("mysql:host=$host_name;dbname=$db_name", $user_name, $password);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
+
+function delete_user_by_id($admin_id, $db) {
+    try {
+        $stmt = $db->prepare("DELETE FROM tbl_admin WHERE user_id = :admin_id");
+        $stmt->bindParam(':admin_id', $admin_id, PDO::PARAM_INT);
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Error deleting user: " . $e->getMessage());
+        return false;
+    }
+}
+
 $user_id = $_SESSION['admin_id'];
 $security_key = $_SESSION['security_key'];
 
@@ -14,14 +38,14 @@ if ($user_role != 1) {
     header('Location: ../Interface/login.php');
 }
 
-if (isset($_GET['delete_user'])) {
-    // Handle user deletion
+if (isset($_GET['delete_user']) && isset($_GET['admin_id'])) {
+    $admin_id = $_GET['admin_id'];
+    $delete_result = delete_user_by_id($admin_id, $db);
 }
 
 if (isset($_POST['add_new_employee'])) {
     $error = $obj_admin->add_new_user($_POST);
 }
-
 ?>
 
 <div class="col-12 mt-5">
@@ -73,10 +97,9 @@ if (isset($_POST['add_new_employee'])) {
                                             <td><?php echo $row['email']; ?></td>
                                             <td><?php echo $row['username']; ?></td>
                                             <td><?php echo $row['temp_password']; ?></td>
-
                                             <td>
                                                 <a title="Update Employee" href="../Manage-Employee/emp-update.php?admin_id=<?php echo $row['user_id']; ?>" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
-                                                <a title="Delete" href="?delete_user=delete_user&admin_id=<?php echo $row['user_id']; ?>" onclick=" return check_delete();" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
+                                                <a title="Delete" href="?delete_user=delete_user&admin_id=<?php echo $row['user_id']; ?>" onclick="return check_delete();" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
                                             </td>
                                         </tr>
                                     <?php endwhile; ?>
@@ -93,7 +116,6 @@ if (isset($_POST['add_new_employee'])) {
 <!-- Modal for employee add -->
 <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog modal-lg">
-        <!-- Modal content -->
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h4 class="modal-title">Add New Employee</h4>
@@ -101,8 +123,6 @@ if (isset($_POST['add_new_employee'])) {
             </div>
             <div class="modal-body">
                 <form role="form" action="" method="post" autocomplete="off" enctype="multipart/form-data">
-                    
-                    <!-- Basic Information -->
                     <h5 class="border-bottom pb-2">Basic Information</h5>
                     <div class="row mb-4">
                         <div class="col-md-6">
@@ -118,8 +138,6 @@ if (isset($_POST['add_new_employee'])) {
                             </div>
                         </div>
                     </div>
-
-                    <!-- Name Information -->
                     <div class="row mb-4">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -140,8 +158,6 @@ if (isset($_POST['add_new_employee'])) {
                             </div>
                         </div>
                     </div>
-
-                    <!-- Account Information -->
                     <h5 class="border-bottom pb-2">Account Information</h5>
                     <div class="row mb-4">
                         <div class="col-md-6">
@@ -157,8 +173,6 @@ if (isset($_POST['add_new_employee'])) {
                             </div>
                         </div>
                     </div>
-
-                    <!-- Employment Information -->
                     <h5 class="border-bottom pb-2">Employment Information</h5>
                     <div class="row mb-4">
                         <div class="col-md-3">
@@ -195,7 +209,6 @@ if (isset($_POST['add_new_employee'])) {
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group text-right mt-4">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         <button type="submit" name="add_new_employee" class="btn btn-primary ml-2">Add Employee</button>
@@ -207,31 +220,27 @@ if (isset($_POST['add_new_employee'])) {
 </div>
 
 <script>
-
 function validateFullname() {
-        var fullnameInput = document.getElementById('fullname');
-        var fullname = fullnameInput.value;
-
-        // Regular expression to match any digit
-        var regex = /\d/;
-
-        if (regex.test(fullname)) {
-            // If a digit is found, clear the input value and show an error message
-            fullnameInput.value = '';
-            fullnameInput.setCustomValidity('Fullname cannot contain numbers.');
-        } else {
-            // If no digit is found, clear any existing error message
-            fullnameInput.setCustomValidity('');
-        }
+    var fullnameInput = document.getElementById('fullname');
+    var fullname = fullnameInput.value;
+    var regex = /\d/;
+    if (regex.test(fullname)) {
+        fullnameInput.value = '';
+        fullnameInput.setCustomValidity('Fullname cannot contain numbers.');
+    } else {
+        fullnameInput.setCustomValidity('');
     }
+}
 
-
-    // JavaScript to prevent the default action of the link
-    document.querySelectorAll('.disabled-link').forEach(function(link) {
-        link.addEventListener('click', function(event) {
-            event.preventDefault();
-        });
+document.querySelectorAll('.disabled-link').forEach(function(link) {
+    link.addEventListener('click', function(event) {
+        event.preventDefault();
     });
+});
+
+function check_delete() {
+    return confirm('Are you sure you want to delete this user?');
+}
 </script>
 
 <?php

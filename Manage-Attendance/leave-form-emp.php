@@ -150,7 +150,9 @@ if (isset($_POST['add_pending_data'])) {
                                     <div class="modal-content">
                                         <div class="modal-header bg-primary text-white">
                                             <h5 class="modal-title" id="leaveModalLabel">Leave Application Summary</h5>
-                                            <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
                                         </div>
                                         <div class="modal-body">
                                             <form role="form" action="" method="post" autocomplete="off" enctype="multipart/form-data">
@@ -203,7 +205,7 @@ if (isset($_POST['add_pending_data'])) {
                                                     <textarea class="form-control" name="emp_Reason" style="resize: none;" id="modal-reason" rows="3" readonly></textarea>
                                                 </div>
                                                 <input type="hidden" name="emp_status" class="form-control" id="modal-employee-status" readonly>
-                                                <input type="hidden" class="form-control" id = "modal-employee-id" name="emp_id" value="">
+                                                <input type="hidden" class="form-control" id="modal-employee-id" name="emp_id" value="">
                                                 <div class="form-group text-right mt-4">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                     <button type="submit" name="add_pending_data" class="btn btn-primary">Confirm Submission</button>

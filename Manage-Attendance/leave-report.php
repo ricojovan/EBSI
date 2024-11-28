@@ -70,10 +70,12 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                                                                 <tr>
                                                                     <td><?php echo htmlspecialchars($data['fullname']); ?></td>
                                                                     <td><?php echo htmlspecialchars($data['leave_type']); ?></td>
-                                                                    <td><?php echo htmlspecialchars($data['filed_date']); ?></td>
+                                                                    <td><?php echo htmlspecialchars((new DateTime($data['filed_date']))->format('Y-m-d')); ?>
                                                                     <td>Pending</td>
                                                                     <td>
                                                                         <button type="button" class="btn btn-sm btn-primary view-request-btn"
+                                                                            data-employee-name="<?php echo htmlspecialchars($data['fullname']); ?>"
+                                                                            data-filed-date="<?php echo htmlspecialchars($data['filed_date']); ?>"
                                                                             data-leave-type="<?php echo htmlspecialchars($data['leave_type']); ?>"
                                                                             data-w-pay="<?php echo htmlspecialchars($data['w_pay']); ?>"
                                                                             data-from-date="<?php echo htmlspecialchars($data['from_date']); ?>"
@@ -119,16 +121,18 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                                                                 <tr>
                                                                     <td><?php echo htmlspecialchars($data['fullname']); ?></td>
                                                                     <td><?php echo htmlspecialchars($data['leave_type']); ?></td>
-                                                                    <td><?php echo htmlspecialchars($data['filed_date']); ?></td>
+                                                                    <td><?php echo htmlspecialchars((new DateTime($data['filed_date']))->format('Y-m-d')); ?>
                                                                     <td>
                                                                         <?php echo $data['isApproved'] === 1 ? 'Approved' : 'Rejected'; ?>
                                                                     </td>
                                                                     <td>
                                                                         <button type="button" class="btn btn-sm btn-primary view-request-btn"
+                                                                            data-employee-name="<?php echo htmlspecialchars($data['fullname']); ?>"
+                                                                            data-filed-date="<?php echo htmlspecialchars((new DateTime($data['filed_date']))->format('Y-m-d')); ?>"
                                                                             data-leave-type="<?php echo htmlspecialchars($data['leave_type']); ?>"
                                                                             data-w-pay="<?php echo htmlspecialchars($data['w_pay']); ?>"
-                                                                            data-from-date="<?php echo htmlspecialchars($data['from_date']); ?>"
-                                                                            data-to-date="<?php echo htmlspecialchars($data['to_date']); ?>"
+                                                                            data-from-date="<?php echo htmlspecialchars((new DateTime($data['from_date']))->format('Y-m-d')); ?>"
+                                                                            data-to-date="<?php echo htmlspecialchars((new DateTime($data['to_date']))->format('Y-m-d')); ?>"
                                                                             data-days="<?php echo htmlspecialchars($data['days']); ?>"
                                                                             data-reason="<?php echo htmlspecialchars($data['reason']); ?>"
                                                                             data-leave-bal="<?php echo htmlspecialchars($data['leave_bal']); ?>"
@@ -170,7 +174,9 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="viewLeaveModalLabel">Leave Request Details</h5>
-                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body" id="details">
             </div>
@@ -199,6 +205,8 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
 
             var Data = [];
 
+            var employeeName = this.getAttribute('data-employee-name');
+            var filedDate = this.getAttribute('data-filed-date');
             var approved = this.getAttribute('data-approved');
             var lType = this.getAttribute('data-leave-type');
             var wPay = this.getAttribute('data-w-pay') == 1 ? "With Pay" : "Without Pay";
@@ -220,8 +228,10 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                     stat = "Rejected";
                 }
                 Data = {
+                    "Full Name": employeeName,
                     "Leave Type": lType,
                     "Pay": wPay,
+                    "Filed Date": filedDate,
                     "From Date": fromDate,
                     "To Date": toDate,
                     "Days": days,
@@ -247,8 +257,10 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                 $('#cancel').hide();
             } else {
                 Data = {
+                    "Full Name": employeeName,
                     "Leave Type": lType,
                     "Pay": wPay,
+                    "Filed Date": filedDate,
                     "From Date": fromDate,
                     "To Date": toDate,
                     "Days": days,
