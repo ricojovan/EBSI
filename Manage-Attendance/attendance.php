@@ -81,14 +81,27 @@ if (isset($_POST['add_punch_out'])) {
         if ($stmt_schedule->rowCount() > 0) {
             $schedule = $stmt_schedule->fetch(PDO::FETCH_ASSOC);
             $schedule_in_time = new DateTime($schedule['intime'], new DateTimeZone('Asia/Manila'));
+            $schedule_out_time = new DateTime($schedule['outtime'], new DateTimeZone('Asia/Manila'));
         } else {
             $schedule_in_time = new DateTime('08:00:00', new DateTimeZone('Asia/Manila'));
+            $schedule_out_time = new DateTime('17:00:00', new DateTimeZone('Asia/Manila'));
         }
 
-        $start_time_for_duration = max($punch_in_time, $schedule_in_time);
+        $effective_in_time = max($punch_in_time, $schedule_in_time);
+        $effective_out_time = min($punch_out_time, $schedule_out_time);
 
-        $total_duration = $start_time_for_duration->diff($punch_out_time);
+        $total_duration = $effective_in_time->diff($effective_out_time);
         $formatted_duration = $total_duration->format('%H:%I:%S');
+
+        $duration_in_seconds = $total_duration->h * 3600 + $total_duration->i * 60 + $total_duration->s;
+        if ($duration_in_seconds > 21600) {
+            $duration_in_seconds -= 3600;
+        }
+
+        $hours = floor($duration_in_seconds / 3600);
+        $minutes = floor(($duration_in_seconds % 3600) / 60);
+        $seconds = $duration_in_seconds % 60;
+        $formatted_duration = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
 
         $sql_update = "UPDATE attendance_info SET out_time = :out_time, total_duration = :total_duration WHERE aten_id = :aten_id";
         $stmt_update = $obj_admin->db->prepare($sql_update);
@@ -434,7 +447,3 @@ include("../nav-and-footer/footer-area.php");
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-
-
-
