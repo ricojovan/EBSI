@@ -46,13 +46,7 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-6">
-                    <!-- <?php if (isset($_SESSION['message'])) {
-                        echo "<div class='alert alert-info'>" . $_SESSION['message'] . "</div>";
-                        unset($_SESSION['message']);
-                    } ?> -->
-                </div>
-                <div class="col-6 d-flex justify-content-end">
+                <div class="col-12 d-flex justify-content-end">
                     <a href="leave-form-emp.php" class="btn btn-success">
                         <i class="fa fa-plus"></i> Add Leave
                     </a>
@@ -84,7 +78,8 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                                                             <tr>
                                                                 <td><?php echo htmlspecialchars($data['fullname']); ?></td>
                                                                 <td><?php echo htmlspecialchars($data['leave_type']); ?></td>
-                                                                <td><?php echo htmlspecialchars($data['filed_date']); ?></td>
+                                                                <td><?php echo htmlspecialchars((new DateTime($data['filed_date']))->format('Y-m-d')); ?>
+                                                                </td>
                                                                 <td><?php echo htmlspecialchars($data['status']); ?></td>
 
                                                                 <?php if (!isset($data['isApproved'])): ?>
@@ -93,9 +88,21 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
                                                                         <button type="button" class="btn btn-sm btn-primary view-request-btn"
                                                                             data-leave-type="<?php echo htmlspecialchars($data['leave_type']); ?>"
                                                                             data-w-pay="<?php echo htmlspecialchars($data['w_pay']); ?>"
-                                                                            data-from-date="<?php echo htmlspecialchars($data['from_date']); ?>"
-                                                                            data-to-date="<?php echo htmlspecialchars($data['to_date']); ?>"
-                                                                            data-filed-date="<?php echo htmlspecialchars($data['filed_date']); ?>"
+                                                                            data-from-date="<?php
+                                                                                            $date = new DateTime($data['from_date']);
+                                                                                            echo htmlspecialchars($date->format('Y-m-d'));
+                                                                                            ?>"
+
+                                                                            data-to-date="<?php
+                                                                                            $date = new DateTime($data['to_date']);
+                                                                                            echo htmlspecialchars($date->format('Y-m-d'));
+                                                                                            ?>"
+
+                                                                            data-filed-date="<?php
+                                                                                                $date = new DateTime($data['filed_date']);
+                                                                                                echo htmlspecialchars($date->format('Y-m-d'));
+                                                                                                ?>"
+
                                                                             data-days="<?php echo htmlspecialchars($data['days']); ?>"
                                                                             data-reason="<?php echo htmlspecialchars($data['reason']); ?>"
                                                                             data-pending-id="<?php echo $data['pending_id']; ?>"
@@ -171,7 +178,9 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="viewLeaveModalLabel">Leave Request Details</h5>
-                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body" id="details">
             </div>
@@ -204,7 +213,6 @@ if (isset($_GET['cancel_pending']) && $_GET['cancel_pending'] === 'cancel_pendin
         </div>
     </div>
 </div>
-
 <script>
     document.querySelectorAll('.view-request-btn').forEach(function(button) {
         button.addEventListener('click', function() {

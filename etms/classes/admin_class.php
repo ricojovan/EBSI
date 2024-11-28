@@ -332,14 +332,13 @@ class Admin_Class
 				$add_leave->bindParam(':days', $emp_Absences);
 				$add_leave->bindParam(':reason', $emp_Reason);
 
-				// Execute the query
 				$add_leave->execute();
-				$_SESSION['message'] = "Leave data added successfully!";
+				$_SESSION['toast_message'] = "Leave data added successfully!";
 				header('Location: ../Manage-Attendance/leave-data.php');
 				exit();
 			}
 		} catch (PDOException $e) {
-			return "Error: " . $e->getMessage();
+			$_SESSION['error_message'] = "There was an error adding the leave data. Please try again.";
 		}
 	}
 
