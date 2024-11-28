@@ -255,7 +255,7 @@ class Admin_Class
 				return "Username is already taken";
 			} else {
 				// Prepare SQL query to insert user data
-				$add_user = $this->db->prepare("INSERT INTO tbl_admin (user_id, fullname, username, email, password, temp_password, em_department, em_position, em_status, em_profile, user_role) 
+				$add_user = $this->db->prepare("INSERT INTO tbl_admin (em_id, fullname, username, email, password, temp_password, em_department, em_position, em_status, em_profile, user_role) 
 					VALUES (:em_id, :fullname, :username, :email, :password, :temp_password, :department, :position, :status, :profile, :role)");
 
 				// Bind parameters
