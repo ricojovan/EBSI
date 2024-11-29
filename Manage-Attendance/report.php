@@ -195,22 +195,21 @@ if(isset($_POST['add_task_post'])){
                                     <th>Date</th>
                                     <th>IN</th>
                                     <th>OUT</th>
-                                    <th>IN</th>
-                                    <th>OUT</th>
-                                    <th>IN</th>
-                                    <th>OUT</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 if($num_row==0){
-                                        echo '<tr><td colspan="5">No Data found</td></tr>';
+                                        echo '<tr><td colspan="6">No Data found</td></tr>';
                                     }
                                 ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
+                
+                
             </div>
         </div>
     </div>
@@ -253,15 +252,12 @@ document.getElementById('excel-file').addEventListener('change', function (event
                 <td>${row.employee_no || ''}</td>
                 <td>${row.name || ''}</td>
                 <td>${row.date || ''}</td>
-                <td>${row.in1 || ''}</td>
-                <td>${row.out1 || ''}</td>
-                <td>${row.in2 || ''}</td>
-                <td>${row.out2 || ''}</td>
-                <td>${row.in3 || ''}</td>
-                <td>${row.out3 || ''}</td>
+                <td>${row.in1 || ''}</td> <!-- Should match "in1" -->
+                <td>${row.out1 || ''}</td> <!-- Should match "out1" -->
             `;
             tableBody.appendChild(tableRow);
         });
+
     })
     .catch(error => console.error('Error:', error));
 });
@@ -416,11 +412,8 @@ document.getElementById('insert-database').addEventListener('click', function ()
             emp_name: cells[2].innerText,
             date_rec: cells[3].innerText,
             in_one: cells[4].innerText,
-            out_one: cells[5].innerText,
-            in_two: cells[6].innerText,
-            out_two: cells[7].innerText,
-            in_three: cells[8].innerText,
-            out_three: cells[9].innerText
+            out_one: cells[5].innerText
+            
         });
     });
 
