@@ -188,17 +188,17 @@ if (isset($_POST['add_payslip_button'])) {
     <div class="card">
     <div class="card-body d-flex justify-content-between align-items-center">
     <div class="text-center w-100">
-        <h5 class="card-title mb-0">Payslip List</h5>
+        <h5 class="card-title mb-0">Payroll</h5>
     </div>
     <div class="text-right">
     <div class="d-flex align-items-center">
-        <button type="button" class="btn btn-primary ml-2 print-link">Print Payslip List</button>
+        <button type="button" class="btn btn-primary ml-2 print-link">Print Payroll</button>
 
-        <form method="post" style="display:inline;">
+        <!-- <form method="post" style="display:inline;">
           <button type="submit" class="btn btn-primary ml-3" name="add_payslip_button">Add New Payslip</button>
-        </form>
+        </form> -->
         <!-- This line below is the old button -->
-        <!-- <button type="button" class="btn btn-primary ml-3" data-toggle="modal" data-target="#addPayslipModal">Add New Payslip</button> -->
+        <button type="button" class="btn btn-primary ml-3" data-toggle="modal" data-target="#addPayslipModal">Add New Employee</button>
     </div>
   </div>
 </div>
@@ -238,27 +238,27 @@ if (isset($_POST['add_payslip_button'])) {
                 </select>
               </div>
               <div class="form-group">
-                <label for="CommisionPercent">Commission Percent</label>
+                <!-- <label for="CommisionPercent">Commission Percent</label>
                 <select class="form-control" id="CommisionPercent" name="CommisionPercent" style="padding: 5px; font-size: 15px;">
                     <option value="5">5%</option>
                     <option value="10">10%</option>
                     <option value="15">15%</option>
                     <option value="20">20%</option>
-                </select>
+                </select> -->
               </div>
             </div>
             <div class="col-md-4">
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="projectBasedPay">Project Based Pay</label>
                 <input type="number" class="form-control" id="projectBasedPay" name="projectBasedPay">
-              </div>
+              </div> -->
               <div class="form-group">
                 <label for="grossPay">Gross Pay</label>
                 <input type="number" class="form-control" id="grossPay" name="grossPay" disabled>
               </div>
             </div>
             <div class="col-md-4">
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="incomeTax">Income Tax</label>
                 <select class="form-control" id="incomeTax" name="incomeTax" style="padding: 5px; font-size: 15px;">
                   <option value="0.00">NONE - 0%</option>
@@ -270,7 +270,7 @@ if (isset($_POST['add_payslip_button'])) {
                   <option value="0.04">Pag-IBIG, PhilHealth - 4%</option>
                   <option value="0.06">ALL (SSS, PhilHealth, Pag-IBIG) - 6%</option>
                 </select>
-              </div>
+              </div> -->
               <div class="form-group">
                 <label for="totalPay">Total Pay</label>
                 <input type="number" class="form-control" id="totalPay" name="totalPay" disabled>
@@ -286,29 +286,64 @@ if (isset($_POST['add_payslip_button'])) {
     </div>
   </div>
 </div>
-            <div class="table-responsive">
+            <div class="table-responsive" >
+              <!-- <h4 class="text-center">Deductions</h4> -->
+              
+              <!-- <table class=" no-wrap table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>SSS-EE</th>
+                    <th>PHIC-EE</th>
+                    <th>PAG-IBIG-EE</th>
+                    <th>Gross Pay</th>
+                    <th>Deductions</th>
+                    <th>Total Pay</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Table data rows go here -->
+                </tbody>
+              </table> -->
+            </div>
+
+            <div class="table-responsive" style="overflow-x: auto;">
             <div id="printableTable">
-                <table class="table table-bordered table-stripped">
-                    <colgroup>
-                        <col width="5%">
-                        <col width="15%">
-                        <col width="20%">
-                        <col width="15%">
-                        <col width="15%">
-                        <col width="10%">
-                        <col width="10%">
-                        <col width="%">
-                    </colgroup>
+                <table class=" no-wrap table table-bordered table-stripped">
+                <!-- <colgroup>
+                    <col width="5%"> 
+                    <col width="20%"> 
+                    <col width="15%"> 
+                    <col width="15%"> 
+                    <col width="15%"> 
+                    <col width="10%"> 
+                    <col width="10%"> 
+                    <col width="10%"> 
+                    <col width="10%"> 
+                </colgroup> -->
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Created At</th>
-                            <th>Employee</th>
-                            <th>Project Based Pay</th>
+                            <th>Name</th>
+                            <th>Monthly Rate</th>
+                            <th>Semi-Monthly Rate</th>
+                            <th>Daily</th>
+                            <th>Hourly</th>
+                            <th>Overtime</th>
+                            <th>Special Holiday</th>
+                            <th>Legal Holiday</th>
+                            <th>Rest Day Duty</th>
+                            <th>Night Differential</th>
+                            <th>Absent Without Pay</th>
+                            <th>Lates/Undertimes</th>
                             <th>Gross Pay</th>
-                            <th>Total Pay</th>
+                            <th>Deductions Total</th>
+                            <th>Net Take</th>
                             <th>Action</th>
                         </tr>
+                        
                     </thead>
                     <tbody>
                     <?php
@@ -324,7 +359,7 @@ if (isset($payslips) && !empty($payslips)) {
       echo '<td>' . $payslip['gross_pay'] . '</td>';
       echo '<td>' . $payslip['total_pay'] . '</td>';
       // echo '<td><a href="#" class="btn btn-primary print-link">Print</a></td>';
-      echo '<td><a href="#" class="btn btn-danger delete-link" data-id="' . $payslip['id'] . '">Delete</a></td>'; // Attach payslip ID to the delete button
+      // echo '<td><a href="#" class="btn btn-danger delete-link" data-id="' . $payslip['id'] . '">Delete</a></td>'; // Attach payslip ID to the delete button
       echo '</tr>';
       $counter++;
   }
@@ -332,7 +367,10 @@ if (isset($payslips) && !empty($payslips)) {
   echo '<tr><td colspan="8">No payslips found.</td></tr>';
 }
                     ?>
+                    
                     </tbody>
+
+                    
                 </table>
             </div>
             </div>
