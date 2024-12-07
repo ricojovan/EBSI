@@ -1,5 +1,5 @@
 <?php
-$page_name = "Payroll";
+$page_name = "Payroll List";
 include('../nav-and-footer/header-nav.php');
 
 // Create an instance of the admin class

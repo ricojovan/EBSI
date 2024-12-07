@@ -1,5 +1,5 @@
 <?php
-$page_name = "Payslip List";
+$page_name = "Payroll";
 include('../nav-and-footer/header-nav.php');
 
 // Create an instance of the admin class
@@ -142,21 +142,21 @@ table {
   border-collapse: collapse;
 }
 
-/* Header styles */
 th {
   text-align: center;
   padding: 10px;
   border: 1px solid #ddd;
   background-color: #f4f4f9;
-  height: 50px; 
-  width: auto; 
+  white-space: nowrap; 
   vertical-align: middle; 
 }
 
+.table-bordered th, .table-bordered td {
+  border: 1px solid #ccc;
+}
 
-thead th {
-  height: 30px; 
-  min-width: 100px; 
+tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
 
@@ -354,20 +354,35 @@ tr:nth-child(even) {
           <th rowspan="2">Daily</th>
           <th rowspan="2">Hourly</th>
           <th colspan="2">Overtime</th>
-          <th rowspan="2">Special Holiday</th>
-          <th rowspan="2">Legal Holiday</th>
-          <th rowspan="2">Rest Day Duty</th>
-          <th rowspan="2">Night Differential</th>
-          <th rowspan="2">Absent Without Pay</th>
-          <th rowspan="2">Lates/Undertimes</th>
+          <th colspan="2">Special Holiday</th>
+          <th colspan="2">Legal Holiday</th>
+          <th colspan="2">Rest Day Duty</th>
+          <th colspan="2">Night Differential</th>
+          <th colspan="2">Deductions</th>
           <th rowspan="2">Gross Pay</th>
           <th rowspan="2">Deductions Total</th>
-          <th rowspan="2">Net Take</th>
+          <th rowspan="2">Net Take/Home Pay</th>
           <th rowspan="2">Action</th>
         </tr>
         <tr>
           <th>Hours</th>
           <th>Add 25% Rate</th>
+
+          <th>Hours</th>
+          <th>Add 30% Rate</th>
+
+          <th>Hours</th>
+          <th>Add 100% Rate</th>
+
+          <th>Hours</th>
+          <th>Add 130% Rate</th>
+
+          <th>Hours</th>
+          <th>Add 10% Rate</th>
+
+          <th>Absent without Pay</th>
+          <th>Late/Undertime</th>
+          
         </tr>
       </thead>
       <tbody>
