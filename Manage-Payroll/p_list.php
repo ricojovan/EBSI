@@ -137,6 +137,39 @@ if (isset($_POST['add_payslip_button'])) {
     
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header styles */
+th {
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f4f4f9;
+  height: 50px; 
+  width: auto; 
+  vertical-align: middle; 
+}
+
+
+thead th {
+  height: 30px; 
+  min-width: 100px; 
+}
+
+
+.table-bordered th, .table-bordered td {
+  border: 1px solid #ccc;
+}
+
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+
     
 
 </style>
@@ -304,49 +337,41 @@ if (isset($_POST['add_payslip_button'])) {
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- Table data rows go here -->
+                   Table data rows go here -->
                 </tbody>
-              </table> -->
+              </table> 
             </div>
 
             <div class="table-responsive" style="overflow-x: auto;">
-            <div id="printableTable">
-                <table class=" no-wrap table table-bordered table-stripped">
-                <!-- <colgroup>
-                    <col width="5%"> 
-                    <col width="20%"> 
-                    <col width="15%"> 
-                    <col width="15%"> 
-                    <col width="15%"> 
-                    <col width="10%"> 
-                    <col width="10%"> 
-                    <col width="10%"> 
-                    <col width="10%"> 
-                </colgroup> -->
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Monthly Rate</th>
-                            <th>Semi-Monthly Rate</th>
-                            <th>Daily</th>
-                            <th>Hourly</th>
-                            <th>Overtime</th>
-                            <th>Special Holiday</th>
-                            <th>Legal Holiday</th>
-                            <th>Rest Day Duty</th>
-                            <th>Night Differential</th>
-                            <th>Absent Without Pay</th>
-                            <th>Lates/Undertimes</th>
-                            <th>Gross Pay</th>
-                            <th>Deductions Total</th>
-                            <th>Net Take</th>
-                            <th>Action</th>
-                        </tr>
-                        
-                    </thead>
-                    <tbody>
-                    <?php
+  <div id="printableTable">
+    <table class="no-wrap table table-bordered table-stripped">
+      <thead>
+        <tr>
+          <th rowspan="2">#</th>
+          <th rowspan="2">Name</th>
+          <th rowspan="2">Monthly Rate</th>
+          <th rowspan="2">Semi-Monthly Rate</th>
+          <th rowspan="2">Daily</th>
+          <th rowspan="2">Hourly</th>
+          <th colspan="2">Overtime</th>
+          <th rowspan="2">Special Holiday</th>
+          <th rowspan="2">Legal Holiday</th>
+          <th rowspan="2">Rest Day Duty</th>
+          <th rowspan="2">Night Differential</th>
+          <th rowspan="2">Absent Without Pay</th>
+          <th rowspan="2">Lates/Undertimes</th>
+          <th rowspan="2">Gross Pay</th>
+          <th rowspan="2">Deductions Total</th>
+          <th rowspan="2">Net Take</th>
+          <th rowspan="2">Action</th>
+        </tr>
+        <tr>
+          <th>Hours</th>
+          <th>Add 25% Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+      <?php
                         // Loop through each payslip and display it in the table
 if (isset($payslips) && !empty($payslips)) {
   $counter = 1;
@@ -367,13 +392,10 @@ if (isset($payslips) && !empty($payslips)) {
   echo '<tr><td colspan="8">No payslips found.</td></tr>';
 }
                     ?>
-                    
-                    </tbody>
-
-                    
-                </table>
-            </div>
-            </div>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 
         </div>
