@@ -11,7 +11,7 @@ $user_role = $_SESSION['user_role'];
 $today = date('Y-m-d');
 
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: ../Interface/login.php');
+    header('Location: ../index.php');
 }
 
 if (isset($_GET['delete_attendance'])) {
