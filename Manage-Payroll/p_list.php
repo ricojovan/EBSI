@@ -251,65 +251,62 @@ tr:nth-child(even) {
       </div>
       <div class="modal-body">
         <form id="payslipForm" method="post">
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="employee_id">Employee</label>
-                <select class="form-control" id="employee_id" name="employee_id" style="padding: 5px; font-size: 15px;">
-                  <?php
-                  // Fetch employees (user_role = 2) from tbl_admin
-                  $stmt = $admin_class->db->prepare("SELECT user_id, fullname FROM tbl_admin WHERE user_role = :userRole");
-                  $userRole = 2; // Assuming 2 represents employees
-                  $stmt->bindParam(':userRole', $userRole, PDO::PARAM_INT);
-                  $stmt->execute();
+        <div class="row">
 
-                  // Loop through each employee
-                  while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    echo '<option value="' . $row['user_id'] . '">' . $row['fullname'] . '</option>';
-                  }
-                  ?>
-                </select>
-              </div>
-              <div class="form-group">
-                <!-- <label for="CommisionPercent">Commission Percent</label>
-                <select class="form-control" id="CommisionPercent" name="CommisionPercent" style="padding: 5px; font-size: 15px;">
-                    <option value="5">5%</option>
-                    <option value="10">10%</option>
-                    <option value="15">15%</option>
-                    <option value="20">20%</option>
-                </select> -->
-              </div>
-            </div>
-            <div class="col-md-4">
-              <!-- <div class="form-group">
-                <label for="projectBasedPay">Project Based Pay</label>
-                <input type="number" class="form-control" id="projectBasedPay" name="projectBasedPay">
-              </div> -->
-              <div class="form-group">
-                <label for="grossPay">Gross Pay</label>
-                <input type="number" class="form-control" id="grossPay" name="grossPay" disabled>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <!-- <div class="form-group">
-                <label for="incomeTax">Income Tax</label>
-                <select class="form-control" id="incomeTax" name="incomeTax" style="padding: 5px; font-size: 15px;">
-                  <option value="0.00">NONE - 0%</option>
-                  <option value="0.02">SSS - 2%</option>
-                  <option value="0.02">PhilHealth - 2%</option>
-                  <option value="0.02">Pag-IBIG - 2%</option>
-                  <option value="0.04">SSS, PhilHealth - 4%</option>
-                  <option value="0.04">SSS, Pag-IBIG - 4%</option>
-                  <option value="0.04">Pag-IBIG, PhilHealth - 4%</option>
-                  <option value="0.06">ALL (SSS, PhilHealth, Pag-IBIG) - 6%</option>
-                </select>
-              </div> -->
-              <div class="form-group">
-                <label for="totalPay">Total Pay</label>
-                <input type="number" class="form-control" id="totalPay" name="totalPay" disabled>
-              </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="employee_id">Employee</label>
+              <select class="form-control" id="employee_id" name="employee_id" style="padding: 5px; font-size: 15px;">
+                <?php
+                // Fetch employees (user_role = 2) from tbl_admin
+                $stmt = $admin_class->db->prepare("SELECT user_id, fullname FROM tbl_admin WHERE user_role = :userRole");
+                $userRole = 2; // Assuming 2 represents employees
+                $stmt->bindParam(':userRole', $userRole, PDO::PARAM_INT);
+                $stmt->execute();
+
+                // Loop through each employee
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                  echo '<option value="' . $row['user_id'] . '">' . $row['fullname'] . '</option>';
+                }
+                ?>
+              </select>
             </div>
           </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="grossPay">Monthly Pay</label>
+              <input type="number" class="form-control" id="grossPay" name="grossPay" placeholder="Enter monthly pay" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="specialHolidayHours">Special Holiday Hours</label>
+              <input type="number" class="form-control" id="specialHolidayHours" name="specialHolidayHours" placeholder="Enter hours">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="legalHolidayHours">Legal Holidays Hours</label>
+              <input type="number" class="form-control" id="legalHolidayHours" name="legalHolidayHours" placeholder="Enter hours">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="restDayHours">Rest Days Hours</label>
+              <input type="number" class="form-control" id="restDayHours" name="restDayHours" placeholder="Enter hours">
+            </div>
+          </div>
+        </div>
+
+
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             <button type="submit" class="btn btn-primary" name="saveButton">Save</button>
