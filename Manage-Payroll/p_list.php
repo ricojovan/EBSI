@@ -48,7 +48,7 @@ if(isset($_GET['id'])) {
 if (isset($_POST['saveButton'])) {
   // Retrieve form data
   $employee_id = $_POST['employee_id'];
-  $gross_pay = 0;   // placeholder values for now, edit as necessary
+  $monthly_pay = 0;   // placeholder values for now, edit as necessary
   $total_pay = 0;
 
   // Retrieve payroll ID from URL
@@ -56,12 +56,12 @@ if (isset($_POST['saveButton'])) {
       $payroll_id = $_GET['id'];
 
       // Insert into payslip table
-      $sql = "INSERT INTO payslip (payroll_id, employee_id, gross_pay, total_pay) 
-      VALUES (:payroll_id, :employee_id, :gross_pay, :total_pay)";
+      $sql = "INSERT INTO payslip (payroll_id, employee_id, monthly_pay, total_pay) 
+      VALUES (:payroll_id, :employee_id, :monthly_pay, :total_pay)";
       $stmt = $admin_class->db->prepare($sql);
       $stmt->bindParam(':payroll_id', $payroll_id);
       $stmt->bindParam(':employee_id', $employee_id);
-      $stmt->bindParam(':gross_pay', $gross_pay);
+      $stmt->bindParam(':monthly_pay', $monthly_pay);
       $stmt->bindParam(':total_pay', $total_pay);
 
       // Execute the query
@@ -432,8 +432,8 @@ if (isset($payslips) && !empty($payslips)) {
       echo '<td>' . $counter . '</td>';
       echo '<td>' . $payslip['created_at'] . '</td>';
       echo '<td>' . $payslip['employee_id'] . '</td>';
-      echo '<td>' . $payslip['project_based_pay'] . '</td>';
-      echo '<td>' . $payslip['gross_pay'] . '</td>';
+      // echo '<td>' . $payslip['project_based_pay'] . '</td>';
+      // echo '<td>' . $payslip['gross_pay'] . '</td>';
       echo '<td>' . $payslip['total_pay'] . '</td>';
       // echo '<td><a href="#" class="btn btn-primary print-link">Print</a></td>';
       // echo '<td><a href="#" class="btn btn-danger delete-link" data-id="' . $payslip['id'] . '">Delete</a></td>'; // Attach payslip ID to the delete button
