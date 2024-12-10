@@ -48,8 +48,16 @@ if(isset($_GET['id'])) {
 if (isset($_POST['saveButton'])) {
   // Retrieve form data
   $employee_id = $_POST['employee_id'];
-  $monthly_pay = 0;   // placeholder values for now, edit as necessary
-  $total_pay = 0;
+  $monthly_pay = $_POST['monthlyPay'];  
+  $basic_pay = (float) $monthly_pay / 2;
+  $daily_pay = (($basic_pay * 2) * 12) / 313;
+  $late_rate = ($daily_pay/8) / 60;
+  $special_holiday_hrs = $_POST['specialHolidayHours'];
+  $legal_holiday_hrs = $_POST['legalHolidayHours'];
+  $rest_day_hrs = $_POST['restDayHours'];
+  $days_absent = $_POST['absentDays'];
+  $minutes_late = $_POST['absentDays'];
+  $total_pay;
 
   // Retrieve payroll ID from URL
   if (isset($_GET['id'])) {
@@ -315,8 +323,8 @@ tr:nth-child(even) {
 
           <div class="col-md-6">
             <div class="form-group">
-              <label for="grossPay">Monthly Pay</label>
-              <input type="number" class="form-control" id="grossPay" name="grossPay" placeholder="Enter monthly pay" required>
+              <label for="monthlyPay">Monthly Pay</label>
+              <input type="number" class="form-control" id="monthlyPay" name="monthlyPay" placeholder="Enter monthly pay" required>
             </div>
           </div>
         </div>
