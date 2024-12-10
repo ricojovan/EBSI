@@ -56,8 +56,8 @@ if (isset($_POST['saveButton'])) {
       $payroll_id = $_GET['id'];
 
       // Insert into payslip table
-      $sql = "INSERT INTO payslip (payroll_id, employee_id, monthly_pay, total_pay) 
-      VALUES (:payroll_id, :employee_id, :monthly_pay, :total_pay)";
+      $sql = "INSERT INTO payslip (payroll_id, employee_id, gross_pay, total_pay) 
+      VALUES (:payroll_id, :employee_id, :gross_pay, :total_pay)";
       $stmt = $admin_class->db->prepare($sql);
       $stmt->bindParam(':payroll_id', $payroll_id);
       $stmt->bindParam(':employee_id', $employee_id);
@@ -279,7 +279,7 @@ tr:nth-child(even) {
 
 <!-- We will take out some parts in the modal because of Add new Payslip we dont need its stuff anymore or maybe 
  we will edit it to do something new -->
-<!-- Modal -->
+<!-- ADD NEW PAYSLIP Modal -->
 <div class="modal fade" id="addPayslipModal" tabindex="-1" role="dialog" aria-labelledby="addPayslipModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -341,6 +341,20 @@ tr:nth-child(even) {
             <div class="form-group">
               <label for="restDayHours">Rest Days Hours</label>
               <input type="number" class="form-control" id="restDayHours" name="restDayHours" placeholder="Enter hours">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="absentDays">Number of Days Absent</label>
+              <input type="number" class="form-control" id="absentDays" name="absentDays" placeholder="Enter days">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="absentDays">Number of Minutes late</label>
+              <input type="number" class="form-control" id="absentDays" name="absentDays" placeholder="Enter minutes">
             </div>
           </div>
         </div>
@@ -432,10 +446,10 @@ if (isset($payslips) && !empty($payslips)) {
       echo '<td>' . $counter . '</td>';
       echo '<td>' . $payslip['created_at'] . '</td>';
       echo '<td>' . $payslip['employee_id'] . '</td>';
-      // echo '<td>' . $payslip['project_based_pay'] . '</td>';
-      // echo '<td>' . $payslip['gross_pay'] . '</td>';
+      //echo '<td>' . $payslip['project_based_pay'] . '</td>';
+      //echo '<td>' . $payslip['monthly_pay'] . '</td>';
       echo '<td>' . $payslip['total_pay'] . '</td>';
-      // echo '<td><a href="#" class="btn btn-primary print-link">Print</a></td>';
+      // echo '<td><a href="payslip_pdf.php" class="btn btn-primary">Print</a></td>';
       // echo '<td><a href="#" class="btn btn-danger delete-link" data-id="' . $payslip['id'] . '">Delete</a></td>'; // Attach payslip ID to the delete button
       echo '</tr>';
       $counter++;
