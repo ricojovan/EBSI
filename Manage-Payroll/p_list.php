@@ -36,7 +36,7 @@ function is_absent($employee_id, $date, $admin_class) {
 }
 
 
-function calc_minutes_late($employee_id, $date, $admin_class) {
+function calculate_minutes_late($employee_id, $date, $admin_class) {
     $sql = "SELECT TIMESTAMPDIFF(MINUTE, TIME('08:00:00'), TIME(in_time)) AS minutes_late 
             FROM attendance_info 
             WHERE atn_user_id = :employee_id 
@@ -54,6 +54,33 @@ function calc_minutes_late($employee_id, $date, $admin_class) {
 
     return 0;  // return 0 if no late record was found
 }
+
+
+function calculate_sss_ee($salary) {
+  $range_increment = 500; // Range increment (e.g., 4250 to 4750)
+  $msc_increment = 500;   // MSC increment
+  $base_msc = 4000;       // Starting MSC
+  $base_salary = 4250;    // Starting salary range
+  $rate = 0.045;          // Contribution rate
+
+  // check if salary is below first range 4250
+  if ($salary < $base_salary) {
+      return $base_msc * $rate;
+  }
+
+  // Calculate the MSC based on the pattern
+  $steps = floor(($salary - $base_salary) / $range_increment);
+  $msc = $base_msc + ($msc_increment * ($steps+1)); // Increment MSC by steps
+
+  // if the MSC is 20000 or above, fixed contribution of 900 by employee
+  if ($msc >= 20000) {
+    return 900; 
+  }
+
+  // Return the calculated contribution
+  return $msc * $rate;
+}
+
 
 // Check if the payroll ID is set in the URL
 if(isset($_GET['id'])) {
@@ -91,6 +118,11 @@ if (isset($_POST['saveButton'])) {
   $special_holiday_hrs = $_POST['specialHolidayHours'];
   $legal_holiday_hrs = $_POST['legalHolidayHours'];
   $rest_day_hrs = $_POST['restDayHours'];
+
+  $sss_ee = calculate_sss_ee($basic_pay);
+  echo "<script>
+        console.log('SSS contribution based off basic pay " . $basic_pay . " : " . $sss_ee . "');
+      </script>";
 
   // Retrieve payroll ID from URL
   if (isset($_GET['id'])) {
@@ -135,7 +167,7 @@ if (isset($_POST['saveButton'])) {
             </script>";
           }
           else {
-            $total_minutes_late += calc_minutes_late($employee_id, $day, $admin_class);
+            $total_minutes_late += calculate_minutes_late($employee_id, $day, $admin_class);
             echo "<script>
               console.log('Employee was present on: " . $day . "');
             </script>";
