@@ -19,6 +19,42 @@ function get_payroll_type($type) {
     }
 }
 
+function is_absent($employee_id, $date, $admin_class) {
+    $sql = "SELECT in_time FROM attendance_info WHERE atn_user_id = :employee_id AND DATE(in_time) = :date";
+    $stmt = $admin_class->db->prepare($sql);
+    $stmt->bindParam(':employee_id', $employee_id);
+    $stmt->bindParam(':date', $date);
+    $stmt->execute();
+    $attendance = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // if INTIME is not null, employee is not absent i.e. returns FALSE
+    if ($attendance && !empty($attendance['in_time'])) {
+        return false; 
+    }
+
+    return true;  // if INTIME is null, employee is absent
+}
+
+
+function calc_minutes_late($employee_id, $date, $admin_class) {
+    $sql = "SELECT TIMESTAMPDIFF(MINUTE, TIME('08:00:00'), TIME(in_time)) AS minutes_late 
+            FROM attendance_info 
+            WHERE atn_user_id = :employee_id 
+            AND DATE(in_time) = :date 
+            AND TIME(in_time) > '08:00:00'";
+    $stmt = $admin_class->db->prepare($sql);
+    $stmt->bindParam(':employee_id', $employee_id);
+    $stmt->bindParam(':date', $date);
+    $stmt->execute();
+    $minutes_late = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($minutes_late !== false && isset($minutes_late['minutes_late'])) {
+        return $minutes_late['minutes_late'];
+    }
+
+    return 0;  // return 0 if no late record was found
+}
+
 // Check if the payroll ID is set in the URL
 if(isset($_GET['id'])) {
     // Retrieve the payroll ID from the URL
@@ -55,22 +91,84 @@ if (isset($_POST['saveButton'])) {
   $special_holiday_hrs = $_POST['specialHolidayHours'];
   $legal_holiday_hrs = $_POST['legalHolidayHours'];
   $rest_day_hrs = $_POST['restDayHours'];
-  $days_absent = $_POST['absentDays'];
-  $minutes_late = $_POST['absentDays'];
-  $total_pay;
 
   // Retrieve payroll ID from URL
   if (isset($_GET['id'])) {
       $payroll_id = $_GET['id'];
+      
+      // gets the start date and end date of the payroll period
+      $sql= "
+          SELECT start_date, end_date
+          FROM payroll_list
+          WHERE id = :payroll_id";
+
+      $stmt = $admin_class->db->prepare($sql);
+      $stmt->bindParam(':payroll_id', $payroll_id);
+      $stmt->execute();
+      $payroll_period = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      $payroll_start_date = $payroll_period['start_date'];
+      $payroll_end_date = $payroll_period['end_date'];
+
+      // get the date range from the payroll period
+      $start_date = date_create($payroll_start_date); 
+      $end_date   = date_create($payroll_end_date); 
+      $end_date->modify('+1 day'); // +1 day to include the end date
+      $interval = DateInterval::createFromDateString('1 day');
+      $daterange = new DatePeriod($start_date, $interval, $end_date);
+
+      // initialize days_absent and total_minutes_late
+      $days_absent = 0;
+      $total_minutes_late = 0;
+      $total_days = 0;
+      foreach ($daterange as $date) {
+          $day = $date->format("Y-m-d");
+          $day_of_week = date('N', strtotime($day));
+
+          // if the day is not a sunday and if employee is absent, increment the days_absent counter
+          if (is_absent($employee_id, $day, $admin_class) && $day_of_week != 7) {
+              $days_absent++;
+          }
+          else if ($day_of_week == 7) {
+            echo "<script>
+              console.log('This day is a Sunday: " . $day . "');
+            </script>";
+          }
+          else {
+            $total_minutes_late += calc_minutes_late($employee_id, $day, $admin_class);
+            echo "<script>
+              console.log('Employee was present on: " . $day . "');
+            </script>";
+          }
+          // note still have to account for other types of days like rest days, special holidays, etc.
+
+          $total_days++;  // get total days in payroll period just for validity
+      }
+
+      // debugging values in console
+      echo "<script>
+        var totaldays = " . json_encode($total_days) . ";
+        console.log('Total Days: ' + totaldays);
+        var absentdays = " . json_encode($days_absent) . ";
+        console.log('Absent Days: ' + absentdays);
+        var totalminuteslate = " . json_encode($total_minutes_late) . ";
+        console.log('Total minutes late: ' + totalminuteslate);
+      </script>";
+
+      $absent_penalty = $daily_pay * $days_absent;
+      $late_penalty = $late_rate * $total_minutes_late;
+      $total_deductions = $absent_penalty + $late_penalty;
+      $total_pay = 0;
 
       // Insert into payslip table
-      $sql = "INSERT INTO payslip (payroll_id, employee_id, gross_pay, total_pay) 
-      VALUES (:payroll_id, :employee_id, :gross_pay, :total_pay)";
+      $sql = "INSERT INTO payslip (payroll_id, employee_id, monthly_pay, total_pay, total_deductions) 
+      VALUES (:payroll_id, :employee_id, :monthly_pay, :total_pay, :total_deductions)";
       $stmt = $admin_class->db->prepare($sql);
       $stmt->bindParam(':payroll_id', $payroll_id);
       $stmt->bindParam(':employee_id', $employee_id);
       $stmt->bindParam(':monthly_pay', $monthly_pay);
       $stmt->bindParam(':total_pay', $total_pay);
+      $stmt->bindParam(':total_deductions', $total_deductions);
 
       // Execute the query
       if ($stmt->execute()) {
