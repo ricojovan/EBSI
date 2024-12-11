@@ -140,11 +140,12 @@ if (isset($_POST['saveButton'])) {
   $monthly_pay = $_POST['monthlyPay'];  
   $basic_pay = (float) $monthly_pay / 2;
   $daily_pay = (($basic_pay * 2) * 12) / 313;
+  $hourly_pay = $daily / 8;
   $late_rate = ($daily_pay/8) / 60;
-  $special_holiday_hrs = $_POST['specialHolidayHours'];
-  $legal_holiday_hrs = $_POST['legalHolidayHours'];
-  $rest_day_hrs = $_POST['restDayHours'];
-  $gross_pay;
+  $special_holiday_hrs = (int) $_POST['specialHolidayHours'] * (($hourly_pay * 0.3) + $hourly_pay);
+  $legal_holiday_hrs = (int) $_POST['legalHolidayHours'] * ($hourly_pay + $hourly_pay);
+  $rest_day_hrs = (int) $_POST['restDayHours'];
+  $gross_pay = $basic_pay + $special_holiday_hrs + $legal_holiday_hrs + $rest_day_hrs;
   $pabibig_ee = calculate_pagibig_ee($basic_pay);
   $phic_ee = calculate_phic_ee($basic_pay);
 
@@ -193,13 +194,11 @@ if (isset($_POST['saveButton'])) {
           // if the day is not a sunday and if employee is absent, increment the days_absent counter
           if (is_absent($employee_id, $day, $admin_class) && $day_of_week != 7) {
               $days_absent++;
-          }
-          else if ($day_of_week == 7) {
+          } else if ($day_of_week == 7) {
             echo "<script>
               console.log('This day is a Sunday: " . $day . "');
             </script>";
-          }
-          else {
+          } else {
             $total_minutes_late += calculate_minutes_late($employee_id, $day, $admin_class);
             echo "<script>
               console.log('Employee was present on: " . $day . "');
