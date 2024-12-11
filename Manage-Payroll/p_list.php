@@ -80,6 +80,14 @@ if(isset($_GET['id'])) {
 
 }
 
+function calculate_pagibig_ee($salary){
+
+}
+
+function calculate_phic_ee($salary){
+
+}
+
 // savebutton for add new employee payslip modal
 if (isset($_POST['saveButton'])) {
   // Retrieve form data
@@ -91,6 +99,13 @@ if (isset($_POST['saveButton'])) {
   $special_holiday_hrs = $_POST['specialHolidayHours'];
   $legal_holiday_hrs = $_POST['legalHolidayHours'];
   $rest_day_hrs = $_POST['restDayHours'];
+  $gross_pay;
+  $sss;
+
+  $pabibig;
+  $philhealth;
+
+  
 
   // Retrieve payroll ID from URL
   if (isset($_GET['id'])) {
