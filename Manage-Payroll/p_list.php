@@ -56,31 +56,6 @@ function calculate_minutes_late($employee_id, $date, $admin_class) {
 }
 
 
-function calculate_sss_ee($salary) {
-  $range_increment = 500; // Range increment (e.g., 4250 to 4750)
-  $msc_increment = 500;   // MSC increment
-  $base_msc = 4000;       // Starting MSC
-  $base_salary = 4250;    // Starting salary range
-  $rate = 0.045;          // Contribution rate
-
-  // check if salary is below first range 4250
-  if ($salary < $base_salary) {
-      return $base_msc * $rate;
-  }
-
-  // Calculate the MSC based on the pattern
-  $steps = floor(($salary - $base_salary) / $range_increment);
-  $msc = $base_msc + ($msc_increment * ($steps+1)); // Increment MSC by steps
-
-  // if the MSC is 20000 or above, fixed contribution of 900 by employee
-  if ($msc >= 20000) {
-    return 900; 
-  }
-
-  // Return the calculated contribution
-  return $msc * $rate;
-}
-
 
 // Check if the payroll ID is set in the URL
 if(isset($_GET['id'])) {
@@ -107,11 +82,54 @@ if(isset($_GET['id'])) {
 
 }
 
+function calculate_sss_ee($salary) {
+  $range_increment = 500; // Range increment (e.g., 4250 to 4750)
+  $msc_increment = 500;   // MSC increment
+  $base_msc = 4000;       // Starting MSC
+  $base_salary = 4250;    // Starting salary range
+  $rate = 0.045;          // Contribution rate
+
+  // check if salary is below first range 4250
+  if ($salary < $base_salary) {
+      return $base_msc * $rate;
+  }
+
+  // Calculate the MSC based on the pattern
+  $steps = floor(($salary - $base_salary) / $range_increment);
+  $msc = $base_msc + ($msc_increment * ($steps+1)); // Increment MSC by steps
+
+  // if the MSC is 20000 or above, fixed contribution of 900 by employee
+  if ($msc >= 20000) {
+    return 900; 
+  }
+
+  // Return the calculated contribution
+  return $msc * $rate;
+}
+
 function calculate_pagibig_ee($salary){
+
+  if($salary > 0 && $salary <=  5000.00) {
+    return $salary * 0.02;
+  } else {
+    return 100.00;
+  }
 
 }
 
 function calculate_phic_ee($salary){
+
+  if($salary > 0 && $salary <= 10000.00) {
+    return (10000.00 * 0.05) / 2;
+
+  } else if ($salary <= 99999.99) {
+    return ($salary * 0.05) / 2;
+
+  } else {
+    return (100000.00 * 0.05) / 2;
+
+  }
+
 
 }
 
@@ -127,16 +145,16 @@ if (isset($_POST['saveButton'])) {
   $legal_holiday_hrs = $_POST['legalHolidayHours'];
   $rest_day_hrs = $_POST['restDayHours'];
   $gross_pay;
-  $sss;
-
-  $pabibig;
-  $philhealth;
+  $pabibig_ee = calculate_pagibig_ee($basic_pay);
+  $phic_ee = calculate_phic_ee($basic_pay);
 
   
-
+  //change basic pay here to gross pay
   $sss_ee = calculate_sss_ee($basic_pay);
   echo "<script>
-        console.log('SSS contribution based off basic pay " . $basic_pay . " : " . $sss_ee . "');
+        console.log('SSS-EE contribution based off basic pay " . $basic_pay . " : " . $sss_ee . "');
+        console.log('PHIC-EE contribution based off basic pay " . $basic_pay . " : " . $phic_ee . "');
+        console.log('PAG-IBIG-EE contribution based off basic pay " . $basic_pay . " : " . $pabibig_ee . "');
       </script>";
 
   // Retrieve payroll ID from URL
