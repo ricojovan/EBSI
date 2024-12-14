@@ -74,28 +74,28 @@ try {
 ?>
 
 
-        <!-- page title area end -->
-         
-         <!-- THIS IS ADMIN SIDE -->
-        <?php
-                        $user_role = $_SESSION['user_role'];
-                        if($user_role == 1){
-                        ?>
-<div class="main-content-inner">
-    <div class="container-fluid">
-        <div class="row justify-content-start"> 
-            <!-- seo fact area start -->
-            <div class="col-lg-4 col-md-6 mt-3 mb-3">
-                <div class="card">
-                    <div class="seo-fact sbg1">
-                        <div class="p-4 d-flex justify-content-between align-items-center">
-                            <div class="seofct-icon"><i class="fa fa-user"></i> Employees</div>
-                            <h2> <?php echo $totalEmployees; ?> </h2>
+<!-- page title area end -->
+
+<!-- THIS IS ADMIN SIDE -->
+<?php
+$user_role = $_SESSION['user_role'];
+if ($user_role == 1) {
+?>
+    <div class="main-content-inner">
+        <div class="container-fluid">
+            <div class="row justify-content-start">
+                <!-- seo fact area start -->
+                <div class="col-lg-4 col-md-6 mt-3 mb-3">
+                    <div class="card">
+                        <div class="seo-fact sbg1">
+                            <div class="p-4 d-flex justify-content-between align-items-center">
+                                <div class="seofct-icon"><i class="fa fa-user"></i> Employees</div>
+                                <h2> <?php echo $totalEmployees; ?> </h2>
+                            </div>
+                            <canvas id="seolinechart1" height="50"></canvas>
                         </div>
-                        <canvas id="seolinechart1" height="50"></canvas>
                     </div>
                 </div>
-            </div>
 
                 <div class="col-lg-4 col-md-6 mt-3 mb-3">
                     <div class="card">
@@ -149,42 +149,44 @@ try {
                                                     LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id)
                                                     WHERE atn_user_id = $user_id
                                                     ORDER BY a.aten_id DESC";
-                                        }
-                                    
-                                        $info = $obj_admin->manage_all_info($sql);
-                                        $serial = 1;
-                                        $num_row = $info->rowCount();
-                                    
-                                        if ($num_row == 0) {
-                                            echo '<tr><td colspan="7">No Data found</td></tr>';
-                                        }
-                                    
-                                        while ($row = $info->fetch(PDO::FETCH_ASSOC)) {
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $serial; $serial++; ?></td>
-                                            <td><?php echo $row['fullname']; ?></td>
-                                            <td><?php echo $row['in_time']; ?></td>
-                                            <td><?php echo $row['out_time']; ?></td>
-                                            <td>
-                                                <?php
-                                                if ($row['total_duration'] == null) {
-                                                    $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
-                                                    $current_time = $date->format('d-m-Y H:i:s');
-                                                
-                                                    $dteStart = new DateTime($row['in_time']);
-                                                    $dteEnd = new DateTime($current_time);
-                                                    $dteDiff = $dteStart->diff($dteEnd);
-                                                    echo $dteDiff->format("%H:%I:%S");
-                                                } else {
-                                                    echo $row['total_duration'];
-                                                }
-                                                ?>
-                                            </td>
-                                        </tr>
-                                        <?php } ?>
-                                    </tbody>
-                                </table>
+                                            }
+
+                                            $info = $obj_admin->manage_all_info($sql);
+                                            $serial = 1;
+                                            $num_row = $info->rowCount();
+
+                                            if ($num_row == 0) {
+                                                echo '<tr><td colspan="7">No Data found</td></tr>';
+                                            }
+
+                                            while ($row = $info->fetch(PDO::FETCH_ASSOC)) {
+                                            ?>
+                                                <tr>
+                                                    <td><?php echo $serial;
+                                                        $serial++; ?></td>
+                                                    <td><?php echo $row['fullname']; ?></td>
+                                                    <td><?php echo $row['in_time']; ?></td>
+                                                    <td><?php echo $row['out_time']; ?></td>
+                                                    <td>
+                                                        <?php
+                                                        if ($row['total_duration'] == null) {
+                                                            $date = new DateTime('now', new DateTimeZone('Asia/Manila'));
+                                                            $current_time = $date->format('d-m-Y H:i:s');
+
+                                                            $dteStart = new DateTime($row['in_time']);
+                                                            $dteEnd = new DateTime($current_time);
+                                                            $dteDiff = $dteStart->diff($dteEnd);
+                                                            echo $dteDiff->format("%H:%I:%S");
+                                                        } else {
+                                                            echo $row['total_duration'];
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -192,10 +194,9 @@ try {
             </div>
         </div>
     </div>
-</div>
 
-<!--THIS IS EMPLOYEE SIDE-->
-<?php 
+    <!--THIS IS EMPLOYEE SIDE-->
+<?php
 } else if ($user_role == 2) {
 
     // Get the logged-in employee's fullname
@@ -215,7 +216,7 @@ try {
             LIMIT 1";
 
         $stmt = $db->prepare($sqlSchedule);
-        $stmt->bindParam(':userId', $loggedInUserId, PDO::PARAM_INT);
+        $stmt->bindParam(':userId', $loggedInUserId, PDO::PARAM_STR);
         $stmt->execute();
 
         $scheduleData = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -249,63 +250,63 @@ try {
     }
 ?>
 
-<div class="main-content-inner">
-    <div class="container-fluid">
-        <div class="row justify-content-start"> 
-            <!-- Schedule Assign Card -->
-            <div class="col-lg-4 col-md-6 mt-4 mb-4">
-                <div class="card shadow-sm border-light rounded">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fa fa-calendar"></i> Schedule Assign</h5>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h2 class="text-center text-success"><?php echo $numberOfDays; ?> Day(s) </h2>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>Start Date:</strong> <span class="text-muted"><?php echo $startDate; ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>End Date:</strong> <span class="text-muted"><?php echo $endDate; ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>Time In:</strong> <span class="text-muted"><?php echo $intime; ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <strong>Time Out:</strong> <span class="text-muted"><?php echo $outtime; ?></span>
-                            </li>
-                        </ul>
-                        <canvas id="seolinechart1" height="50" class="mt-auto"></canvas>
+    <div class="main-content-inner">
+        <div class="container-fluid">
+            <div class="row justify-content-start">
+                <!-- Schedule Assign Card -->
+                <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                    <div class="card shadow-sm border-light rounded">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fa fa-calendar"></i> Schedule Assign</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h2 class="text-center text-success"><?php echo $numberOfDays; ?> Day(s) </h2>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>Start Date:</strong> <span class="text-muted"><?php echo $startDate; ?></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>End Date:</strong> <span class="text-muted"><?php echo $endDate; ?></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>Time In:</strong> <span class="text-muted"><?php echo $intime; ?></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>Time Out:</strong> <span class="text-muted"><?php echo $outtime; ?></span>
+                                </li>
+                            </ul>
+                            <canvas id="seolinechart1" height="50" class="mt-auto"></canvas>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-lg-4 col-md-6 mt-4 mb-4">
-                <div class="card shadow-sm border-light rounded">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0"><i class="fa fa-check-circle"></i> Attendance Count (Monthly)</h5>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h2 class="text-center text-success"><?php echo $attendanceCount; ?></h2>
-                        <canvas id="seolinechart2" height="50" class="mt-auto"></canvas>
+                <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                    <div class="card shadow-sm border-light rounded">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fa fa-check-circle"></i> Attendance Count (Monthly)</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h2 class="text-center text-success"><?php echo $attendanceCount; ?></h2>
+                            <canvas id="seolinechart2" height="50" class="mt-auto"></canvas>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-lg-4 col-md-6 mt-4 mb-4">
-                <div class="card shadow-sm border-light rounded">
-                    <div class="card-header bg-danger text-white">
-                        <h5 class="mb-0"><i class="fa fa-times-circle"></i> Leave Count</h5>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h2 class="text-center text-danger">5</h2>
-                        <canvas id="seolinechart3" height="50" class="mt-auto"></canvas>
+                <div class="col-lg-4 col-md-6 mt-4 mb-4">
+                    <div class="card shadow-sm border-light rounded">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0"><i class="fa fa-times-circle"></i> Leave Count</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h2 class="text-center text-danger">5</h2>
+                            <canvas id="seolinechart3" height="50" class="mt-auto"></canvas>
+                        </div>
                     </div>
                 </div>
-            </div>    
-            <!-- SEO fact area end -->
+                <!-- SEO fact area end -->
+            </div>
         </div>
     </div>
-</div>
 
 <?php
 }

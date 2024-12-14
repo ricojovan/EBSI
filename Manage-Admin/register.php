@@ -8,12 +8,11 @@
             <?php
             include '../db_connection.php'; // Include database connection script
 
-            // Check if form is submitted
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                // Retrieve form data
+
                 $first_name = $_POST['first_name'];
                 $last_name = $_POST['last_name'];
-                $full_name = $first_name . ' ' . $last_name; // Combine first and last name
+                $full_name = $first_name . ' ' . $last_name;
 
                 $username = $_POST['username'];
                 $e_password = $_POST['e_password'];

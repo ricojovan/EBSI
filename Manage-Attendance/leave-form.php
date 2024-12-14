@@ -2,11 +2,12 @@
 $page_name = "Leave Form";
 include('../nav-and-footer/header-nav.php');
 
-if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
-    $userId = intval($_GET['user_id']);
+if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {
+    $userId = htmlspecialchars($_GET['user_id'], ENT_QUOTES, 'UTF-8'); // Sanitize the input
 } else {
     die("Invalid or missing User ID.");
 }
+
 
 $leaveData = $obj_admin->fetch_leave_data_by_ids($userId);
 
