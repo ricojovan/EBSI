@@ -5,7 +5,7 @@ session_start(); // Start session if not already started
 
 if (!isset($_SESSION['username'])) {
     // Redirect to login if no username is found in session
-    header("Location: ../Interface/login.php");
+    header("Location: ../index.php");
     exit();
 }
 

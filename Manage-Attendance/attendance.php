@@ -3,15 +3,17 @@
 $page_name = "Attendance";
 include('../nav-and-footer/header-nav.php');
 
+ini_set('display_errors', 1); ini_set('display_startup_errors', 1); error_reporting(E_ALL);
+
 $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 $user_role = $_SESSION['user_role'];
-
+var_dump($_SESSION);
 $today = date('Y-m-d');
 
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: ../Interface/login.php');
+    header('Location: ../index.php');
 }
 
 if (isset($_GET['delete_attendance'])) {
@@ -23,7 +25,7 @@ if (isset($_GET['delete_attendance'])) {
 
 if (isset($_POST['add_punch_in'])) {
     $today = date('Y-m-d');
-    $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+    $sql_schedule = "SELECT * FROM scheduling WHERE fullname = ':user_name' AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
     $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
     $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
 
@@ -74,7 +76,7 @@ if (isset($_POST['add_punch_out'])) {
         $punch_in_time_raw = $row['in_time'];
         $punch_in_time = new DateTime($punch_in_time_raw, new DateTimeZone('Asia/Manila'));
 
-        $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+        $sql_schedule = "SELECT * FROM scheduling WHERE fullname = ':user_name' AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
         $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
         $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
 
@@ -117,7 +119,7 @@ if (isset($_POST['add_punch_out'])) {
 
 // Function to get schedule
 function getSchedule($obj_admin, $user_name, $today) {
-    $sql_schedule = "SELECT * FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+    $sql_schedule = "SELECT * FROM scheduling WHERE fullname = ':user_name' AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
     $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
     $stmt_schedule->execute(['user_name' => $user_name, 'today' => $today]);
     return $stmt_schedule;
@@ -163,7 +165,7 @@ $stmt_schedule = getSchedule($obj_admin, $user_name, $today);
                                     <div class="col-md-8">
                                         <div class="btn-group">
                                             <?php 
-                                            $sql = "SELECT * FROM attendance_info WHERE atn_user_id = $user_id AND out_time IS NULL";
+                                            $sql = "SELECT * FROM attendance_info WHERE atn_user_id = '$user_id' AND out_time IS NULL";
                                             $info = $obj_admin->manage_all_info($sql);
                                             $num_row = $info->rowCount();
                                             
@@ -171,7 +173,7 @@ $stmt_schedule = getSchedule($obj_admin, $user_name, $today);
                                             ?>
                                             <div class="btn-group">
                                                 <form method="post" role="form" action="">
-                                                    <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+                                                    <input type="text" name="user_id" value="<?php echo $user_id; ?>">
                                                     <?php 
                                                     // Check if the user has already timed in
                                                     $sql = "SELECT * FROM attendance_info WHERE atn_user_id = :user_id AND DATE(in_time) = :today";
@@ -212,17 +214,19 @@ $stmt_schedule = getSchedule($obj_admin, $user_name, $today);
                                                         FROM attendance_info a
                                                         LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id)
                                                         ORDER BY a.aten_id DESC";
+
                                             } else {
-                                                $sql = "SELECT a.*, b.fullname 
+                                                $sql = "SELECT a.*, b.emp_name as fullname
                                                         FROM attendance_info a
-                                                        LEFT JOIN tbl_admin b ON(a.atn_user_id = b.user_id)
-                                                        WHERE atn_user_id = $user_id
+                                                        LEFT JOIN employees b ON(a.atn_user_id = b.emp_id)
+                                                        WHERE atn_user_id = '$user_id'
                                                         ORDER BY a.aten_id DESC";
                                             }
                                             
                                             $info = $obj_admin->manage_all_info($sql);
                                             $serial = 1;
                                             $num_row = $info->rowCount();
+
                                             
                                             if ($num_row == 0) {
                                                 echo '<tr><td colspan="7">No Data found</td></tr>';
@@ -241,7 +245,7 @@ $stmt_schedule = getSchedule($obj_admin, $user_name, $today);
                                                         $time_only = $in_time->format('H:i');
 
                                                         // Fetch the user's schedule for the day
-                                                        $sql_schedule = "SELECT intime FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+                                                        $sql_schedule = "SELECT intime FROM scheduling WHERE fullname = ':user_name' AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
                                                         $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
                                                         $stmt_schedule->execute(['user_name' => $row['fullname'], 'today' => $today]);
 
@@ -270,7 +274,7 @@ $stmt_schedule = getSchedule($obj_admin, $user_name, $today);
                                                     $current_time = new DateTime('now', new DateTimeZone('Asia/Manila'));
                                                     
                                                     // Check if user has a schedule for this day
-                                                    $sql_schedule = "SELECT outtime FROM scheduling WHERE fullname = :user_name AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
+                                                    $sql_schedule = "SELECT outtime FROM scheduling WHERE fullname = ':user_name' AND DATE(start_date) <= :today AND DATE(end_date) >= :today";
                                                     $stmt_schedule = $obj_admin->db->prepare($sql_schedule);
                                                     $stmt_schedule->execute(['user_name' => $row['fullname'], 'today' => $today]);
                                                     

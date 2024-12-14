@@ -3,7 +3,7 @@ $page_name = "Leave Form";
 include('../nav-and-footer/header-nav.php');
 
 $empId = $_SESSION['admin_id'];
-$empDptmt = $_SESSION['empDepartment'];
+$empDptmt = $_SESSION['emp_dept'];
 $empstatus = $_SESSION['empStatus'];
 $empPosition = $_SESSION['empPosition'];
 
@@ -30,11 +30,11 @@ if (isset($_POST['add_pending_data'])) {
                             <form id="leaveForm">
                                 <div class="row">
                                     <!-- Left column -->
-                                    <input type="hidden" value=<?php echo $empId ?> id="employee-id" class="form-control" placeholder="Enter employee ID">
+                                    <input type="hidden" value="<?php echo $empId ?>" id="employee-id" class="form-control" placeholder="Enter employee ID">
                                     <input type="hidden" value="<?php echo $user_name ?>" id="employee-name" class="form-control" placeholder="Enter employee name">
-                                    <input type="hidden" value=<?php echo $empDptmt ?> id="department" class="form-control" placeholder="Enter department">
-                                    <input type="hidden" value=<?php echo $empstatus ?> id="employee-status" class="form-control" placeholder="Enter employee status">
-                                    <input type="hidden" value=<?php echo $empPosition ?> id="position" class="form-control" placeholder="Enter position">
+                                    <input type="hidden" value="<?php echo $empDptmt ?>" id="department" class="form-control" placeholder="Enter department">
+                                    <input type="hidden" value="<?php echo $empstatus ?>" id="employee-status" class="form-control" placeholder="Enter employee status">
+                                    <input type="hidden" value="<?php echo $empPosition ?>" id="position" class="form-control" placeholder="Enter position">
 
                                     <div class="col-md-6 mt-3">
                                         <div class="form-section">
@@ -149,7 +149,7 @@ if (isset($_POST['add_pending_data'])) {
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">
                                         <div class="modal-header bg-primary text-white">
-                                            <h5 class="modal-title" id="leaveModalLabel">Leave Application Summary</h5>
+                                            <h5 class="modal-title" id="leaveModalLabel">Leave Application Summary <?php echo $empId ?></h5>
                                             <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
@@ -205,7 +205,7 @@ if (isset($_POST['add_pending_data'])) {
                                                     <textarea class="form-control" name="emp_Reason" style="resize: none;" id="modal-reason" rows="3" readonly></textarea>
                                                 </div>
                                                 <input type="hidden" name="emp_status" class="form-control" id="modal-employee-status" readonly>
-                                                <input type="hidden" class="form-control" id="modal-employee-id" name="emp_id" value="">
+                                                <input type="hidden" class="form-control" id="modal-employee-id" name="emp_id">
                                                 <div class="form-group text-right mt-4">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                     <button type="submit" name="add_pending_data" class="btn btn-primary">Confirm Submission</button>

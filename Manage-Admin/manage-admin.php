@@ -9,13 +9,13 @@ $user_id = $_SESSION['admin_id'];
 $user_name = $_SESSION['name'];
 $security_key = $_SESSION['security_key'];
 if ($user_id == NULL || $security_key == NULL) {
-    header('Location: ../Interface/login.php');
+    header('Location: ../index.php');
 }
 
 // check admin
 $user_role = $_SESSION['user_role'];
 if ($user_role != 1) {
-    header('Location: ../login.php');
+    header('Location: ../index.php');
 }
 
 ?>

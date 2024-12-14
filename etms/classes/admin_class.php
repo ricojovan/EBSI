@@ -66,8 +66,7 @@ class Admin_Class
 			return [];
 		}
 	}
-
-	// Example SQL query in Admin_Class methods
+	
 	public function pending_leave_data_by_id($userId)
 	{
 		try {
@@ -116,35 +115,50 @@ class Admin_Class
 
 	public function admin_login_check($data)
 	{
-
-		$upass = $this->test_form_input_data(md5($data['admin_password']));
 		$username = $this->test_form_input_data($data['username']);
-		try {
-			$stmt = $this->db->prepare("SELECT * FROM tbl_admin WHERE username=:uname AND password=:upass LIMIT 1");
-			$stmt->execute(array(':uname' => $username, ':upass' => $upass));
-			$userRow = $stmt->fetch(PDO::FETCH_ASSOC);
-			if ($stmt->rowCount() > 0) {
-				session_start();
-				$_SESSION['admin_id'] = $userRow['user_id'];
-				$_SESSION['name'] = $userRow['fullname'];
-				$_SESSION['security_key'] = 'rewsgf@%^&*nmghjjkh';
-				$_SESSION['user_role'] = $userRow['user_role'];
-				$_SESSION['temp_password'] = $userRow['temp_password'];
-				$_SESSION['empDepartment'] = $userRow['em_department'];
-				$_SESSION['empPosition'] = $userRow['em_position'];
-				$_SESSION['empStatus'] = $userRow['em_status'];
+		$password = $this->test_form_input_data(md5($data['admin_password']));
 
-				if ($userRow['temp_password'] == null) {
-					header('Location: ../Interface/dashboard.php');
-				} else {
-					header('Location: ../Manage-Employee/change-password.php');
-				}
-			} else {
-				$message = 'Invalid user name or Password';
-				return $message;
+		try {
+			$stmt = $this->db->prepare("SELECT * FROM tbl_admin WHERE username = :username AND password = :password LIMIT 1");
+			$stmt->execute(array(':username' => $username, ':password' => $password));
+			$adminRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($adminRow) {
+				session_start();
+				$_SESSION['admin_id'] = $adminRow['user_id'];
+				$_SESSION['name'] = $adminRow['fullname'];
+				$_SESSION['security_key'] = 'rewsgf@%^&*nmghjjkh';
+				$_SESSION['user_role'] = 1;
+
+				header('Location: Interface/dashboard.php');
+				exit;
 			}
+
+			$stmt = $this->db->prepare("SELECT * FROM employees WHERE username = :username AND password = :password LIMIT 1");
+			$stmt->execute([':username' => $username, ':password' => $password]);
+			$employeeRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($employeeRow) {
+				session_start();
+				$_SESSION['admin_id'] = $employeeRow['emp_id'];
+				$_SESSION['name'] = $employeeRow['emp_name'];
+				$_SESSION['security_key'] = 'rewsgf@%^&*nmghjjkh';
+				$_SESSION['user_role'] = 2;
+				$_SESSION['empDepartment'] = $employeeRow['emp_dept'];
+				$_SESSION['empPosition'] = $employeeRow['job_title'];
+				$_SESSION['empStatus'] = $employeeRow['employee_type'];
+				$_SESSION['temp_password'] = $adminRow['temp_password'];
+
+				if ($employeeRow['temp_password'] == null) {
+					header('Location: Interface/dashboard.php');
+				} else {
+					header('Location: Manage-Employee/change-password.php');
+				}
+				exit;
+			}
+			return 'Invalid username or password';
 		} catch (PDOException $e) {
-			echo $e->getMessage();
+			return 'Database error: ' . $e->getMessage();
 		}
 	}
 
@@ -160,7 +174,7 @@ class Admin_Class
 
 		if ($password == $re_password) {
 			try {
-				$update_user = $this->db->prepare("UPDATE tbl_admin SET password = :x, temp_password = :y WHERE user_id = :id ");
+				$update_user = $this->db->prepare("UPDATE employees SET password = :x, temp_password = :y WHERE emp_id = :id ");
 
 				$update_user->bindparam(':x', $final_password);
 				$update_user->bindparam(':y', $temp_password);
@@ -196,82 +210,122 @@ class Admin_Class
 
 	public function admin_logout()
 	{
-
 		session_start();
 		unset($_SESSION['admin_id']);
 		unset($_SESSION['admin_name']);
 		unset($_SESSION['security_key']);
 		unset($_SESSION['user_role']);
-		header('Location: ../Interface/login.php');
+		header('Location: ../index.php');
 	}
 
 	/*----------- add_new_user--------------*/
 
 	public function add_new_user($data)
 	{
+		$em_username = $this->test_form_input_data($data['em_username']);
+		$temp_password = rand(100000, 999999);
+		$password = md5($temp_password);
 
-		// Retrieve Employee ID
-		$user_id = $this->test_form_input_data($data['em_id']);
+		$em_id = $this->test_form_input_data($data['em_id']);
+		$em_lastname = $this->test_form_input_data($data['em_lastname']);
+		$em_firstname = $this->test_form_input_data($data['em_firstname']);
+		$em_middlename = $this->test_form_input_data($data['em_middlename']);
+		$em_fullname = $this->test_form_input_data(trim($data['em_firstname'] . ' ' . $data['em_middlename'] . ' ' . $data['em_lastname']));
+		$em_gender = $this->test_form_input_data($data['em_gender']);
+		$em_dob = $this->test_form_input_data($data['em_dob']);
+		$em_civ_stat = $this->test_form_input_data($data['em_civ_stat']);
+		$em_email = $this->test_form_input_data($data['em_email']);
+		$em_mobile = $this->test_form_input_data($data['em_mobile']);
 
-		// Combine the first, middle, and last names into a single fullname
-		$user_fullname = $this->test_form_input_data(trim($data['em_firstname'] . ' ' . $data['em_middlename'] . ' ' . $data['em_lastname']));
-		// Additional form data
-		$user_username = $this->test_form_input_data($data['em_username']);
-		$user_email = $this->test_form_input_data($data['em_email']);
-		$department = $this->test_form_input_data($data['em_department']);
-		$position = $this->test_form_input_data($data['em_position']);
-		$status = $this->test_form_input_data($data['em_status']);
-		$role = ($data['em_role'] == 'employee') ? 2 : 3; // Set user role based on selection
-		$temp_password = rand(100000, 999999); // Generate a temporary password
-		$user_password = md5($temp_password); // Hash the password
+		$em_home_addr = $this->test_form_input_data($data['em_home_addr']);
+		$em_curr_addr = $this->test_form_input_data($data['em_curr_addr']);
 
-		// Handle file upload if provided
-		$profile_pic = $_FILES['em_profile_pic']['name'];
-		$target_dir = "../assets/images/author/"; // 
+		$em_hire_date = $this->test_form_input_data($data['em_hire_date']);
+		$em_dept = $this->test_form_input_data($data['em_dept']);
+		$em_pos = $this->test_form_input_data($data['em_pos']);
+		$em_type = $this->test_form_input_data($data['em_type']);
+		$em_pType = $this->test_form_input_data($data['em_pType']);
+		$em_taxStat = $this->test_form_input_data($data['em_taxStat']);
+		$em_basic_sal = $this->test_form_input_data($data['em_basic_sal']);
+		$em_mRate = $this->test_form_input_data($data['em_mRate']);
+		$em_dRate = $this->test_form_input_data($data['em_dRate']);
+
+		$em_sss_no = $this->test_form_input_data($data['em_sss_no']);
+		$em_phealth_no = $this->test_form_input_data($data['em_phealth_no']);
+		$em_pagibig_no = $this->test_form_input_data($data['em_pagibig_no']);
+		$em_tin_no = $this->test_form_input_data($data['em_tin_no']);
+
+		$profile_pic = $_FILES['em_prof_pic']['name'];
+		$target_dir = "../assets/images/author/";
 		$target_file = $target_dir . basename($profile_pic);
-
 
 		if (!is_dir($target_dir)) {
 			mkdir($target_dir, 0777, true);
 		}
 
-		if ($profile_pic && !move_uploaded_file($_FILES['em_profile_pic']['tmp_name'], $target_file)) {
+		if ($profile_pic && !move_uploaded_file($_FILES['em_prof_pic']['tmp_name'], $target_file)) {
 			return "Failed to upload profile picture.";
 		}
 
 		try {
 			// Check if email or username already exists
-			$sqlEmail = "SELECT email FROM tbl_admin WHERE email = :email";
+			$sqlEmail = "SELECT emp_email_addr FROM employees WHERE emp_email_addr = :email";
 			$query_result_for_email = $this->db->prepare($sqlEmail);
-			$query_result_for_email->execute([':email' => $user_email]);
+			$query_result_for_email->execute([':email' => $em_email]);
 
-			$sqlUsername = "SELECT username FROM tbl_admin WHERE username = :username";
+			$sqlUsername = "SELECT username FROM employees WHERE username = :username";
 			$query_result_for_username = $this->db->prepare($sqlUsername);
-			$query_result_for_username->execute([':username' => $user_username]);
+			$query_result_for_username->execute([':username' => $em_username]);
 
 			if ($query_result_for_email->rowCount() > 0) {
 				return "Email is already taken";
 			} elseif ($query_result_for_username->rowCount() > 0) {
 				return "Username is already taken";
 			} else {
-				// Prepare SQL query to insert user data
-				$add_user = $this->db->prepare("INSERT INTO tbl_admin (em_id, fullname, username, email, password, temp_password, em_department, em_position, em_status, em_profile, user_role) 
-					VALUES (:em_id, :fullname, :username, :email, :password, :temp_password, :department, :position, :status, :profile, :role)");
 
-				// Bind parameters
-				$add_user->bindParam(':em_id', $user_id);
-				$add_user->bindParam(':fullname', $user_fullname);
-				$add_user->bindParam(':username', $user_username);
-				$add_user->bindParam(':email', $user_email);
-				$add_user->bindParam(':password', $user_password);
+				$add_user = $this->db->prepare(
+					"INSERT INTO employees (
+					emp_id, emp_name, emp_lname, emp_fname, emp_mname, hire_date, sss_number, p_health_num, p_ibig_num, tin_num, 
+					birth_date, department, job_title, employee_type, pay_type, b_salary, m_rate, d_rate, tax_stat, emp_civ_stat,
+					emp_home_addr, emp_curr_addr, gender, emp_email_addr, mobile_num, username, password, temp_password, emp_profile
+					) 
+					VALUES (
+					:em_id, :em_name, :em_lname, :em_fname, :em_mname, :hire_date, :sss_number, :p_health_num, :p_ibig_num, :tin_num,
+					:birth_date, :department, :job_title, :employee_type, :pay_type, :b_salary, :m_rate, :d_rate, :tax_stat, :emp_civ_stat,
+                    :emp_home_addr, :emp_curr_addr, :gender, :emp_email_addr, :mobile_num, :username, :password, :temp_password, :emp_profile
+					)"
+				);
+
+				$add_user->bindParam(':em_id', $em_id);
+				$add_user->bindParam(':em_name', $em_fullname);
+				$add_user->bindParam(':em_lname', $em_lastname);
+				$add_user->bindParam(':em_fname', $em_firstname);
+				$add_user->bindParam(':em_mname', $em_middlename);
+				$add_user->bindParam(':hire_date', $em_hire_date);
+				$add_user->bindParam(':sss_number', $em_sss_no);
+				$add_user->bindParam(':p_health_num', $em_phealth_no);
+				$add_user->bindParam(':p_ibig_num', $em_pagibig_no);
+				$add_user->bindParam(':tin_num', $em_tin_no);
+				$add_user->bindParam(':birth_date', $em_dob);
+				$add_user->bindParam(':department', $em_dept);
+				$add_user->bindParam(':job_title', $em_pos);
+				$add_user->bindParam(':employee_type', $em_type);
+				$add_user->bindParam('pay_type', $em_pType);
+				$add_user->bindParam(':b_salary', $em_basic_sal);
+				$add_user->bindParam(':m_rate', $em_mRate);
+				$add_user->bindParam('d_rate', $em_dRate);
+				$add_user->bindParam(':tax_stat', $em_taxStat);
+				$add_user->bindParam(':emp_civ_stat', $em_civ_stat);
+				$add_user->bindParam(':emp_home_addr', $em_home_addr);
+				$add_user->bindParam(':emp_curr_addr', $em_curr_addr);
+				$add_user->bindParam(':gender', $em_gender);
+				$add_user->bindParam(':emp_email_addr', $em_email);
+				$add_user->bindParam(':mobile_num', $em_mobile);
+				$add_user->bindParam(':username', $em_username);
+				$add_user->bindParam(':password', $password);
 				$add_user->bindParam(':temp_password', $temp_password);
-				$add_user->bindParam(':department', $department);
-				$add_user->bindParam(':position', $position);
-				$add_user->bindParam(':status', $status);
-				$add_user->bindParam(':profile', $target_file);
-				$add_user->bindParam(':role', $role);
+				$add_user->bindParam(':emp_profile', $target_file);
 
-				// Execute the query
 				$add_user->execute();
 			}
 		} catch (PDOException $e) {
@@ -283,68 +337,76 @@ class Admin_Class
 
 	public function add_pending_data($data)
 	{
-		$emp_id = is_numeric($data['emp_id']) ? intval($data['emp_id']) : 0;
+		$emp_id = $this->test_form_input_data($data['emp_id']);
 		$emp_name = $this->test_form_input_data($data['emp_name']);
 		$emp_dept = $this->test_form_input_data($data['emp_dept']);
-		$emp_w_pay = ($data['pay'] == 'With Pay') ? 1 : 0;
+		$emp_w_pay = ($data['pay'] === 'With Pay') ? 1 : 0;
 		$emp_status = $this->test_form_input_data($data['emp_status']);
 		$emp_pos = $this->test_form_input_data($data['emp_pos']);
 		$emp_lType = $this->test_form_input_data($data['emp_leaveType']);
 		$emp_filed = $this->test_form_input_data($data['emp_DateFiled']);
 		$emp_FromDate = $this->test_form_input_data($data['emp_DateFrom']);
 		$emp_ToDate = $this->test_form_input_data($data['emp_DateTo']);
-		$emp_Absences = is_numeric($data['emp_Abs']) ? intval($data['emp_Abs']) : 0;
 		$emp_Reason = $this->test_form_input_data($data['emp_Reason']);
 
-		try {
-			$sqlemp_Id = "SELECT user_id FROM tbl_admin WHERE user_id = :emp_id";
-			$query_result_for_emp_id = $this->db->prepare($sqlemp_Id);
-			$query_result_for_emp_id->execute([':emp_id' => $emp_id]);
+		$date1 = new DateTime($emp_FromDate);
+		$date2 = new DateTime($emp_ToDate);
+		$emp_Absences = $date2->diff($date1)->days + 1;
 
-			if ($query_result_for_emp_id->rowCount() == 0) {
-				return "The employee ID does not exist in the admin table.";
+		try {
+
+			$stmt = $this->db->prepare("SELECT emp_id FROM employees WHERE emp_id = :emp_id");
+			$stmt->execute([':emp_id' => $emp_id]);
+
+			if ($stmt->rowCount() === 0) {
+				return "The provided Employee ID does not exist.";
 			}
 
-			$sqlemp_Id_in_leave = "SELECT user_id FROM tbl_pending_leave WHERE user_id = :emp_id";
-			$query_result_for_leave = $this->db->prepare($sqlemp_Id_in_leave);
-			$query_result_for_leave->execute([':emp_id' => $emp_id]);
+			$stmt = $this->db->prepare("SELECT user_id FROM tbl_pending_leave WHERE user_id = :emp_id");
+			$stmt->execute([':emp_id' => $emp_id]);
 
-			if ($query_result_for_leave->rowCount() > 0) {
+			if ($stmt->rowCount() > 0) {
 				return "You have a pending request. Please resolve it before submitting another one.";
-			} else {
-				$add_leave = $this->db->prepare("
-                INSERT INTO tbl_pending_leave (
-                    user_id, fullname, position, department, status, leave_type, w_pay, from_date, to_date, filed_date, days, reason
-                ) VALUES (
-                    :emp_id, :emp_name, :emp_pos, :emp_dept, :emp_status, :leave_type, :w_pay, :from_date, :to_date, :filed_date, :days, :reason
-                )
-            ");
-				$add_leave->bindParam(':emp_id', $emp_id);
-				$add_leave->bindParam(':emp_name', $emp_name);
-				$add_leave->bindParam(':emp_pos', $emp_pos);
-				$add_leave->bindParam(':emp_dept', $emp_dept);
-				$add_leave->bindParam(':emp_status', $emp_status);
-				$add_leave->bindParam(':leave_type', $emp_lType);
-				$add_leave->bindParam(':w_pay', $emp_w_pay);
-				$add_leave->bindParam(':from_date', $emp_FromDate);
-				$add_leave->bindParam(':to_date', $emp_ToDate);
-				$add_leave->bindParam(':filed_date', $emp_filed);
-				$add_leave->bindParam(':days', $emp_Absences);
-				$add_leave->bindParam(':reason', $emp_Reason);
+			}
 
-				$add_leave->execute();
+			$stmt = $this->db->prepare("
+            INSERT INTO tbl_pending_leave (
+                user_id, fullname, position, department, status, leave_type, w_pay, from_date, to_date, filed_date, days, reason
+            ) VALUES (
+                :emp_id, :emp_name, :emp_pos, :emp_dept, :emp_status, :leave_type, :w_pay, :from_date, :to_date, :filed_date, :days, :reason
+            )
+        ");
+
+			if ($stmt->execute([
+				':emp_id' => $emp_id,
+				':emp_name' => $emp_name,
+				':emp_pos' => $emp_pos,
+				':emp_dept' => $emp_dept,
+				':emp_status' => $emp_status,
+				':leave_type' => $emp_lType,
+				':w_pay' => $emp_w_pay,
+				':from_date' => $emp_FromDate,
+				':to_date' => $emp_ToDate,
+				':filed_date' => $emp_filed,
+				':days' => $emp_Absences,
+				':reason' => $emp_Reason
+			])) {
 				$_SESSION['toast_message'] = "Leave data added successfully!";
 				header('Location: ../Manage-Attendance/leave-data.php');
 				exit();
+			} else {
+				$_SESSION['error_message'] = "Failed to add leave data. Please try again.";
 			}
 		} catch (PDOException $e) {
+			error_log("Error adding leave data: " . $e->getMessage());
 			$_SESSION['error_message'] = "There was an error adding the leave data. Please try again.";
 		}
 	}
 
+
 	public function add_leave_data($data)
 	{
-		$emp_id = is_numeric($data['emp_id']) ? intval($data['emp_id']) : 0;
+		$emp_id = $this->test_form_input_data($data['emp_id']);
 		$emp_name = $this->test_form_input_data($data['emp_name']);
 		$emp_dept = $this->test_form_input_data($data['emp_dept']);
 		$emp_w_pay = ($data['pay'] == 'With Pay') ? 1 : 0;
@@ -365,7 +427,7 @@ class Admin_Class
 		$hr_name = $this->test_form_input_data($data['rec_by']);
 
 		try {
-			$sqlemp_Id = "SELECT user_id FROM tbl_admin WHERE user_id = :emp_id";
+			$sqlemp_Id = "SELECT emp_id FROM employees WHERE emp_id = :emp_id";
 			$query_result_for_emp_id = $this->db->prepare($sqlemp_Id);
 			$query_result_for_emp_id->execute([':emp_id' => $emp_id]);
 
@@ -414,8 +476,8 @@ class Admin_Class
 			$delete_old_request->execute();
 
 			$_SESSION['message'] = "Leave Data Reviewed!";
-				header('Location: ../Manage-Attendance/leave-report.php');
-				exit();
+			header('Location: ../Manage-Attendance/leave-report.php');
+			exit();
 		} catch (PDOException $e) {
 			return "Error: " . $e->getMessage();
 		}
@@ -428,7 +490,7 @@ class Admin_Class
 		$user_username = $this->test_form_input_data($data['em_username']);
 		$user_email = $this->test_form_input_data($data['em_email']);
 		try {
-			$update_user = $this->db->prepare("UPDATE tbl_admin SET fullname = :x, username = :y, email = :z WHERE user_id = :id ");
+			$update_user = $this->db->prepare("UPDATE employees SET emp_name = :x, username = :y, emp_email_addr = :z WHERE emp_id = :id ");
 
 			$update_user->bindparam(':x', $user_fullname);
 			$update_user->bindparam(':y', $user_username);
@@ -478,7 +540,7 @@ class Admin_Class
 		$employee_password  = $this->test_form_input_data(md5($data['employee_password']));
 
 		try {
-			$update_user_password = $this->db->prepare("UPDATE tbl_admin SET password = :x WHERE user_id = :id ");
+			$update_user_password = $this->db->prepare("UPDATE employees SET password = :x WHERE emp_id = :id ");
 
 			$update_user_password->bindparam(':x', $employee_password);
 			$update_user_password->bindparam(':id', $id);
@@ -690,11 +752,6 @@ class Admin_Class
 			echo $e->getMessage();
 		}
 	}
-
-
-
-
-
 
 	public function pause_time($data)
 	{

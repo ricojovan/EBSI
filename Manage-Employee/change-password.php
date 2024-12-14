@@ -39,7 +39,6 @@ if (isset($_POST['change_password_btn'])) {
                 <?php } ?>
                 <form action="" method="POST">
                     <input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
-
                     <!-- New Password -->
                     <div class="form-floating mb-4">
                         <input type="password" class="form-control" id="newPassword" name="password" placeholder="New Password" required />
