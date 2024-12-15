@@ -55,7 +55,75 @@ function calculate_minutes_late($employee_id, $date, $admin_class) {
     return 0;  // return 0 if no late record was found
 }
 
+function calculate_overtime_hours($employee_id, $date, $admin_class) {
+    $sql = "SELECT * 
+      FROM attendance_info 
+      WHERE atn_user_id = :employee_id 
+      AND DATE(in_time) = :date";
+    $stmt = $admin_class->db->prepare($sql);
+    $stmt->bindParam(':employee_id', $employee_id);
+    $stmt->bindParam(':date', $date);
+    $stmt->execute();
+    $emp_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    if ($emp_data !== false && isset($emp_data['in_time'])) {
+        $in_time = new DateTime($emp_data['in_time']);
+        $out_time = new DateTime($emp_data['out_time']);
+        $overtime_hours = 0;
+
+        // calculate total worked hours
+        $total_work_hours = $out_time->diff($in_time)->h + ($out_time->diff($in_time)->i / 60); // includes fractional hours
+
+        if ($total_work_hours > 8) {
+            $overtime_hours = $total_work_hours - 8;
+        }
+
+        return $overtime_hours; 
+    }
+
+    return 0; 
+}
+
+function calculate_night_hours($employee_id, $date, $admin_class) {
+    $sql = "SELECT * 
+            FROM attendance_info 
+            WHERE atn_user_id = :employee_id 
+            AND DATE(in_time) = :date";
+    $stmt = $admin_class->db->prepare($sql);
+    $stmt->bindParam(':employee_id', $employee_id);
+    $stmt->bindParam(':date', $date);
+    $stmt->execute();
+    $emp_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($emp_data !== false && isset($emp_data['in_time'])) {
+        $in_time = new DateTime($emp_data['in_time']);
+        $out_time = new DateTime($emp_data['out_time']);
+        $night_hours = 0;
+
+        $night_start = new DateTime($in_time->format('Y-m-d') . ' 22:00:00');
+        $night_end = new DateTime($in_time->format('Y-m-d') . ' 06:00:00');
+        $night_end->modify('+1 day');
+
+       // calculate overlap of the employee's shift with the night period
+        if ($out_time > $night_start) { // Work overlaps night start
+            $start = max($in_time, $night_start); 
+            $end = min($out_time, $night_end);    
+            
+            if ($start < $end) { // check if valid overlap
+                $interval = $start->diff($end);
+                $night_hours = $interval->h + ($interval->i / 60); // includes fractional hours 
+            }
+        }
+
+        return $night_hours;
+    }
+
+    return 0;
+}
+
+function get_overtime_hours($employee_id, $date, $admin_class) {
+
+}
 
 // Check if the payroll ID is set in the URL
 if(isset($_GET['id'])) {
@@ -140,7 +208,7 @@ if (isset($_POST['saveButton'])) {
   $monthly_pay = $_POST['monthlyPay'];  
   $basic_pay = (float) $monthly_pay / 2;
   $daily_pay = (($basic_pay * 2) * 12) / 313;
-  $hourly_pay = $daily / 8;
+  $hourly_pay = $daily_pay / 8;
   $late_rate = ($daily_pay/8) / 60;
   $special_holiday_hrs = (int) $_POST['specialHolidayHours'] * (($hourly_pay * 0.3) + $hourly_pay);
   $legal_holiday_hrs = (int) $_POST['legalHolidayHours'] * ($hourly_pay + $hourly_pay);
@@ -183,10 +251,13 @@ if (isset($_POST['saveButton'])) {
       $interval = DateInterval::createFromDateString('1 day');
       $daterange = new DatePeriod($start_date, $interval, $end_date);
 
-      // initialize days_absent and total_minutes_late
+      // initialize the necessary values
       $days_absent = 0;
       $total_minutes_late = 0;
       $total_days = 0;
+      $total_night_hours = 0;
+      $total_overtime_hours = 0;
+
       foreach ($daterange as $date) {
           $day = $date->format("Y-m-d");
           $day_of_week = date('N', strtotime($day));
@@ -200,8 +271,14 @@ if (isset($_POST['saveButton'])) {
             </script>";
           } else {
             $total_minutes_late += calculate_minutes_late($employee_id, $day, $admin_class);
+            $total_night_hours += calculate_night_hours($employee_id, $day, $admin_class);
+            $total_overtime_hours += calculate_overtime_hours($employee_id, $day, $admin_class);
+
             echo "<script>
               console.log('Employee was present on: " . $day . "');
+              console.log('Minutes late: " . calculate_minutes_late($employee_id, $day, $admin_class) . "');
+              console.log('Night hours: " . calculate_night_hours($employee_id, $day, $admin_class) . "');
+              console.log('Overtime hours: " . calculate_overtime_hours($employee_id, $day, $admin_class) . "');
             </script>";
           }
           // note still have to account for other types of days like rest days, special holidays, etc.
@@ -217,6 +294,8 @@ if (isset($_POST['saveButton'])) {
         console.log('Absent Days: ' + absentdays);
         var totalminuteslate = " . json_encode($total_minutes_late) . ";
         console.log('Total minutes late: ' + totalminuteslate);
+        console.log('Total night hours: " . $total_night_hours . "');
+        console.log('Total overtime hours: " . $total_overtime_hours . "');
       </script>";
 
       $absent_penalty = $daily_pay * $days_absent;
