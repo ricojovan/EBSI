@@ -205,36 +205,25 @@ function calculate_phic_ee($salary){
 if (isset($_POST['saveButton'])) {
   // Retrieve form data
   $employee_id = $_POST['employee_id'];
-  $monthly_pay = $_POST['monthlyPay'];  
+  $monthly_pay = $_POST['monthlyPay']; 
+  
+  // initialize values
   $basic_pay = (float) $monthly_pay / 2;
   $daily_pay = (($basic_pay * 2) * 12) / 313;
   $hourly_pay = $daily_pay / 8;
   $late_rate = ($daily_pay/8) / 60;
-  $special_holiday_hrs = (int) $_POST['specialHolidayHours'] * (($hourly_pay * 0.3) + $hourly_pay);
-  $legal_holiday_hrs = (int) $_POST['legalHolidayHours'] * ($hourly_pay + $hourly_pay);
-  $rest_day_hrs = (int) $_POST['restDayHours'];
-  $gross_pay = $basic_pay + $special_holiday_hrs + $legal_holiday_hrs + $rest_day_hrs;
-  $pabibig_ee = calculate_pagibig_ee($basic_pay);
-  $phic_ee = calculate_phic_ee($basic_pay);
-
-  
-  //change basic pay here to gross pay
-  $sss_ee = calculate_sss_ee($basic_pay);
-  echo "<script>
-        console.log('SSS-EE contribution based off basic pay " . $basic_pay . " : " . $sss_ee . "');
-        console.log('PHIC-EE contribution based off basic pay " . $basic_pay . " : " . $phic_ee . "');
-        console.log('PAG-IBIG-EE contribution based off basic pay " . $basic_pay . " : " . $pabibig_ee . "');
-      </script>";
+  //$special_holiday_hrs = (int) $_POST['specialHolidayHours'] * (($hourly_pay * 0.3) + $hourly_pay);
+  //$legal_holiday_hrs = (int) $_POST['legalHolidayHours'] * ($hourly_pay + $hourly_pay);
+  //$rest_day_hrs = (int) $_POST['restDayHours'];
 
   // Retrieve payroll ID from URL
   if (isset($_GET['id'])) {
       $payroll_id = $_GET['id'];
       
       // gets the start date and end date of the payroll period
-      $sql= "
-          SELECT start_date, end_date
-          FROM payroll_list
-          WHERE id = :payroll_id";
+      $sql= " SELECT start_date, end_date
+              FROM payroll_list
+              WHERE id = :payroll_id";
 
       $stmt = $admin_class->db->prepare($sql);
       $stmt->bindParam(':payroll_id', $payroll_id);
@@ -298,20 +287,57 @@ if (isset($_POST['saveButton'])) {
         console.log('Total overtime hours: " . $total_overtime_hours . "');
       </script>";
 
-      $absent_penalty = $daily_pay * $days_absent;
-      $late_penalty = $late_rate * $total_minutes_late;
-      $total_deductions = $absent_penalty + $late_penalty;
-      $total_pay = 0;
+      // calculating the gross pay
+      $deminimis_allowance = 0; // not included in gross pay
+      $adjustments = 0;
+      $overtime_pay = $total_overtime_hours * ($hourly_pay * 1.25);
+      $special_holiday_pay = (int) $_POST['specialHolidayHours'] * (($daily_pay * 0.3));
+      $legal_holiday_pay = (int) $_POST['legalHolidayHours'] * $daily_pay;
+      $rest_day_pay = 0;
+      $night_pay = $total_night_hours * ($hourly_pay * 0.1);
+      $absent_penalty = $daily_pay * $days_absent;      // deduction
+      $late_penalty = $late_rate * $total_minutes_late; // deduction
 
+      $gross_pay = $basic_pay - $absent_penalty - $late_penalty + $overtime_pay + $special_holiday_pay + $legal_holiday_pay + $rest_day_pay + $night_pay + $adjustments;
+
+      // replace basic pay with gross pay
+      $sss_ee = calculate_sss_ee($basic_pay);         // assuming the ee contribution is based off the gross pay
+      $pabibig_ee = calculate_pagibig_ee($basic_pay);
+      $phic_ee = calculate_phic_ee($basic_pay);
+
+      // placed all the deductions inside total_deductions for now
+      $total_deductions = $sss_ee + $phic_ee + $pabibig_ee;
+      $total_pay = $gross_pay - $total_deductions;  // assume total_pay is net take home pay
+
+      echo "<script>
+            console.log('SSS-EE contribution based off basic pay " . $basic_pay . " : " . $sss_ee . "');
+            console.log('PHIC-EE contribution based off basic pay " . $basic_pay . " : " . $phic_ee . "');
+            console.log('PAG-IBIG-EE contribution based off basic pay " . $basic_pay . " : " . $pabibig_ee . "');
+          </script>";
       // Insert into payslip table
-      $sql = "INSERT INTO payslip (payroll_id, employee_id, monthly_pay, total_pay, total_deductions) 
-      VALUES (:payroll_id, :employee_id, :monthly_pay, :total_pay, :total_deductions)";
+      $sql = "INSERT INTO payslip (payroll_id, employee_id, monthly_pay, basic_pay, daily_pay, hourly_pay, deminimis_allowance,
+                                    overtime_pay, rest_day_pay, night_pay, legal_holiday_pay, special_holiday_pay,
+                                    adjustments, total_deductions, total_pay) 
+      VALUES (:payroll_id, :employee_id, :monthly_pay, :basic_pay, :daily_pay, :hourly_pay, :deminimis_allowance,
+              :overtime_pay, :rest_day_pay, :night_pay, :legal_holiday_pay, :special_holiday_pay, :adjustments,
+              :total_deductions, :total_pay)";
       $stmt = $admin_class->db->prepare($sql);
       $stmt->bindParam(':payroll_id', $payroll_id);
       $stmt->bindParam(':employee_id', $employee_id);
       $stmt->bindParam(':monthly_pay', $monthly_pay);
-      $stmt->bindParam(':total_pay', $total_pay);
+      $stmt->bindParam(':basic_pay', $basic_pay);
+      $stmt->bindParam(':daily_pay', $daily_pay);
+      $stmt->bindParam(':hourly_pay', $hourly_pay);
+      $stmt->bindParam(':deminimis_allowance', $deminimis_allowance);
+      $stmt->bindParam(':overtime_pay', $overtime_pay);
+      $stmt->bindParam(':rest_day_pay', $rest_day_pay);
+      $stmt->bindParam(':night_pay', $night_pay);
+      $stmt->bindParam(':legal_holiday_pay', $legal_holiday_pay);
+      $stmt->bindParam(':special_holiday_pay', $special_holiday_pay);
+      $stmt->bindParam(':adjustments', $adjustments);
       $stmt->bindParam(':total_deductions', $total_deductions);
+      $stmt->bindParam(':total_pay', $total_pay);
+
 
       // Execute the query
       if ($stmt->execute()) {
@@ -355,43 +381,6 @@ if (isset($_POST['delete_id'])) {
       exit;
   }
 }
-
-
-// if (isset($_POST['add_payslip_button'])) {
-//   $payroll_id = $_GET['id'];
-//   $userRole = 2;
-
-//   // Check if payslips already exist for the payroll ID
-//   $check_sql = "SELECT COUNT(*) FROM payslip WHERE payroll_id = :payroll_id";
-//   $check_stmt = $admin_class->db->prepare($check_sql);
-//   $check_stmt->bindParam(':payroll_id', $payroll_id);
-//   $check_stmt->execute();
-
-//   if ($check_stmt->fetchColumn() == 0) {
-//       // Only insert if no payslips exist for this payroll ID
-//       $insert_sql = "
-//           INSERT INTO payslip (payroll_id, employee_id)
-//           SELECT :payroll_id, a.user_id
-//           FROM tbl_admin a
-//           JOIN attendance_info ai ON a.user_id = ai.atn_user_id
-//           JOIN payroll_list pl ON pl.id = :payroll_id
-//           WHERE a.user_role = :userRole
-//             AND DATE(ai.in_time) >= pl.start_date
-//             AND DATE(ai.out_time) <= pl.end_date
-//             AND ai.total_duration >= 8
-//             AND a.user_id NOT IN (s
-//               SELECT employee_id 
-//               FROM payslip 
-//               WHERE payroll_id = :payroll_id
-//             )
-//           GROUP BY a.user_id";
-
-//       $insert_stmt = $admin_class->db->prepare($insert_sql);
-//       $insert_stmt->bindParam(':payroll_id', $payroll_id);
-//       $insert_stmt->bindParam(':userRole', $userRole, PDO::PARAM_INT);
-//       $insert_stmt->execute();
-//   }
-// }
 
 ?>
 
