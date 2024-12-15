@@ -121,10 +121,6 @@ function calculate_night_hours($employee_id, $date, $admin_class) {
     return 0;
 }
 
-function get_overtime_hours($employee_id, $date, $admin_class) {
-
-}
-
 // Check if the payroll ID is set in the URL
 if(isset($_GET['id'])) {
     // Retrieve the payroll ID from the URL
@@ -304,15 +300,29 @@ if (isset($_POST['saveButton'])) {
       $sss_ee = calculate_sss_ee($basic_pay);         // assuming the ee contribution is based off the gross pay
       $pabibig_ee = calculate_pagibig_ee($basic_pay);
       $phic_ee = calculate_phic_ee($basic_pay);
+      $sss_loan = $_POST['sssLoan'];
+      $pagibig_loan = $_POST['pagibigLoan'];
+      $pagibig_mp2 = $_POST['pagibigMP2'];
+      $withholding_tax = 0; // not yet implemented
+      $company_loan_mc = $_POST['companyLoanMC'];
+      $company_loan_cash = $_POST['companyLoanCash'];
+      $vault_loan = $_POST['vaultLoan'];
 
       // placed all the deductions inside total_deductions for now
-      $total_deductions = $sss_ee + $phic_ee + $pabibig_ee;
+      $total_deductions = $sss_ee + $phic_ee + $pabibig_ee + $sss_loan + $pagibig_loan + $withholding_tax + $company_loan_mc + $vault_loan;
       $total_pay = $gross_pay - $total_deductions;  // assume total_pay is net take home pay
 
       echo "<script>
             console.log('SSS-EE contribution based off basic pay " . $basic_pay . " : " . $sss_ee . "');
             console.log('PHIC-EE contribution based off basic pay " . $basic_pay . " : " . $phic_ee . "');
             console.log('PAG-IBIG-EE contribution based off basic pay " . $basic_pay . " : " . $pabibig_ee . "');
+            console.log('SSS Loan: " . $sss_loan . "');
+            console.log('PAG-IBIG Loan: " . $pagibig_loan . "');
+            console.log('PAG-IBIG MP2: " . $pagibig_mp2 . "');
+            console.log('Company Loan (MC): " . $company_loan_mc . "');
+            console.log('Company Loan (Cash): " . $company_loan_cash . "');
+            console.log('Vault Loan: " . $vault_loan . "');
+            console.log('Withholding Tax: " . $withholding_tax . "');
           </script>";
       // Insert into payslip table
       $sql = "INSERT INTO payslip (payroll_id, employee_id, monthly_pay, basic_pay, daily_pay, hourly_pay, deminimis_allowance,
@@ -533,7 +543,7 @@ tr:nth-child(even) {
 
           <div class="col-md-6">
             <div class="form-group">
-              <label for="employee_id">Employee</label>
+              <label for="employee_id"><b>Employee</b></label>
               <select class="form-control" id="employee_id" name="employee_id" style="padding: 5px; font-size: 15px;">
                 <?php
                 // Fetch employees (user_role = 2) from tbl_admin
@@ -553,48 +563,83 @@ tr:nth-child(even) {
 
           <div class="col-md-6">
             <div class="form-group">
-              <label for="monthlyPay">Monthly Pay</label>
+              <label for="monthlyPay"><b>Monthly Pay</b></label>
               <input type="number" class="form-control" id="monthlyPay" name="monthlyPay" placeholder="Enter monthly pay" required>
             </div>
           </div>
         </div>
 
+        <hr class="hr hr-blurry" />
+
         <div class="row">
           
           <div class="col-md-4">
             <div class="form-group">
-              <label for="specialHolidayHours">Special Holiday Hours</label>
+              <label for="specialHolidayHours"><b>Special Holiday Hours</b></label>
               <input type="number" class="form-control" id="specialHolidayHours" name="specialHolidayHours" placeholder="Enter hours">
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="form-group">
-              <label for="legalHolidayHours">Legal Holidays Hours</label>
+              <label for="legalHolidayHours"><b>Legal Holidays Hours</b></label>
               <input type="number" class="form-control" id="legalHolidayHours" name="legalHolidayHours" placeholder="Enter hours">
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="form-group">
-              <label for="restDayHours">Rest Days Hours</label>
+              <label for="restDayHours"><b>Rest Days Hours</b></label>
               <input type="number" class="form-control" id="restDayHours" name="restDayHours" placeholder="Enter hours">
             </div>
           </div>
+        </div>
 
+        <hr class="hr hr-blurry" />
+
+        <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <label for="absentDays">Number of Days Absent</label>
-              <input type="number" class="form-control" id="absentDays" name="absentDays" placeholder="Enter days">
+              <label for="sssLoan"><b>SSS Loan</b></label>
+              <input type="number" class="form-control" id="sssLoan" name="sssLoan" placeholder="Enter amount">
             </div>
           </div>
 
           <div class="col-md-4">
             <div class="form-group">
-              <label for="absentDays">Number of Minutes late</label>
-              <input type="number" class="form-control" id="absentDays" name="absentDays" placeholder="Enter minutes">
+              <label for="pagibigLoan"><b>PAG-IBIG Loan</b></label>
+              <input type="number" class="form-control" id="pagibigLoan" name="pagibigLoan" placeholder="Enter amount">
             </div>
           </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="pagibigMP2"><b>PAG-IBIG MP2</b></label>
+              <input type="number" class="form-control" id="pagibigMP2" name="pagibigMP2" placeholder="Enter amount">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="companyLoanMC"><b>Company Loan (MC)</b></label>
+              <input type="number" class="form-control" id="companyLoanMC" name="companyLoanMC" placeholder="Enter amount">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="companyLoanCash"><b>Company Loan (Cash)</b></label>
+              <input type="number" class="form-control" id="companyLoanCash" name="companyLoanCash" placeholder="Enter amount">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="vaultLoan"><b>Vault Loan</b></label>
+              <input type="number" class="form-control" id="vaultLoan" name="vaultLoan" placeholder="Enter amount">
+            </div>
+          </div>
+          
         </div>
 
 
