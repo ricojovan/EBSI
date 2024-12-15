@@ -682,11 +682,30 @@ if (isset($payslips) && !empty($payslips)) {
   foreach ($payslips as $payslip) {
       echo '<tr>';
       echo '<td>' . $counter . '</td>';
-      echo '<td>' . $payslip['created_at'] . '</td>';
+      //echo '<td>' . $payslip['created_at'] . '</td>';
       echo '<td>' . $payslip['employee_id'] . '</td>';
+      echo '<td>' . $payslip['monthly_pay'] . '</td>';
+      echo '<td>' . $payslip['basic_pay'] . '</td>';
+      echo '<td>' . $payslip['daily_pay'] . '</td>';
+      echo '<td>' . $payslip['hourly_pay'] . '</td>';
+      echo '<td>&nbsp;</td>'; // Overtime Hours
+      echo '<td>' . $payslip['overtime_pay'] . '</td>';
+      echo '<td>&nbsp;</td>'; // Special Holiday Hours
+      echo '<td>' . $payslip['special_holiday_pay'] . '</td>';
+      echo '<td>&nbsp;</td>'; // Legal Holiday Hours
+      echo '<td>' . $payslip['legal_holiday_pay'] . '</td>';
+      echo '<td>&nbsp;</td>'; // Rest Days Hours
+      echo '<td>' . $payslip['rest_day_pay'] . '</td>';
+      echo '<td>&nbsp;</td>'; // Night Differential Hours
+      echo '<td>' . $payslip['night_pay'] . '</td>';
+      echo '<td>&nbsp;</td>'; // Absent penalty
+      echo '<td>&nbsp;</td>'; // Late penalty
+      echo '<td>&nbsp;</td>'; // Gross pay
+      echo '<td>' . $payslip['total_deductions'] . '</td>'; // Deductions
+      echo '<td>' . $payslip['total_pay'] . '</td>'; // Net Take Home pay
       //echo '<td>' . $payslip['project_based_pay'] . '</td>';
       //echo '<td>' . $payslip['monthly_pay'] . '</td>';
-      echo '<td>' . $payslip['total_pay'] . '</td>';
+      //echo '<td>' . $payslip['total_pay'] . '</td>';
       // echo '<td><a href="payslip_pdf.php" class="btn btn-primary">Print</a></td>';
       // echo '<td><a href="#" class="btn btn-danger delete-link" data-id="' . $payslip['id'] . '">Delete</a></td>'; // Attach payslip ID to the delete button
       echo '</tr>';
