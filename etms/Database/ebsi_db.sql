@@ -110,7 +110,7 @@ CREATE TABLE `employees` (
   `emp_profile` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`emp_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci; /* changed from utf8mb4_0900_ai_ci */
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -165,7 +165,7 @@ CREATE TABLE `employees_archives` (
   `remarks` text NOT NULL,
   PRIMARY KEY (`archive_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci; /* changed from utf8mb4_0900_ai_ci */
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
