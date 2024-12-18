@@ -296,16 +296,16 @@ if (isset($_POST['saveButton'])) {
 
       $gross_pay = $basic_pay - $absent_penalty - $late_penalty + $overtime_pay + $special_holiday_pay + $legal_holiday_pay + $rest_day_pay + $night_pay + $adjustments;
 
-      $sss_ee = calculate_sss_ee($gross_pay);         // assuming the ee contribution is based off the gross pay
-      $pabibig_ee = calculate_pagibig_ee($gross_pay);
-      $phic_ee = calculate_phic_ee($gross_pay);
-      $sss_loan = $_POST['sssLoan'];
-      $pagibig_loan = $_POST['pagibigLoan'];
-      $pagibig_mp2 = $_POST['pagibigMP2'];
-      $withholding_tax = 0; // not yet implemented
-      $company_loan_mc = $_POST['companyLoanMC'];
-      $company_loan_cash = $_POST['companyLoanCash'];
-      $vault_loan = $_POST['vaultLoan'];
+      $sss_ee = floatval(calculate_sss_ee($gross_pay));         // assuming the ee contribution is based off the gross pay
+      $pabibig_ee = floatval(calculate_pagibig_ee($gross_pay));
+      $phic_ee = floatval(calculate_phic_ee($gross_pay));
+      $sss_loan = floatval($_POST['sssLoan']);
+      $pagibig_loan = floatval($_POST['pagibigLoan']);
+      $pagibig_mp2 = floatval($_POST['pagibigMP2']);
+      $withholding_tax = floatval(0); // not yet implemented
+      $company_loan_mc = floatval($_POST['companyLoanMC']);
+      $company_loan_cash = floatval($_POST['companyLoanCash']);
+      $vault_loan = floatval($_POST['vaultLoan']);
 
       // placed all the deductions inside total_deductions for now
       $total_deductions = $sss_ee + $phic_ee + $pabibig_ee + $sss_loan + $pagibig_loan + $withholding_tax + $company_loan_mc + $vault_loan;
@@ -532,6 +532,8 @@ tr:nth-child(even) {
     <div class="d-flex align-items-center">
         <button type="button" class="btn btn-primary ml-2 print-link">Print Payroll</button>
 
+        <!-- Print Payslip Button -->
+        <button type="button" class="btn btn-primary ml-3" data-toggle="modal" data-target="#printPayslipModal">Print Payslip</button>
         <!-- <form method="post" style="display:inline;">
           <button type="submit" class="btn btn-primary ml-3" name="add_payslip_button">Add New Payslip</button>
         </form> -->
@@ -670,6 +672,59 @@ tr:nth-child(even) {
     </div>
   </div>
 </div>
+
+
+<!-- Print Payslip Modal -->
+<div class="modal fade" id="printPayslipModal" tabindex="-1" role="dialog" aria-labelledby="printPayslipModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="printPayslipModalLabel">Print Payslip</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="printPayslipForm" method="get" action="payslip_pdf.php">
+          <div class="form-group">
+          <label for="employee_id"><b>Employee</b></label>
+            <select class="form-control" id="employee_id" name="employee_id" style="padding: 5px; font-size: 15px;">
+              <?php
+              // Fetch employees who have existing payslips in the current payroll
+              $sql = "SELECT DISTINCT a.user_id, a.fullname 
+                FROM payslip p
+                JOIN tbl_admin a ON p.employee_id = a.user_id
+                WHERE p.payroll_id = :payroll_id";
+              $stmt = $admin_class->db->prepare($sql);
+              $stmt->bindParam(':payroll_id', $payroll_id, PDO::PARAM_INT);
+              $stmt->execute();
+
+              // Loop through each employee
+              while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                  echo '<option value="' . $row['user_id'] . '">' . $row['fullname'] . '</option>';
+              }
+              ?>
+            </select>
+          </div>
+          <?php
+          // Ensure the payroll_id is available in the URL
+          if (isset($_GET['id'])) {
+              $payroll_id = $_GET['id'];
+              echo '<input type="hidden" name="payroll_id" value="' . htmlspecialchars($payroll_id) . '">';
+          }
+          ?>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Print Payslip</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
             <div class="table-responsive" >
               <!-- <h4 class="text-center">Deductions</h4> -->
               
@@ -823,30 +878,6 @@ include("../nav-and-footer/footer-area.php");
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- <script type="text/javascript">
-    // Function to calculate and update Gross Pay and Total Pay
-  function calculatePayslip() {
-    let projectBasedPay = parseFloat($('#projectBasedPay').val());
-    let commissionPercent = parseFloat($('#CommisionPercent').val()) / 100;
-    let incomeTaxPercent = parseFloat($('#incomeTax').val());
-
-    // Calculate Gross Pay
-    let grossPay = projectBasedPay - (projectBasedPay * commissionPercent);
-    $('#grossPay').val(grossPay.toFixed(2));
-
-    // Calculate Total Pay
-    let incomeTaxDeduction = grossPay * incomeTaxPercent;
-    let totalPay = grossPay - incomeTaxDeduction;
-    $('#totalPay').val(totalPay.toFixed(2));
-  }
-
-  // Execute calculation on input change
-  $(document).ready(function() {
-    $('#projectBasedPay, #CommisionPercent, #incomeTax').on('change', function() {
-      calculatePayslip();
-    });
-  });
-</script> -->
 
 <script>
 $(document).ready(function() {

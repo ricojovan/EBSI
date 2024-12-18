@@ -1,8 +1,26 @@
 <?php
-
+//require '../etms/authentication.php'; // admin authentication check 
+require '../etms/classes/admin_class.php';
 require_once '../vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
+
+$admin_class = new admin_class();
+
+$employee_id = $_GET['employee_id'];
+$payroll_id = $_GET['payroll_id'];
+
+$sql = "SELECT p.*, a.fullname AS employee_name, pr.start_date, pr.end_date
+        FROM payslip p
+        JOIN tbl_admin a ON p.employee_id = a.user_id
+        JOIN payroll_list pr ON p.payroll_id = pr.id
+        WHERE p.payroll_id = :payroll_id AND p.employee_id = :employee_id LIMIT 1";
+
+$stmt = $admin_class->db->prepare($sql);
+$stmt->bindParam(':payroll_id', $payroll_id);
+$stmt->bindParam(':employee_id', $employee_id);
+$stmt->execute();
+$payslipDetails = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // initialize dompdf
 $options = new Options();
@@ -14,40 +32,40 @@ $pngbase64 = base64_encode(file_get_contents('../assets/images/payslip/payslip_h
 
 // data arrays --- with placeholder values for now
 $salaryComponents = [
-    ['component' => 'Monthly Basic Salary', 'amount' => '1000.00'],
-    ['component' => 'Basic Pay', 'amount' => '200.00'],
-    ['component' => 'De Minimis Allowance', 'amount' => '500.00'],
-    ['component' => 'Overtime Pay', 'amount' => '500.00'],      
-    ['component' => 'Rest Day Duty', 'amount' => '500.00'],
-    ['component' => 'Night Differential', 'amount' => '500.00'],
-    ['component' => 'Legal Holiday Pay', 'amount' => '500.00'],
-    ['component' => 'Special holiday Pay', 'amount' => '500.00'],
-    ['component' => 'Adjustments', 'amount' => '500.00'],
+    ['component' => 'Monthly Basic Salary', 'amount' => $payslipDetails['monthly_pay'] ?? '0.00'],
+    ['component' => 'Basic Pay', 'amount' => $payslipDetails['basic_pay'] ?? '0.00'],
+    ['component' => 'De Minimis Allowance', 'amount' => $payslipDetails['deminimis_allowance'] ?? '0.00'],
+    ['component' => 'Overtime Pay', 'amount' => $payslipDetails['overtime_pay'] ?? '0.00'],      
+    ['component' => 'Rest Day Duty', 'amount' => $payslipDetails['rest_day_pay'] ?? '0.00'],
+    ['component' => 'Night Differential', 'amount' => $payslipDetails['night_pay'] ?? '0.00'],
+    ['component' => 'Legal Holiday Pay', 'amount' => $payslipDetails['legal_holiday_pay'] ?? '0.00'],
+    ['component' => 'Special holiday Pay', 'amount' => $payslipDetails['special_holiday_pay'] ?? '0.00'],
+    ['component' => 'Adjustments', 'amount' => $payslipDetails['adjustments'] ?? '0.00'],
     // adding space
     ['component' => '&nbsp;', 'amount' => '&nbsp;'],
     ['component' => '&nbsp;', 'amount' => '&nbsp;'],
     ['component' => '&nbsp;', 'amount' => '&nbsp;'],
     ['component' => '&nbsp;', 'amount' => '&nbsp;'],
     ['component' => '&nbsp;', 'amount' => '&nbsp;'],
-    ['component' => 'Gross Basic Pay', 'amount' => '4,700.00']
+    ['component' => 'Gross Basic Pay', 'amount' => $payslipDetails['gross_pay'] ?? '0.00']
 ];
 
 $deductions = [
-    ['deduction' => 'SSS Contribution', 'amount' => '1000.00'],
-    ['deduction' => 'Phil-Health Contribution', 'amount' => '250.00'],
-    ['deduction' => 'Pag-IBIG Contribution', 'amount' => '100.00'],
-    ['deduction' => 'Withholding Tax', 'amount' => '100.00'],
+    ['deduction' => 'SSS Contribution', 'amount' => $payslipDetails['sss_ee'] ?? '0.00'],
+    ['deduction' => 'Phil-Health Contribution', 'amount' => $payslipDetails['phic_ee'] ?? '0.00'],
+    ['deduction' => 'Pag-IBIG Contribution', 'amount' => $payslipDetails['pag_ibig_ee'] ?? '0.00'],
+    ['deduction' => 'Withholding Tax', 'amount' => '0.00'],
     ['deduction' => '&nbsp;', 'amount' => '&nbsp;'],       // space
-    ['deduction' => 'SSS Loan', 'amount' => '100.00'],
-    ['deduction' => 'Pag-IBIG Loan', 'amount' => '100.00'],
-    ['deduction' => 'Pag-IBIG MP2', 'amount' => '100.00'],
-    ['deduction' => 'Vault Loan', 'amount' => '100.00'],
-    ['deduction' => 'Overpayments', 'amount' => '100.00'],
+    ['deduction' => 'SSS Loan', 'amount' => '0.00'],
+    ['deduction' => 'Pag-IBIG Loan', 'amount' => '0.00'],
+    ['deduction' => 'Pag-IBIG MP2', 'amount' => '0.00'],
+    ['deduction' => 'Vault Loan', 'amount' => '0.00'],
+    ['deduction' => 'Overpayments', 'amount' => '0.00'],
     ['deduction' => '&nbsp;', 'amount' => '&nbsp;'],    // space
-    ['deduction' => 'Tardiness/Half-Day/Undertime', 'amount' => '100.00'],
-    ['deduction' => 'Absence', 'amount' => '100.00'],
+    ['deduction' => 'Tardiness/Half-Day/Undertime', 'amount' => $payslipDetails['late_deduct'] ?? '0.00'],
+    ['deduction' => 'Absence', 'amount' => $payslipDetails['absent_deduct'] ?? '0.00'],
     ['deduction' => '&nbsp;', 'amount' => '&nbsp;'],    // space
-    ['deduction' => 'Total Deductions', 'amount' => '2,150.00']
+    ['deduction' => 'Total Deductions', 'amount' => $payslipDetails['total_deductions'] ?? '0.00']
 ];
 
 // helper func to generate table rows
@@ -139,15 +157,15 @@ $html = '
         
         <tr>
             <td class="subtitle">EMPLOYEE NUMBER:</td>
-            <td>EBSI2424</td>
+            <td>' . $payslipDetails['employee_id'] . '</td>
             <td class="subtitle">PAY DATE:</td>
-            <td>June 30, 2024</td>
+            <td>&nbsp;</td>
         </tr>
         <tr>
             <td class="subtitle">EMPLOYEE NAME:</td>
-            <td>EmpName</td>
+            <td>' . $payslipDetails['employee_name'] . '</td>
             <td class="subtitle">PAY PERIOD:</td>
-            <td>June 05-19, 2024</td>
+            <td>' . date('M d', strtotime($payslipDetails['start_date'])) . '-' . date('M d, Y', strtotime($payslipDetails['end_date'])) . '</td>
         </tr>
 
         <tr><td colspan="4" class="no-border">&nbsp;</td></tr>
@@ -177,7 +195,7 @@ $html = '
             <tr><td colspan="4" class="no-border">&nbsp;</td></tr>
             <tr>
                 <td colspan="2" class="no-border" style="font-weight:bold;">Net Take Home Pay</td>
-                <td colspan="2">2,550.00</td>
+                <td colspan="2">' . $payslipDetails['total_pay'] . '</td>
             </tr>
             <tr><td colspan="4" class="no-border">&nbsp;</td></tr>
             <tr><td colspan="4" class="title">&nbsp;</td></tr>
