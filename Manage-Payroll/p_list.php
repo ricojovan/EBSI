@@ -285,7 +285,7 @@ if (isset($_POST['saveButton'])) {
 
       // calculating the gross pay
       $deminimis_allowance = 0; // not included in gross pay
-      $adjustments = 0;
+      $adjustments = 0; // not yet implemented
       $overtime_pay = $total_overtime_hours * ($hourly_pay * 1.25);
       $special_holiday_pay = (int) $_POST['specialHolidayHours'] * (($daily_pay * 0.3));
       $legal_holiday_pay = (int) $_POST['legalHolidayHours'] * $daily_pay;
@@ -326,10 +326,12 @@ if (isset($_POST['saveButton'])) {
 
       // Insert into payslip table
       $sql = "INSERT INTO payslip (payroll_id, employee_id, monthly_pay, basic_pay, daily_pay, hourly_pay, deminimis_allowance,
-                                    adjustments, overtime_hours, overtime_pay, special_holiday_pay, legal_holiday_pay, rest_day_pay, night_differential_hours, night_pay, gross_pay, sss_ee,
+                                    adjustments, overtime_hours, overtime_pay, special_holiday_pay, legal_holiday_pay, rest_day_pay, night_differential_hours, night_pay, 
+                                    days_absent, absent_deduct, minutes_late, late_deduct, gross_pay, sss_ee,
                                     phic_ee, pag_ibig_ee, total_deductions, total_pay) 
       VALUES (:payroll_id, :employee_id, :monthly_pay, :basic_pay, :daily_pay, :hourly_pay, :deminimis_allowance,
-              :adjustments, :overtime_hours, :overtime_pay, :special_holiday_pay, :legal_holiday_pay, :rest_day_pay, :night_differential_hours, :night_pay, :gross_pay, :sss_ee, :phic_ee, :pag_ibig_ee,
+              :adjustments, :overtime_hours, :overtime_pay, :special_holiday_pay, :legal_holiday_pay, :rest_day_pay, :night_differential_hours, 
+              :night_pay, :days_absent, :absent_deduct, :minutes_late, :late_deduct, :gross_pay, :sss_ee, :phic_ee, :pag_ibig_ee,
               :total_deductions, :total_pay)";
 
       $stmt = $admin_class->db->prepare($sql);
@@ -348,6 +350,14 @@ if (isset($_POST['saveButton'])) {
       $stmt->bindParam(':rest_day_pay', $rest_day_pay);
       $stmt->bindParam(':night_differential_hours', $total_night_hours);
       $stmt->bindParam(':night_pay', $night_pay);
+      
+
+      $stmt->bindParam(':days_absent', $days_absent);
+      $stmt->bindParam(':absent_deduct', $absent_penalty);
+      $stmt->bindParam(':minutes_late', $total_minutes_late);
+      $stmt->bindParam(':late_deduct', $late_penalty);
+
+
       $stmt->bindParam(':gross_pay', $gross_pay);
       $stmt->bindParam(':sss_ee', $sss_ee);
       $stmt->bindParam(':phic_ee', $phic_ee);
@@ -699,7 +709,7 @@ tr:nth-child(even) {
                       <th colspan="2">Legal Holiday</th>
                       <th colspan="2">Rest Day Duty</th>
                       <th colspan="2">Night Differential</th>
-                      <th colspan="6">Deductions</th>
+                      <th colspan="8">Deductions</th>
                       <th rowspan="2">Deductions Total</th>
                       <th rowspan="2">Net Take/Home Pay</th>
                       <th rowspan="2">Action</th>
@@ -720,8 +730,10 @@ tr:nth-child(even) {
                       <th>Hours</th>
                       <th>Add 10% Rate</th>
 
-                      <th>Absent without Pay</th>
-                      <th>Late/Undertime</th>
+                      <th>No. Days Absent</th>
+                      <th>Deducted Absent Pay</th>
+                      <th>No. Minutes Late</th>
+                      <th>Deducted Late Pay</th>
                       <th>Gross Pay</th>
                       <th>SSS-EE</th>
                       <th>PHIC-EE</th>
@@ -764,8 +776,13 @@ tr:nth-child(even) {
                         echo '<td>' . $payslip['rest_day_pay'] . '</td>';
                         echo '<td>' . $payslip['night_differential_hours'] . '</td>';
                         echo '<td>' . $payslip['night_pay'] . '</td>';
-                        echo '<td>&nbsp;</td>'; // Absent penalty
-                        echo '<td>&nbsp;</td>'; // Late penalty
+
+                        echo '<td>' . $payslip['days_absent'] . '</td>';
+                        echo '<td>' . $payslip['absent_deduct'] . '</td>';
+                        echo '<td>' . $payslip['minutes_late'] . '</td>';
+                        echo '<td>' . $payslip['late_deduct'] . '</td>';
+
+
                         echo '<td>' . $payslip['gross_pay'] . '</td>';
 
                         echo '<td>' . $payslip['sss_ee'] . '</td>';
