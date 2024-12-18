@@ -530,8 +530,7 @@ tr:nth-child(even) {
     </div>
     <div class="text-right">
     <div class="d-flex align-items-center">
-        <button type="button" class="btn btn-primary ml-2 print-link">Print Payroll</button>
-
+        
         <!-- Print Payslip Button -->
         <button type="button" class="btn btn-primary ml-3" data-toggle="modal" data-target="#printPayslipModal">Print Payslip</button>
         <!-- <form method="post" style="display:inline;">
@@ -880,43 +879,7 @@ include("../nav-and-footer/footer-area.php");
 
 
 <script>
-$(document).ready(function() {
-    // Print function when "Print" link is clicked
-    $("body").on("click", ".print-link", function() {
-        // Get the parent table of the clicked link
-        // var $table = $(this).closest("table").clone();
-        var $table = $("#printableTable").clone();
 
-        // Remove the "Print" column and "Action" column from the cloned table
-        $table.find("th:last-child, td:last-child").remove();
-        // $table.find("th:nth-child(7), td:nth-child(7)").remove();
-
-        // Create a new window for printing
-        var printWindow = window.open('', '_blank');
-        printWindow.document.write('<html><head><title>Print Payslip</title></head><body>');
-
-        // Add CSS for styling the printable content
-        printWindow.document.write('<style>\
-            body { font-family: Arial, sans-serif; text-align: center; }\
-            table { width: 100%; border-collapse: collapse; }\
-            th, td { border: 1px solid #000; padding: 8px; text-align: center; }\
-            th { background-color: #f2f2f2; }\
-            td { background-color: #fff; }\
-            </style>');
-
-        // Append the table content to the new window
-        printWindow.document.write($table.prop('outerHTML'));
-
-        // Close the HTML document
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-
-        // Print the content
-        printWindow.print();
-
-        return false;
-    });
-});
 
 $(document).ready(function() {
     // Delete function when "Delete" link is clicked
